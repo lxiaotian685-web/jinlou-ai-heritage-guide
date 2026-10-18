@@ -1,351 +1,54 @@
-@import "../../styles/archive.wxss";
-
-/* ==========================================================================
-   全景列表 · B 蚝壳青灰
-   纸面档案页头 + 全幅照片卡；数据与进入事件保持原样。
-   ========================================================================== */
-
-.panoramas-page {
-  box-sizing: border-box;
-  padding: 0 32rpx calc(52rpx + env(safe-area-inset-bottom));
-}
-
-/* ---------- 页头 ---------- */
-.pano-head {
-  padding: 36rpx 0 0;
-}
-
-.pano-head__top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 20rpx;
-}
-
-.pano-head__folio {
-  flex: none;
-  font-size: 18rpx;
-  line-height: 1.5;
-  letter-spacing: 3rpx;
-  color: var(--arc-muted);
-}
-
-.pano-head__main {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24rpx;
-  margin-top: 14rpx;
-}
-
-.pano-head__copy {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10rpx;
-}
-
-.pano-head__title {
-  font-size: 64rpx;
-  line-height: 1.2;
-  letter-spacing: 6rpx;
-}
-
-.pano-head__seal {
-  flex: none;
-  margin-top: 6rpx;
-}
-
-.pano-head__rule {
-  display: flex;
-  align-items: center;
-  gap: 18rpx;
-  margin-top: 26rpx;
-}
-
-.pano-head__rule-line {
-  flex: 1;
-  height: 1rpx;
-  background: var(--arc-line-strong);
-}
-
-.pano-head__rule-meta {
-  flex: none;
-  font-size: 18rpx;
-  line-height: 1.5;
-  letter-spacing: 3rpx;
-  color: var(--arc-muted);
-}
-
-/* ---------- 加载 / 错误 / 空 ---------- */
-.pano-state {
-  padding-top: 30rpx;
-}
-
-.pano-state__card {
-  display: flex;
-  flex-direction: column;
-  gap: 14rpx;
-  padding: 34rpx 30rpx;
-}
-
-.pano-state__title {
-  font-size: 36rpx;
-  line-height: 1.4;
-  letter-spacing: 2rpx;
-  color: var(--arc-ink);
-}
-
-.pano-state__line {
-  width: 88rpx;
-  height: 2rpx;
-  background: var(--arc-red);
-}
-
-.pano-error {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14rpx;
-  margin-top: 30rpx;
-}
-
-.pano-error__title {
-  font-size: 36rpx;
-  line-height: 1.4;
-  letter-spacing: 2rpx;
-  color: var(--arc-ink);
-}
-
-.pano-error__body {
-  font-size: 24rpx;
-  line-height: 1.75;
-  color: var(--arc-muted);
-}
-
-.pano-error__btn {
-  width: auto;
-  min-width: 260rpx;
-  min-height: 88rpx;
-  margin-top: 4rpx;
-}
-
-.pano-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12rpx;
-  margin-top: 30rpx;
-}
-
-.pano-empty__title {
-  font-size: 34rpx;
-  line-height: 1.4;
-  letter-spacing: 2rpx;
-  color: var(--arc-ink);
-}
-
-.pano-empty__body {
-  font-size: 24rpx;
-  line-height: 1.75;
-  color: var(--arc-muted);
-}
-
-/* ---------- 场景档案卡 ---------- */
-.pano-list {
-  display: flex;
-  flex-direction: column;
-  gap: 28rpx;
-  margin-top: 30rpx;
-}
-
-.pano-card {
-  overflow: hidden;
-}
-
-.pano-card.arc-card--ticks::before,
-.pano-card.arc-card--ticks::after {
-  z-index: 5;
-}
-
-.pano-card__media {
-  position: relative;
-  width: 100%;
-  height: 320rpx;
-  border-top: 0;
-  border-right: 0;
-  border-left: 0;
-}
-
-.pano-card__cover {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.pano-card__shade {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(180deg, rgba(20, 28, 24, 0.1) 0%, rgba(20, 28, 24, 0) 44%, rgba(20, 28, 24, 0.16) 100%);
-  pointer-events: none;
-}
-
-.pano-card__body {
-  display: flex;
-  flex-direction: column;
-  padding: 20rpx 24rpx 24rpx;
-}
-
-.pano-card__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-}
-
-.pano-card__folio {
-  display: flex;
-  align-items: baseline;
-  gap: 6rpx;
-}
-
-.pano-card__folio-label {
-  font-size: 18rpx;
-  line-height: 1.5;
-  letter-spacing: 2rpx;
-  color: var(--arc-muted);
-}
-
-.pano-card__folio-num {
-  font-size: 26rpx;
-  line-height: 1;
-  color: var(--arc-red);
-}
-
-.pano-card__tag {
-  flex: none;
-}
-
-.pano-card__name {
-  display: block;
-  margin-top: 8rpx;
-  font-size: 44rpx;
-  line-height: 1.34;
-  letter-spacing: 1rpx;
-  color: var(--arc-ink);
-}
-
-.pano-card__summary {
-  display: block;
-  margin-top: 10rpx;
-  font-size: 25rpx;
-  line-height: 1.78;
-  color: var(--arc-blue);
-}
-
-.pano-card__hair {
-  margin-top: 20rpx;
-}
-
-.pano-card__cta {
-  width: 100%;
-  min-height: 92rpx;
-  margin-top: 20rpx;
-  font-size: 27rpx;
-  letter-spacing: 3rpx;
-}
-
-/* ---------- 页脚 ---------- */
-.pano-foot {
-  margin-top: 40rpx;
-}
-
-.pano-foot .arc-hair--dot text {
-  font-size: 18rpx;
-  letter-spacing: 3rpx;
-}
-
-/* ---------- 大字模式 ---------- */
-.font-large .pano-head__title {
-  font-size: 76rpx;
-}
-
-.font-large .pano-head__folio,
-.font-large .pano-head__rule-meta {
-  font-size: 22rpx;
-}
-
-.font-large .pano-state__title,
-.font-large .pano-error__title,
-.font-large .pano-empty__title {
-  font-size: 42rpx;
-}
-
-.font-large .pano-error__body,
-.font-large .pano-empty__body {
-  font-size: 30rpx;
-  line-height: 1.8;
-}
-
-.font-large .pano-card__folio-label {
-  font-size: 22rpx;
-}
-
-.font-large .pano-card__folio-num {
-  font-size: 32rpx;
-}
-
-.font-large .pano-card__name {
-  font-size: 52rpx;
-}
-
-.font-large .pano-card__summary {
-  font-size: 32rpx;
-}
-
-.font-large .pano-card__cta {
-  min-height: 100rpx;
-  font-size: 32rpx;
-}
-
-.font-large .pano-foot .arc-hair--dot text {
-  font-size: 22rpx;
-}
-
-/* ---------- 高对比 ---------- */
-.panoramas-page.high-contrast {
-  background-color: #fff;
-  background-image: none;
-}
-
-.high-contrast .arc-card,
-.high-contrast .arc-empty {
-  background: #fff;
-  border-color: #393939;
-}
-
-.high-contrast .pano-head__folio,
-.high-contrast .pano-head__rule-meta,
-.high-contrast .pano-card__folio-label,
-.high-contrast .pano-foot .arc-hair--dot text,
-.high-contrast .pano-error__body,
-.high-contrast .pano-empty__body {
-  color: #222;
-}
-
-.high-contrast .pano-card__summary {
-  color: #243029;
-}
-
-.high-contrast .pano-card__media {
-  border-color: #393939;
-}
-
-.high-contrast .arc-tag {
-  border-color: #393939;
-  color: #111;
-}
+.ar-page { background:#f3efe5; }
+.heading { display:flex; flex-direction:column; gap:12rpx; padding-bottom:8rpx; }
+.eyebrow { color:#8a6a2b; font-size:23rpx; letter-spacing:2rpx; }
+.heading .muted { font-size:25rpx; line-height:1.65; }
+.progress-row { display:grid; grid-template-columns:repeat(3, 1fr); gap:10rpx; padding-top:24rpx; }
+.progress-step { padding:14rpx 8rpx; border-radius:999rpx; background:#e6e0d5; color:#77716b; font-size:21rpx; text-align:center; }
+.progress-step.active { background:#3a5a47; color:#fff; }
+.intro-section { display:flex; flex-direction:column; gap:22rpx; }
+.target-card image { width:100%; height:380rpx; }
+.target-copy { padding:26rpx; display:flex; flex-direction:column; gap:10rpx; }
+.target-label { color:#8a6a2b; font-size:22rpx; }
+.target-title { font-size:36rpx; font-weight:600; }
+.target-description { color:#5d554f; font-size:25rpx; line-height:1.65; }
+.guide-card { padding:26rpx; display:flex; flex-direction:column; gap:14rpx; color:#5d554f; font-size:25rpx; line-height:1.55; }
+.guide-title { color:#382c24; font-size:29rpx; font-weight:600; }
+.start-button { width:100%; margin:0; }
+.completed-note { color:#3a5a47; font-size:23rpx; text-align:center; }
+.ar-stage { position:relative; width:100%; height:720rpx; margin-top:22rpx; overflow:hidden; background:#171512; }
+.camera,.fallback-image { width:100%; height:100%; }
+.stage-shade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.32), transparent 25%, transparent 70%, rgba(0,0,0,.4)); pointer-events:none; }
+.stage-badge { position:absolute; left:28rpx; top:26rpx; padding:10rpx 18rpx; border-radius:999rpx; background:rgba(20,22,19,.72); color:#fff; font-size:22rpx; }
+.target-frame { position:absolute; left:14%; top:20%; width:72%; height:52%; }
+.corner { position:absolute; width:58rpx; height:58rpx; border-color:#f2d58c; }
+.corner-a { left:0; top:0; border-left:5rpx solid #f2d58c; border-top:5rpx solid #f2d58c; }
+.corner-b { right:0; top:0; border-right:5rpx solid #f2d58c; border-top:5rpx solid #f2d58c; }
+.corner-c { left:0; bottom:0; border-left:5rpx solid #f2d58c; border-bottom:5rpx solid #f2d58c; }
+.corner-d { right:0; bottom:0; border-right:5rpx solid #f2d58c; border-bottom:5rpx solid #f2d58c; }
+.hotspot { position:absolute; z-index:3; width:72rpx; height:72rpx; min-height:72rpx; margin:-36rpx 0 0 -36rpx; padding:0; border:4rpx solid rgba(255,255,255,.86); border-radius:50%; background:rgba(58,90,71,.88); color:#fff; line-height:64rpx; font-size:27rpx; box-shadow:0 8rpx 24rpx rgba(0,0,0,.3); }
+.hotspot.active { background:#b7792c; transform:scale(1.1); }
+.align-panel,.discovery-panel { display:flex; flex-direction:column; gap:20rpx; }
+.panel-title { font-size:34rpx; font-weight:600; }
+.align-panel .muted { font-size:25rpx; line-height:1.65; }
+.secondary-button { width:100%; margin:0; background:#e8e0d3; color:#382c24; border-radius:16rpx; font-size:27rpx; }
+.text-button { width:100%; margin:0; background:transparent; color:#5f625f; font-size:25rpx; }
+.camera-error { margin-top:24rpx; padding:28rpx; display:flex; flex-direction:column; gap:18rpx; }
+.camera-error button { margin:0; background:#e8e0d3; color:#382c24; }
+.error-title { font-size:29rpx; font-weight:600; }
+.hotspot-tabs { display:flex; gap:12rpx; overflow-x:auto; }
+.hotspot-tab { flex:none; margin:0; padding:0 20rpx; min-height:66rpx; line-height:66rpx; border-radius:999rpx; background:#e5dfd3; color:#5e574f; font-size:23rpx; }
+.hotspot-tab.active { background:#3a5a47; color:#fff; }
+.detail-card { padding:28rpx; display:flex; flex-direction:column; gap:12rpx; }
+.detail-index,.quiz-label { color:#8a6a2b; font-size:22rpx; }
+.detail-title,.quiz-title { font-size:33rpx; font-weight:600; }
+.detail-description { color:#4f4842; font-size:26rpx; line-height:1.72; }
+.review-notice { color:#7c756e; font-size:22rpx; line-height:1.55; }
+.action-row { display:grid; grid-template-columns:1fr 1fr; gap:14rpx; }
+.action-row button { margin:0; padding:0 12rpx; min-height:76rpx; line-height:1.25; border-radius:14rpx; background:#3a5a47; color:#fff; font-size:23rpx; }
+.quiz-card { padding:28rpx; display:flex; flex-direction:column; gap:14rpx; }
+.quiz-option { width:100%; margin:0; padding:18rpx 20rpx; line-height:1.45; border-radius:14rpx; background:#eee8dc; color:#4f4842; font-size:24rpx; text-align:left; }
+.quiz-option.correct { background:#dfeadf; color:#294d39; }
+.quiz-option.wrong { background:#f3ded7; color:#7b3b2f; }
+.quiz-feedback { color:#8b493a; font-size:23rpx; }
+.quiz-feedback.success { color:#3a5a47; }
+.restart-button { margin-bottom:22rpx; }

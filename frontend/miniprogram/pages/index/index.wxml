@@ -94,6 +94,7 @@
       </view>
       <button class="arc-btn continue-button" bindtap="continueVisit">{{continueCard.buttonText}}</button>
     </view>
+
   </view>
 
   <view class="home-block">
@@ -105,7 +106,7 @@
     </view>
 
     <view class="entry-grid">
-      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToPanoramas" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="全景漫游，体验交互框架">
+      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToArStudy" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="AR木雕寻宝，对准木雕发现工艺细节">
         <view class="arc-photo entry__media">
           <image src="/images/arc/arc-pond.jpg" mode="aspectFill" lazy-load="{{true}}" />
           <view class="entry__grade"></view>
@@ -113,9 +114,9 @@
         </view>
         <view class="entry__body">
           <text class="entry__index">01</text>
-          <text class="entry__label serif">全景漫游</text>
-          <text class="entry__meta">体验交互框架</text>
-          <text class="entry__code">PANORAMA</text>
+          <text class="entry__label serif">AR木雕寻宝</text>
+          <text class="entry__meta">对准木雕，发现工艺细节</text>
+          <text class="entry__code">AR STUDY</text>
         </view>
       </view>
 

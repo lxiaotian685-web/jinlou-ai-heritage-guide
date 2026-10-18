@@ -96,7 +96,7 @@ Page({
   goToSpots() {
     wx.navigateTo({ url: '/pages/spots/index' });
   },
-  goToPanoramas() {
+  goToArStudy() {
     wx.switchTab({ url: '/pages/panoramas/index' });
   },
   goToAssistant() {
