@@ -26,7 +26,7 @@
   </view>
   <view wx:if="{{continueCard}}" class="section continue-wrap"><view class="continue-card card"><view><text class="continue-label">继续游览</text><text class="continue-title serif">{{continueCard.title}}</text><text class="continue-description">{{continueCard.description}}</text></view><button bindtap="continueVisit">{{continueCard.buttonText}}</button></view></view>
   <view class="section feature-grid">
-    <view class="feature card" bindtap="goToPanoramas"><text class="feature-title serif">全景漫游</text><text class="muted">体验交互框架</text></view>
+    <view class="feature card" bindtap="goToArStudy"><text class="feature-title serif">AR木雕寻宝</text><text class="muted">对准木雕，发现工艺细节</text></view>
     <view class="feature card" bindtap="goToAssistant"><text class="feature-title serif">常见问题</text><text class="muted">查看景区资料答疑</text></view>
     <view class="feature card visit-center" bindtap="goToVisitCenter"><text class="feature-title serif">我的游览</text><text class="muted">收藏、进度与当前路线</text></view>
   </view>

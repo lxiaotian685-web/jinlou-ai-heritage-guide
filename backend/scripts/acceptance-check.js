@@ -55,6 +55,10 @@ try {
   check('缓存快速回退', apiService.includes('timeout: cached ? 1500 : 8000'));
   const homeTemplate = readFileSync(resolve(frontendRoot, 'pages/index/index.wxml'), 'utf8');
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
+  const arTemplate = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.wxml'), 'utf8');
+  const arScript = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.js'), 'utf8');
+  check('AR木雕研学试点', ['<camera', '观察构件', '理解雕刻层次', '查看饰金效果', '使用参考图继续', '来参加一下研学问答吧', '小小木雕观察员'].every((text) => arTemplate.includes(text) || arScript.includes(text)));
+  check('全景入口已替换', appConfig.tabBar.list.some((item) => item.pagePath === 'pages/panoramas/index' && item.text === 'AR研学') && homeTemplate.includes('AR木雕寻宝') && !homeTemplate.includes('全景漫游'));
   const spotDetailScript = readFileSync(resolve(frontendRoot, 'pages/spot-detail/index.js'), 'utf8');
   check('后台讲解音频地址接入', spotDetailScript.includes("configuredCloudUrl.startsWith('cloud://')") && spotDetailScript.includes('fileID: configuredCloudUrl'));
   const spotImages = require(resolve(frontendRoot, 'utils/spot-images.js'));

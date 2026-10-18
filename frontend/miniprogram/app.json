@@ -31,7 +31,7 @@
     "list": [
       { "pagePath": "pages/index/index", "text": "首页" },
       { "pagePath": "pages/guide/index", "text": "导览" },
-      { "pagePath": "pages/panoramas/index", "text": "全景" },
+      { "pagePath": "pages/panoramas/index", "text": "AR研学" },
       { "pagePath": "pages/service/index", "text": "服务" }
     ]
   },
