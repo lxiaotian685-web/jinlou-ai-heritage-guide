@@ -1,0 +1,6 @@
+.ticket { margin-top: 28rpx; padding: 30rpx; display: flex; flex-direction: column; gap: 20rpx; }
+.card-title, .group-title { font-size: 32rpx; font-weight: 600; }.ticket .muted { font-size: 25rpx; }
+.group { margin-top: 34rpx; display: flex; flex-direction: column; gap: 16rpx; }.item { padding: 26rpx; display: flex; justify-content: space-between; font-size: 27rpx; }.item .muted { font-size: 25rpx; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; }.option { padding: 32rpx 20rpx; text-align: center; font-size: 27rpx; }
+.state { margin-top: 28rpx; padding: 30rpx; display: flex; flex-direction: column; gap: 20rpx; }
+.service-item { padding:26rpx; display:flex; flex-direction:column; gap:20rpx; }.item-copy { display:flex; justify-content:space-between; gap:24rpx; font-size:27rpx; }.item-copy .muted { font-size:25rpx; text-align:right; }.action-row { display:flex; gap:16rpx; }.action-row button, .single-action { flex:1; margin:0; padding:0 18rpx; line-height:64rpx; border-radius:12rpx; background:#ede8de; color:#382c24; font-size:24rpx; }.single-action { width:100%; }

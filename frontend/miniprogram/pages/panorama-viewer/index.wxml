@@ -1,0 +1,47 @@
+<view class="viewer-page">
+  <view wx:if="{{loading}}" class="center-state">正在加载场景…</view>
+  <view wx:elif="{{error}}" class="center-state">
+    <text>{{error}}</text>
+    <button class="retry" bindtap="loadViewer">重新加载</button>
+  </view>
+  <block wx:else>
+    <view class="viewer-head">
+      <text class="scene-name serif">{{scene.name}}</text>
+      <text class="demo-badge">交互框架演示</text>
+    </view>
+    <movable-area class="panorama-area">
+      <movable-view class="panorama-canvas" direction="horizontal" inertia out-of-bounds="false" x="-300">
+        <image class="panorama-image" src="{{scene.previewImage}}" mode="aspectFill" />
+        <button
+          wx:for="{{scene.hotspots}}"
+          wx:key="id"
+          class="hotspot hotspot-{{item.type}}"
+          style="left: {{item.positionX}}%; top: {{item.positionY}}%;"
+          data-id="{{item.id}}"
+          bindtap="handleHotspot"
+        >{{item.type === 'scene' ? '前往' : '介绍'}}</button>
+      </movable-view>
+    </movable-area>
+    <view wx:if="{{showHelp}}" class="help" bindtap="dismissHelp">左右拖动画面 · 点击标记了解内容</view>
+    <view class="notice">当前使用普通参考图验证交互，真实360°全景素材待现场采集。</view>
+    <scroll-view class="scene-strip" scroll-x enable-flex>
+      <view
+        wx:for="{{scenes}}"
+        wx:key="id"
+        class="scene-card {{item.id === scene.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="selectScene"
+      >
+        <image src="{{item.previewImage}}" mode="aspectFill" />
+        <text>{{item.name}}</text>
+      </view>
+    </scroll-view>
+    <view wx:if="{{activeHotspot}}" class="sheet-mask" bindtap="closeHotspot">
+      <view class="sheet" catchtap="stopPropagation">
+        <text class="sheet-title serif">{{activeHotspot.title}}</text>
+        <text class="sheet-content">{{activeHotspot.content}}</text>
+        <button class="sheet-button" bindtap="closeHotspot">返回场景</button>
+      </view>
+    </view>
+  </block>
+</view>

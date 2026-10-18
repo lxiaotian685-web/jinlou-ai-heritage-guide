@@ -1,0 +1,43 @@
+<view class="page section {{displayClass}}">
+  <view class="heading"><text class="section-title serif">我的游览</text><text class="muted">记录只保存在当前手机，不登录、不跨设备同步</text></view>
+  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
+  <view wx:if="{{loading}}" class="state card">正在整理游览记录…</view>
+  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadData">重新加载</button></view>
+  <block wx:else>
+    <view class="progress-card card">
+      <view class="progress-head"><view><text class="progress-label">15点游览进度</text><text class="progress-count serif">{{visitedCount}} / {{totalCount}}</text></view><text class="progress-percent">{{progressPercent}}%</text></view>
+      <view class="progress-track"><view class="progress-value" style="width:{{progressPercent}}%;"></view></view>
+    </view>
+
+    <view wx:if="{{selectedRoute}}" class="route-card card">
+      <view class="card-head"><view><text class="card-label">当前路线</text><text class="card-title serif">{{selectedRoute.name}}</text></view><button class="text-button" bindtap="clearRoute">清除路线</button></view>
+      <view wx:if="{{routeProgress}}" class="route-summary">
+        <text>已完成 {{routeProgress.completedCount}} / {{routeProgress.totalCount}}</text>
+        <text wx:if="{{routeProgress.currentStop}}">当前站：{{routeProgress.currentStop.name}}</text>
+        <text wx:if="{{routeProgress.nextStop}}">下一站：{{routeProgress.nextStop.name}}</text>
+        <text wx:if="{{routeProgress.isComplete}}">路线已全部完成</text>
+      </view>
+      <button class="secondary-button" bindtap="openRoute">返回路线导览</button>
+    </view>
+    <view wx:else class="empty-card card"><text class="card-title serif">还没有选择路线</text><text>可以从“推荐路线”选择一条路线后开始游览。</text></view>
+
+    <view class="list-card card">
+      <view class="card-head"><view><text class="card-label">我的收藏</text><text class="card-title serif">{{favoriteSpots.length}} 个景点</text></view><button wx:if="{{favoriteSpots.length}}" class="text-button" bindtap="clearFavorites">全部清除</button></view>
+      <view wx:if="{{favoriteSpots.length}}" class="spot-list"><view wx:for="{{favoriteSpots}}" wx:key="id" class="spot-row"><view class="spot-copy" data-id="{{item.id}}" bindtap="openSpot"><text>{{item.name}}</text><text>{{item.category}}</text></view><button data-id="{{item.id}}" bindtap="removeFavorite">取消收藏</button></view></view>
+      <text wx:else class="empty-text">还没有收藏景点</text>
+    </view>
+    <view class="list-card card"><view class="card-head"><view><text class="card-label">最近浏览</text><text class="card-title serif">最近 {{recentSpots.length}} 个景点</text></view></view><view wx:if="{{recentSpots.length}}" class="spot-list"><view wx:for="{{recentSpots}}" wx:key="id" class="spot-row"><view class="spot-copy" data-id="{{item.id}}" bindtap="openSpot"><text>{{item.name}}</text><text>{{item.category}}</text></view></view></view><text wx:else class="empty-text">还没有浏览记录</text></view>
+
+    <view class="list-card card"><view class="card-head"><view><text class="card-label">私人记录</text><text class="card-title serif">{{notedSpots.length}} 个景点</text></view><button wx:if="{{notedSpots.length}}" class="text-button" bindtap="clearNotes">全部清除</button></view><view wx:if="{{notedSpots.length}}" class="spot-list"><view wx:for="{{notedSpots}}" wx:key="id" class="note-row" data-id="{{item.id}}" bindtap="openSpot"><view><text>{{item.name}}</text><text>{{item.ratingText}}</text></view><text class="note-preview">{{item.noteText || '只保存了评分'}}</text></view></view><text wx:else class="empty-text">还没有评分或私人笔记</text></view>
+
+    <view class="list-card card">
+      <view class="card-head"><view><text class="card-label">已游览</text><text class="card-title serif">{{visitedSpots.length}} 个景点</text></view><button wx:if="{{visitedSpots.length}}" class="text-button" bindtap="clearVisited">清空进度</button></view>
+      <view wx:if="{{visitedSpots.length}}" class="spot-list"><view wx:for="{{visitedSpots}}" wx:key="id" class="spot-row"><view class="spot-copy" data-id="{{item.id}}" bindtap="openSpot"><text>{{item.name}}</text><text>{{item.category}}</text></view><button data-id="{{item.id}}" bindtap="removeVisited">取消记录</button></view></view>
+      <text wx:else class="empty-text">还没有已游览记录</text>
+    </view>
+
+    <view class="data-card card"><text class="card-title serif">本机数据管理</text><text>只清除这台手机中的收藏、游览进度、路线、浏览记录和私人笔记，不会修改景区内容。</text><button class="danger-button" bindtap="clearAll">清空全部本机游览记录</button></view>
+    <view class="data-card card"><text class="card-title serif">显示设置</text><text>设置会保存在当前手机，也可以在首页快速切换。</text><view class="display-buttons"><button class="{{displaySettings.fontSize === 'normal' ? 'active' : ''}}" data-size="normal" bindtap="setFontSize">标准</button><button class="{{displaySettings.fontSize === 'large' ? 'active' : ''}}" data-size="large" bindtap="setFontSize">大字</button></view><button class="contrast-button {{displaySettings.highContrast ? 'active' : ''}}" bindtap="toggleContrast">{{displaySettings.highContrast ? '关闭高对比度' : '开启高对比度'}}</button></view>
+    <button class="privacy-button" bindtap="openPrivacy">隐私与本地数据</button>
+  </block>
+</view>

@@ -1,0 +1,15 @@
+<view class="page section">
+  <view class="heading"><text class="section-title serif">全景漫游</text><text class="muted">转动视角，慢看金楼</text></view>
+  <view wx:if="{{loading}}" class="state card">正在读取全景场景…</view>
+  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadPanoramas">重新加载</button></view>
+  <view wx:else class="list">
+    <view wx:for="{{panoramas}}" wx:key="id" class="panorama card">
+      <image class="preview" src="{{item.previewImage}}" mode="aspectFill" />
+      <view class="content">
+        <view class="row"><text class="name serif">{{item.name}}</text><text class="badge">360°</text></view>
+        <text class="summary">{{item.summary}}</text>
+        <button class="primary-button" data-id="{{item.id}}" bindtap="openPanorama">查看交互演示</button>
+      </view>
+    </view>
+  </view>
+</view>

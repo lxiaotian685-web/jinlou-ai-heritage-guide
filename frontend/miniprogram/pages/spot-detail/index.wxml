@@ -1,0 +1,40 @@
+<view class="page {{displayClass}}">
+  <view wx:if="{{loading}}" class="section">正在读取…</view>
+  <view wx:elif="{{error}}" class="section state card"><text>{{error}}</text><button class="primary-button" bindtap="loadSpot">重新加载</button></view>
+  <block wx:else>
+    <view wx:if="{{offlineNotice}}" class="section"><view class="offline-notice card">{{offlineNotice}}</view></view>
+    <image class="cover" src="{{spot.coverImage}}" mode="aspectFill" />
+    <view class="section detail">
+      <text class="category">{{spot.category}}</text>
+      <text class="title serif">{{spot.name}}</text>
+      <text class="summary">{{spot.summary}}</text>
+      <view class="personal-actions">
+        <button class="favorite-button {{isFavorite ? 'active' : ''}}" bindtap="toggleFavorite">{{isFavorite ? '已收藏' : '收藏景点'}}</button>
+        <button class="visited-button {{isVisited ? 'active' : ''}}" bindtap="toggleVisited">{{isVisited ? '已游览' : '标记已游览'}}</button>
+      </view>
+      <button class="share-button" open-type="share">分享这个景点</button>
+      <view wx:if="{{activeNarration}}" class="narration card">
+        <view class="languages">
+          <button wx:for="{{narrations}}" wx:key="languageCode" class="language {{activeNarration.languageCode === item.languageCode ? 'active' : ''}}" data-code="{{item.languageCode}}" bindtap="switchLanguage">{{item.languageLabel}}</button>
+        </view>
+        <text class="narration-title serif">语音讲解</text>
+        <text wx:if="{{activeNarration.notice}}" class="audio-notice">{{activeNarration.notice}}</text>
+        <text class="transcript">{{activeNarration.transcript}}</text>
+        <view wx:if="{{activeNarration.audioReady}}" class="audio-progress"><view class="audio-progress-fill" style="width: {{audioProgress}}%"></view></view>
+        <text wx:if="{{activeNarration.audioReady}}" class="audio-time">{{audioTime}}</text>
+        <button class="audio-button" bindtap="handleAudio">{{activeNarration.audioReady ? (isPlaying ? '暂停讲解' : '播放讲解') : '音频待录制'}}</button>
+        <view wx:if="{{activeNarration.audioReady}}" class="audio-tools"><button data-seconds="-15" bindtap="seekAudio">后退15秒</button><button wx:for="{{playbackRates}}" wx:key="*this" class="{{playbackRate === item ? 'active' : ''}}" data-rate="{{item}}" bindtap="setPlaybackRate">{{item}}×</button><button data-seconds="15" bindtap="seekAudio">前进15秒</button></view>
+      </view>
+      <view class="personal-note card">
+        <view class="note-head"><view><text class="narration-title serif">我的私人记录</text><text>只保存在当前手机</text></view><button wx:if="{{spotNote.rating || spotNote.text}}" bindtap="clearPersonalNote">清除</button></view>
+        <view class="rating-row"><button wx:for="{{ratingOptions}}" wx:key="*this" class="{{spotNote.rating >= item ? 'active' : ''}}" data-rating="{{item}}" bindtap="selectRating">★</button><text>{{spotNote.rating ? spotNote.rating + ' 星' : '未评分'}}</text></view>
+        <textarea maxlength="500" value="{{spotNote.text}}" placeholder="记录你的参观感受、想再看的细节……" bindinput="handleNoteInput"></textarea>
+        <button class="save-note-button" bindtap="savePersonalNote">保存私人记录</button>
+      </view>
+      <view class="notice card">详细历史、开放信息与正式讲解素材待景区审核和接入。</view>
+      <button wx:if="{{spot.id === 'jinlou'}}" class="secondary-button" bindtap="openCraftGuide">查看木雕工艺图解</button>
+      <button wx:if="{{spot.hasPanorama}}" class="primary-button" disabled>全景素材待接入</button>
+      <view class="adjacent-nav"><button wx:if="{{previousSpot}}" data-id="{{previousSpot.id}}" bindtap="openAdjacentSpot">上一站 · {{previousSpot.name}}</button><button wx:if="{{nextSpot}}" data-id="{{nextSpot.id}}" bindtap="openAdjacentSpot">下一站 · {{nextSpot.name}}</button></view>
+    </view>
+  </block>
+</view>

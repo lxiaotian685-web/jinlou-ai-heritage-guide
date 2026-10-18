@@ -1,0 +1,34 @@
+<view class="page section {{displayClass}}">
+  <view class="heading-row">
+    <view class="heading"><text class="section-title serif">循迹慢游</text><text class="muted">根据兴趣选择游览主题</text></view>
+    <button class="home-button" bindtap="backHome">返回首页</button>
+  </view>
+  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
+  <view wx:if="{{meta}}" class="route-status card">
+    <view class="status-head"><text class="status-title">{{meta.statusLabel}}</text><text class="status-date">核对至 {{meta.lastReviewed}}</text></view>
+    <text class="status-copy">{{meta.notice}}</text>
+    <view class="status-grid">
+      <text>入口出口：待确认</text><text>无障碍路线：待确认</text>
+    </view>
+    <text class="safety-copy">{{meta.safetyNotice}}</text>
+  </view>
+  <view wx:if="{{loading}}" class="state card">正在读取推荐游线…</view>
+  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadRoutes">重新加载</button></view>
+  <view wx:else class="route-list">
+    <view wx:for="{{routes}}" wx:key="id" class="route-card card">
+      <view class="route-head" data-id="{{item.id}}" bindtap="toggleRoute">
+        <view class="route-copy"><view class="name-row"><text class="route-name serif">{{item.name}}</text><text class="verify-badge">{{item.verificationLabel}}</text></view><text class="theme">{{item.theme}}</text></view>
+        <text class="toggle">{{expandedId === item.id ? '收起' : '展开'}}</text>
+      </view>
+      <view class="meta"><text>{{item.duration}}</text><text>{{item.audience}}</text></view>
+      <view wx:if="{{expandedId === item.id}}" class="route-detail">
+        <text class="passage-notice">{{item.passageNotice}}</text>
+        <view wx:for="{{item.stops}}" wx:for-item="stop" wx:for-index="stopIndex" wx:key="*this" class="stop">
+          <text class="number">{{stopIndex + 1}}</text><text>{{stop}}</text>
+        </view>
+        <button class="map-button" data-id="{{item.id}}" bindtap="openOnGuide">在导览图中查看</button>
+        <button class="share-route-button" open-type="share" data-id="{{item.id}}">分享这条路线</button>
+      </view>
+    </view>
+  </view>
+</view>
