@@ -24,5 +24,6 @@ export const reviewedNarrations = reviewedSpotContent.map((spot) => ({
   languageCode: 'zh-CN',
   languageLabel: '普通话',
   transcript: `欢迎来到${spotNames[spot.id]}。${spot.summary}`,
-  audioUrl: '',
+  audioUrl: `/media/narrations/${spot.id}-zh.wav`,
+  audioType: 'system-tts-preview',
 }));

@@ -19,10 +19,13 @@
         </view>
         <text class="narration-title serif">语音讲解</text>
         <text wx:if="{{activeNarration.notice}}" class="audio-notice">{{activeNarration.notice}}</text>
+        <text class="transcript-label">讲解文字稿</text>
         <text class="transcript">{{activeNarration.transcript}}</text>
         <view wx:if="{{activeNarration.audioReady}}" class="audio-progress"><view class="audio-progress-fill" style="width: {{audioProgress}}%"></view></view>
         <text wx:if="{{activeNarration.audioReady}}" class="audio-time">{{audioTime}}</text>
         <button class="audio-button" bindtap="handleAudio">{{activeNarration.audioReady ? (isPlaying ? '暂停讲解' : '播放讲解') : '音频待录制'}}</button>
+        <text wx:if="{{audioStatus}}" class="audio-status">{{audioStatus}}</text>
+        <text wx:if="{{audioError}}" class="audio-error">{{audioError}}</text>
         <view wx:if="{{activeNarration.audioReady}}" class="audio-tools"><button data-seconds="-15" bindtap="seekAudio">后退15秒</button><button wx:for="{{playbackRates}}" wx:key="*this" class="{{playbackRate === item ? 'active' : ''}}" data-rate="{{item}}" bindtap="setPlaybackRate">{{item}}×</button><button data-seconds="15" bindtap="seekAudio">前进15秒</button></view>
       </view>
       <view class="personal-note card">

@@ -139,6 +139,7 @@ module.exports = {
   getHome: () => request('/home', { cache: true }),
   getRecommendations: (category) => request(`/recommendations?category=${encodeURIComponent(category)}`),
   trackRecommendation: (itemId, action) => request('/recommendations/track', { method: 'POST', data: { itemId, action } }),
+  getAssistantSuggestions: () => request('/assistant/suggestions', { cache: true }),
   askAssistant: (question) => request('/assistant/chat', { method: 'POST', data: { question } }),
   getTourRoutes: () => request('/routes', { cache: true }),
   getSiteMap: () => request('/site-map', { cache: true }),

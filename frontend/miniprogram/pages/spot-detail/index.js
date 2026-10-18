@@ -20,7 +20,7 @@ const CLOUD_AUDIO = {};
 for (const spotId of CLOUD_AUDIO_SPOT_IDS) CLOUD_AUDIO[`${spotId}:zh-CN`] = createCloudAudio(spotId);
 
 Page({
-  data: { spot: null, narrations: [], activeNarration: null, isFavorite: false, isVisited: false, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00', playbackRates: PLAYBACK_RATES, playbackRate: 1, ratingOptions: [1, 2, 3, 4, 5], spotNote: { rating: 0, text: '' }, offlineNotice: '', loading: true, error: '' },
+  data: { spot: null, narrations: [], activeNarration: null, isFavorite: false, isVisited: false, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00', audioStatus: '', audioError: '', playbackRates: PLAYBACK_RATES, playbackRate: 1, ratingOptions: [1, 2, 3, 4, 5], spotNote: { rating: 0, text: '' }, offlineNotice: '', loading: true, error: '' },
   onLoad(options) {
     this.spotId = options.id || (options.scene ? decodeURIComponent(options.scene) : '');
     this.loadSpot();
@@ -73,12 +73,12 @@ Page({
     const activeNarration = this.data.narrations.find((item) => item.languageCode === event.currentTarget.dataset.code);
     if (activeNarration) {
       this.destroyAudio();
-      this.setData({ activeNarration, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00' });
+      this.setData({ activeNarration, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00', audioStatus: '', audioError: '' });
     }
   },
   async handleAudio() {
     if (!this.data.activeNarration?.audioReady) {
-      wx.showToast({ title: '正式讲解音频待录制', icon: 'none' });
+      this.setData({ audioStatus: '', audioError: '暂无可播放音频，请直接阅读下方讲解文字稿。' });
       return;
     }
     if (this.audio) {
@@ -88,10 +88,14 @@ Page({
     }
     if (this.audioLoading) return;
     this.audioLoading = true;
+    this.setData({ audioStatus: '正在准备普通话试听…', audioError: '' });
     try {
       const source = await this.resolveAudioSource();
       this.createAudio(source.url, source.canFallback);
       this.audio.play();
+    } catch (error) {
+      console.error('Audio source resolution failed', error);
+      this.setData({ audioStatus: '', audioError: '音频暂时无法播放，请直接阅读下方讲解文字稿。' });
     } finally {
       this.audioLoading = false;
     }
@@ -120,7 +124,7 @@ Page({
       }
     } catch (error) {
       console.warn('Cloud audio download failed, using local API fallback', error);
-      wx.showToast({ title: '云音频不可用，尝试本地讲解', icon: 'none' });
+      this.setData({ audioStatus: '云端音频不可用，正在尝试本地试听。', audioError: '' });
       return { url: this.getLocalAudioUrl(), canFallback: false };
     }
   },
@@ -138,10 +142,10 @@ Page({
     this.audio = wx.createInnerAudioContext();
     this.audio.src = sourceUrl;
     this.audio.playbackRate = this.data.playbackRate;
-    this.audio.onPlay(() => this.setData({ isPlaying: true }));
-    this.audio.onPause(() => this.setData({ isPlaying: false }));
-    this.audio.onStop(() => this.setData({ isPlaying: false }));
-    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100 }));
+    this.audio.onPlay(() => this.setData({ isPlaying: true, audioStatus: '正在播放普通话试听。', audioError: '' }));
+    this.audio.onPause(() => this.setData({ isPlaying: false, audioStatus: '讲解已暂停。' }));
+    this.audio.onStop(() => this.setData({ isPlaying: false, audioStatus: '' }));
+    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: '普通话试听已播放完毕。' }));
     this.audio.onTimeUpdate(() => {
       const duration = this.audio.duration || 0;
       const current = this.audio.currentTime || 0;
@@ -154,12 +158,12 @@ Page({
       this.setData({ isPlaying: false });
       this.destroyAudio();
       if (canFallback) {
-        wx.showToast({ title: '已切换本地讲解', icon: 'none' });
+        this.setData({ audioStatus: '云端音频播放失败，正在切换本地试听。', audioError: '' });
         this.createAudio(this.getLocalAudioUrl(), false);
         this.audio.play();
         return;
       }
-      wx.showToast({ title: '音频加载失败，请检查网络', icon: 'none' });
+      this.setData({ audioStatus: '', audioError: '音频加载失败，请检查网络，或直接阅读下方讲解文字稿。' });
     });
   },
   seekAudio(event) {
