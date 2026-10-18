@@ -1,0 +1,22 @@
+<view class="page section admin-page">
+  <view class="heading"><text class="section-title serif">云端内容管理</text><text class="muted">当前批次支持景点名称、类别和简介；图片、音频及商家广告将在后续批次接入。</text></view>
+  <view wx:if="{{!authorized}}" class="card login-card">
+    <text class="card-title serif">管理员登录</text>
+    <input password value="{{token}}" placeholder="输入云端管理口令" bindinput="handleToken" confirm-type="done" bindconfirm="login" />
+    <button class="primary-button" loading="{{loading}}" disabled="{{loading || !token}}" bindtap="login">连接云端管理</button>
+  </view>
+  <block wx:else>
+    <view class="toolbar"><text class="status">已连接云端 · {{spots.length}}个景点</text><button bindtap="logout">退出</button></view>
+    <view class="card edit-card">
+      <text class="label">选择景点</text>
+      <picker mode="selector" range="{{spots}}" range-key="name" value="{{selectedIndex}}" bindchange="chooseSpot"><view class="picker">{{form.name}}　›</view></picker>
+      <text class="label">景点名称</text><input value="{{form.name}}" maxlength="60" data-field="name" bindinput="handleField" />
+      <text class="label">景点类别</text><input value="{{form.category}}" maxlength="40" data-field="category" bindinput="handleField" />
+      <text class="label">景点简介</text><textarea value="{{form.summary}}" maxlength="1000" auto-height data-field="summary" bindinput="handleField" />
+      <text class="counter">{{form.summary.length}} / 1000</text>
+      <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到云端</button>
+    </view>
+  </block>
+  <view wx:if="{{message}}" class="message success">{{message}}</view>
+  <view wx:if="{{error}}" class="message error">{{error}}</view>
+</view>

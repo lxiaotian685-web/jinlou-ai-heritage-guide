@@ -1,0 +1,29 @@
+{
+  "name": "bijiang-explorer-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test",
+    "backup": "node scripts/backup-db.js",
+    "restore": "node scripts/restore-db.js",
+    "content:update": "node scripts/update-spot.js",
+    "content:service": "node scripts/update-service.js",
+    "content:spots-reviewed": "node scripts/apply-reviewed-spots.js",
+    "audio:generate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-narration-audio.ps1",
+    "content:narrations-reviewed": "node scripts/apply-reviewed-narrations.js",
+    "launch:check": "node scripts/check-launch-readiness.js",
+    "cloud:seed": "node scripts/cloud-db-seed.js",
+    "cloud:publish": "node scripts/cloud-publish.js",
+    "cloud:check": "node scripts/check-cloud-api.js",
+    "acceptance:check": "node scripts/acceptance-check.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>碧江金楼运营后台</title>
+  <link rel="stylesheet" href="./styles.css?v=20261014-spot-history">
+  <link rel="stylesheet" href="./redesign.css?v=20260928-analytics">
+</head>
+<body>
+  <main id="login-view" class="login-layout">
+    <section class="login-story" aria-label="系统介绍">
+      <div class="brand-mark" aria-hidden="true">金</div>
+      <div>
+        <p class="kicker">碧江金楼数字运营</p>
+        <h1>让景区资料更新<br>变得简单、可追溯</h1>
+        <p class="login-copy">在一个地方维护首页、景点、讲解音频和周边推荐。所有发布内容均应经景区审核。</p>
+      </div>
+      <p class="login-footnote">管理网页和游客小程序共用同一份云端资料。</p>
+    </section>
+    <section class="login-panel" aria-labelledby="login-title">
+      <form id="login-form" class="login-form">
+        <p class="section-label">管理人员登录</p>
+        <h2 id="login-title">输入管理口令</h2>
+        <p class="helper">口令只会保存在当前浏览器标签页，关闭后需重新登录。</p>
+        <label for="admin-token">管理口令</label>
+        <input id="admin-token" name="token" type="password" autocomplete="current-password" required minlength="8" placeholder="请输入云端管理口令">
+        <p id="login-error" class="form-message error" role="alert"></p>
+        <button id="login-button" class="button primary" type="submit">进入后台</button>
+      </form>
+    </section>
+  </main>
+
+  <div id="app-view" class="app-layout" hidden>
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span class="brand-mark small">金</span><span><strong>碧江金楼</strong><small>运营后台</small></span></div>
+      <nav id="main-nav" aria-label="主要功能">
+        <span class="nav-group-label">总览</span>
+        <button class="nav-item active" data-view="overview" type="button">工作台</button>
+        <button class="nav-item" data-view="analytics" type="button">运营数据</button>
+        <span class="nav-group-label">内容维护</span>
+        <button class="nav-item" data-view="home" type="button">首页内容</button>
+        <button class="nav-item" data-view="spots" type="button">景点管理</button>
+        <button class="nav-item" data-view="audio" type="button">讲解与音频</button>
+        <button class="nav-item" data-view="ads" type="button">周边推荐</button>
+      </nav>
+      <div class="sidebar-footer">
+        <span id="cloud-state" class="cloud-state">云端已连接</span>
+        <button id="logout-button" class="text-button" type="button">退出登录</button>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <button id="menu-button" class="menu-button" type="button" aria-label="打开菜单">菜单</button>
+        <div><p id="view-label" class="section-label">工作台</p><h2 id="view-title">内容总览</h2></div>
+        <button id="refresh-button" class="button secondary compact" type="button">刷新数据</button>
+      </header>
+      <div id="global-message" class="global-message" role="status"></div>
+
+      <section class="view active" data-view-panel="overview">
+        <div class="dashboard-heading"><div><p class="dashboard-date">碧江金楼数字运营</p><h3>欢迎使用碧江金楼运营管理平台</h3><p>查看内容状态和游客互动，再处理需要更新的资料。</p></div><div class="heading-actions"><button class="button secondary compact" data-jump-view="ads" type="button">新增周边内容</button><button class="button primary compact" data-jump-view="analytics" type="button">查看运营数据</button></div></div>
+        <div class="metric-grid">
+          <article><span>景点资料</span><strong id="spot-count">0</strong><small>导览点已建档</small></article>
+          <article><span>普通话讲解</span><strong id="audio-count">0</strong><small>讲解稿已整理</small></article>
+          <article><span>已上线推荐</span><strong id="ad-count">0</strong><small>游客当前可见</small></article>
+          <article class="metric-accent"><span>近7天商家互动</span><strong id="click-count">0</strong><small>详情、电话和链接</small></article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="trend-panel"><div class="panel-heading"><div><h3>近30天商家互动趋势</h3><p>帮助判断哪些内容更受游客关注。</p></div><strong id="trend-total">0 次</strong></div><div id="overview-trend" class="trend-chart" aria-label="近30天商家互动趋势"></div><div class="chart-legend"><span>较早</span><span>最近</span></div></section>
+          <section class="health-panel"><div class="panel-heading"><div><h3>内容健康度</h3><p>优先处理缺资料项目。</p></div></div><div class="health-list"><button data-jump-view="spots" type="button"><span>景点封面</span><strong id="cover-health">12 / 15</strong><small>还缺3张实拍图</small></button><button data-jump-view="audio" type="button"><span>正式音频</span><strong id="audio-health">0 / 15</strong><small>等待正式配音</small></button><button data-jump-view="ads" type="button"><span>周边内容</span><strong id="ad-health">0 条</strong><small>管理草稿与上架</small></button></div></section>
+        </div>
+        <div class="notice-panel"><div><h3>发布提醒</h3><p>景点资料需经内容负责人确认。商户内容只做信息展示，不在系统内收款、退款或结算佣金。</p></div><button class="button secondary compact" data-jump-view="home" type="button">检查首页内容</button></div>
+      </section>
+
+      <section class="view" data-view-panel="home" hidden>
+        <form id="home-form" class="editor-layout">
+          <div class="form-column">
+            <div class="field"><label for="home-title">首页主标题</label><input id="home-title" maxlength="60" required></div>
+            <div class="field"><label for="home-subtitle">首页副标题</label><input id="home-subtitle" maxlength="80" required></div>
+            <div class="carousel-note"><strong>首页采用自动轮播</strong><span>图片每隔约5秒自动切换。列表中的第1张，是游客进入首页时最先看到的照片。</span></div>
+            <div class="field upload-field"><label>添加轮播照片</label><label class="upload-button" for="home-file">选择多张照片</label><input class="file-input" id="home-file" type="file" multiple accept="image/jpeg,image/png,image/webp"><span id="home-file-name" class="file-name">可以一次选择多张，最多保留8张</span><small>选择后会加入轮播列表。调整顺序后，点击“保存首页轮播”才会上传。</small></div>
+            <input id="home-image" type="hidden">
+            <div id="home-slide-list" class="slide-manager" aria-label="首页轮播顺序"></div>
+            <button class="button primary" type="submit">保存首页轮播</button>
+          </div>
+          <figure class="media-preview primary-preview"><span class="preview-order">第1张</span><img id="home-preview" alt="首页首张轮播图预览"><figcaption><strong>进入首页时首先展示</strong><span>之后按左侧列表顺序自动轮播。</span></figcaption></figure>
+        </form>
+      </section>
+
+      <section class="view" data-view-panel="spots" hidden>
+        <div class="split-editor">
+          <div class="selection-column"><label for="spot-select">选择景点</label><select id="spot-select"></select><div id="spot-list" class="selection-list"></div></div>
+          <form id="spot-form" class="form-column">
+            <input id="spot-id" type="hidden">
+            <div class="field"><label for="spot-name">景点名称</label><input id="spot-name" maxlength="60" required></div>
+            <div class="field"><label for="spot-category">景点类别</label><input id="spot-category" maxlength="40" required></div>
+            <div class="field"><label for="spot-summary">景点简介</label><textarea id="spot-summary" maxlength="1000" rows="8" required></textarea></div>
+            <div class="field upload-field"><label>景点封面照片</label><label class="upload-button" for="spot-file">选择照片</label><input class="file-input" id="spot-file" type="file" accept="image/jpeg,image/png,image/webp"><span id="spot-file-name" class="file-name">正在读取现有照片</span><div class="upload-actions"><button id="spot-cancel-file" class="button secondary compact" type="button" hidden>取消本次选择</button><button id="spot-restore-previous" class="button secondary compact" type="button" hidden>恢复上一张照片</button></div><p id="spot-previous-note" class="restore-note" hidden>系统已保留上次保存前的封面。点击恢复后，还需点击下方“保存景点”才会生效。</p><div class="inline-preview"><img id="spot-preview" alt="景点封面预览"><p id="spot-preview-empty" class="preview-empty" hidden>该景点暂未有实拍封面，可以点击上方“选择照片”补充。</p></div></div>
+            <details class="advanced"><summary>高级设置：手动填写图片地址</summary><div class="field"><label for="spot-image">景点封面文件地址</label><input id="spot-image" maxlength="600"><small>通常不用填写，系统会在上传照片后自动生成。</small></div></details>
+            <button class="button primary" type="submit">保存景点</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="audio" hidden>
+        <div class="split-editor">
+          <div class="selection-column"><label for="audio-select">选择讲解</label><select id="audio-select"></select><div class="context-note">正式音频上传前，请确认配音员授权和讲解稿已审核。</div></div>
+          <form id="audio-form" class="form-column">
+            <input id="audio-id" type="hidden">
+            <div class="field"><label for="audio-transcript">讲解文字</label><textarea id="audio-transcript" maxlength="4000" rows="12" required></textarea></div>
+            <div class="field upload-field"><label>正式讲解音频</label><label class="upload-button" for="audio-file">选择音频文件</label><input class="file-input" id="audio-file" type="file" accept="audio/mpeg,audio/mp4,audio/wav,audio/x-m4a"><span id="audio-file-name" class="file-name">尚未选择新音频</span><small>正式配音未准备好时可以不选择。</small></div>
+            <details class="advanced"><summary>高级设置：手动填写音频地址</summary><div class="field"><label for="audio-url">音频文件地址</label><input id="audio-url" maxlength="600"><small>留空代表暂不开放音频播放。</small></div></details>
+            <div class="field"><label for="audio-status">审核状态</label><select id="audio-status"><option value="pending">待审核</option><option value="approved">已通过</option><option value="rejected">已退回</option></select></div>
+            <button class="button primary" type="submit">保存讲解</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="ads" hidden>
+        <div class="ads-toolbar"><div><h3>商家与周边内容</h3><p>可管理美食、酒店、交通和周边景点。</p></div><button id="new-ad-button" class="button secondary compact" type="button">新增内容</button></div>
+        <div class="ads-layout">
+          <div id="ad-list" class="ad-list"></div>
+          <form id="ad-form" class="form-column ad-form">
+            <input id="ad-id" type="hidden">
+            <div id="ad-current-category" class="category-summary"><span>当前分类</span><strong id="ad-category-label">美食</strong></div>
+            <fieldset id="ad-new-category" class="category-picker" hidden><legend>新增内容属于哪一类？</legend><div class="category-options"><button type="button" data-category="food">美食</button><button type="button" data-category="hotel">住宿</button><button type="button" data-category="transport">交通</button><button type="button" data-category="attraction">周边景点</button></div></fieldset>
+            <input id="ad-category" type="hidden" value="food">
+            <input id="ad-status" type="hidden" value="offline">
+            <div class="field"><label for="ad-name">商家或项目名称</label><input id="ad-name" maxlength="80" required></div>
+            <div class="field-grid">
+              <div class="field"><label for="ad-type">类型</label><input id="ad-type" maxlength="40" placeholder="例如：顺德菜、民宿" required></div>
+              <div class="field"><label for="ad-phone">联系电话</label><input id="ad-phone" type="tel" inputmode="tel" maxlength="40" placeholder="例如：0757-12345678"></div>
+            </div>
+            <div class="field"><label for="ad-product">主推商品或套餐</label><input id="ad-product" maxlength="100"></div>
+            <div class="field"><label for="ad-description">图文介绍</label><textarea id="ad-description" maxlength="1200" rows="6"></textarea></div>
+            <div class="field"><label for="ad-address">地址</label><input id="ad-address" maxlength="200"></div>
+            <div class="field"><label for="ad-hours">营业时间或使用说明</label><input id="ad-hours" maxlength="120" placeholder="例如：每天 10:00-22:00"></div>
+            <div class="field"><label for="ad-link">官网或团购链接（选填）</label><input id="ad-link" type="url" maxlength="600" placeholder="https://"><small>没有链接可以留空。当前游客端会提供复制链接功能。</small></div>
+            <div class="field upload-field"><label>商家展示照片</label><label class="upload-button" for="ad-file">选择照片</label><input class="file-input" id="ad-file" type="file" accept="image/jpeg,image/png,image/webp"><span id="ad-file-name" class="file-name">正在读取现有照片</span><div class="inline-preview"><img id="ad-preview" alt="商家展示图片预览"><p id="ad-preview-empty" class="preview-empty" hidden>这条内容尚未上传商家照片，可以点击上方“选择照片”补充。</p></div></div>
+            <details class="advanced"><summary>高级设置</summary><div class="field"><label for="ad-image">图片文件地址</label><input id="ad-image" maxlength="600"><small>通常不用填写，上传照片后会自动生成。</small></div><div class="field"><label for="ad-category-advanced">纠正分类</label><select id="ad-category-advanced"><option value="food">美食</option><option value="hotel">住宿</option><option value="transport">交通</option><option value="attraction">周边景点</option></select></div><div class="field"><label for="ad-sort">展示顺序</label><input id="ad-sort" type="number" min="0" max="9999" value="100"><small>数字越小越靠前，一般保持100即可。</small></div></details>
+            <div class="publish-actions"><button class="button secondary save-draft" type="submit" data-save-status="offline">保存草稿</button><button class="button primary" type="submit" data-save-status="online">保存并上架</button></div>
+            <button id="delete-ad-button" class="button danger delete-button" type="button">删除这条内容</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="analytics" hidden>
+        <div class="analytics-intro"><div><p class="section-label">近30天</p><h3>周边推荐运营数据</h3><p>记录游客打开详情、拨打电话和复制链接的操作次数，不采集姓名、手机号或精确位置。</p></div><button id="analytics-refresh" class="button secondary compact" type="button">刷新统计</button></div>
+        <div class="analytics-metrics">
+          <article><span>全部操作</span><strong id="analytics-total">0</strong><small>近30天累计</small></article>
+          <article><span>打开详情</span><strong id="analytics-detail">0</strong><small>查看商家介绍</small></article>
+          <article><span>拨打电话</span><strong id="analytics-phone">0</strong><small>高意向操作</small></article>
+          <article><span>复制链接</span><strong id="analytics-link">0</strong><small>进一步了解</small></article>
+        </div>
+        <div class="analytics-chart-grid">
+          <section class="analytics-chart-panel analytics-bar-panel">
+            <div class="panel-heading"><div><h3>每日互动柱状图</h3><p>近30天实际发生的详情、电话和链接操作。</p></div><strong id="analytics-chart-total">0 次</strong></div>
+            <div id="analytics-daily-bars" class="analytics-bar-chart" role="img" aria-label="近30天每日互动柱状图"></div>
+            <div class="analytics-axis"><span>30天前</span><span>今天</span></div>
+          </section>
+          <section class="analytics-chart-panel analytics-donut-panel">
+            <div class="panel-heading"><div><h3>用户行为扇形图</h3><p>不同操作在全部真实互动中的占比。</p></div></div>
+            <div class="donut-layout">
+              <div id="analytics-action-donut" class="action-donut" role="img" aria-label="用户行为占比扇形图"><span><strong id="analytics-donut-total">0</strong><small>总操作</small></span></div>
+              <div id="analytics-action-legend" class="action-legend"></div>
+            </div>
+          </section>
+        </div>
+        <section class="category-panel"><div class="panel-heading"><div><h3>内容分类关注度</h3><p>比较美食、住宿、交通和周边景点获得的真实互动。</p></div></div><div id="analytics-category-bars" class="category-bars"></div></section>
+        <section class="ranking-panel"><div class="panel-heading"><div><h3>商家互动排行</h3><p>用于比较内容关注度，点击次数不等于到店人数或成交量。</p></div></div><div class="table-scroll"><table><thead><tr><th>商家</th><th>分类</th><th>总操作</th><th>详情</th><th>电话</th><th>链接</th></tr></thead><tbody id="analytics-rows"></tbody></table></div><p id="analytics-empty" class="analytics-empty" hidden>暂时还没有点击数据。商家上架后，游客操作会自动累计。</p></section>
+      </section>
+    </section>
+  </div>
+
+  <template id="empty-template"><div class="empty-state"><strong>暂无内容</strong><span>点击新增后开始编辑。</span></div></template>
+  <template id="slide-template"><article class="slide-item"><div class="slide-thumb-wrap"><span class="slide-number"></span><img class="slide-thumb" alt="轮播照片预览"></div><div class="slide-copy"><strong class="slide-title"></strong><span class="slide-hint"></span></div><div class="slide-actions"><button class="button secondary compact" data-slide-action="first" type="button">设为首图</button><button class="button secondary compact" data-slide-action="up" type="button">上移</button><button class="button secondary compact" data-slide-action="down" type="button">下移</button><button class="button danger compact" data-slide-action="remove" type="button">移除</button></div></article></template>
+  <script src="https://static.cloudbase.net/cloudbase-js-sdk/3.10.1/cloudbase.full.js"></script>
+  <script src="./config.js?v=20260928-analytics"></script>
+  <script src="./app.js?v=20261014-spot-history"></script>
+</body>
+</html>

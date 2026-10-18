@@ -1,0 +1,32 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="section state">正在读取…</view>
+  <view wx:elif="{{error}}" class="section state card">
+    <text>{{error}}</text>
+    <button class="primary-button" bindtap="loadGuide">重新加载</button>
+  </view>
+  <block wx:else>
+    <view class="section heading">
+      <text class="eyebrow">岭南建筑细节 · 教学演示</text>
+      <text class="title serif">{{guide.title}}</text>
+      <text class="summary">{{guide.summary}}</text>
+    </view>
+    <view class="diagram">
+      <image src="{{guide.image}}" mode="aspectFill" />
+      <view class="diagram-shade"></view>
+      <view class="focus-ring"><text>{{guide.steps[activeStep].number}}</text></view>
+      <view class="diagram-label">二维示意图 · 点位待标定</view>
+    </view>
+    <view class="section">
+      <view class="step-tabs">
+        <button wx:for="{{guide.steps}}" wx:key="number" class="step-tab {{activeStep === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectStep">{{item.number}}</button>
+      </view>
+      <view class="step-card card">
+        <text class="step-index">步骤 {{guide.steps[activeStep].number}}</text>
+        <text class="step-title serif">{{guide.steps[activeStep].title}}</text>
+        <text class="step-description">{{guide.steps[activeStep].description}}</text>
+      </view>
+      <button class="model-button" bindtap="handleModel">{{guide.modelReady ? '打开3D图解' : '3D模型待制作'}}</button>
+      <view class="notice">{{guide.notice}}</view>
+    </view>
+  </block>
+</view>

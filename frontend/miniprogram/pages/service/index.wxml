@@ -1,0 +1,37 @@
+<view class="page section {{displayClass}}">
+  <text class="section-title serif">游览服务</text>
+  <view wx:if="{{loading}}" class="state card">正在读取服务信息…</view>
+  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadService">重新加载</button></view>
+  <block wx:else>
+  <view class="ticket card">
+    <text class="card-title serif">景区订票</text>
+    <text class="muted">官方订票平台与票务信息待景区确认</text>
+    <button class="primary-button" bindtap="handleTicket">{{service.ticket.label}}</button>
+  </view>
+  <view class="group">
+    <text class="group-title serif">到访与导航</text>
+    <view class="card service-item">
+      <view class="item-copy"><text>景区地址</text><text class="muted">{{service.address}}</text></view>
+      <view class="action-row"><button bindtap="copyAddress">复制地址</button><button bindtap="openMap">打开地图</button></view>
+    </view>
+    <view class="card item"><text>交通与停车</text><text class="muted">{{service.transport}}</text></view>
+  </view>
+  <view class="group">
+    <text class="group-title serif">周边推荐</text>
+    <view class="grid">
+      <view class="card option" data-category="food" data-title="附近美食" bindtap="openRecommendations">附近美食</view>
+      <view class="card option" data-category="hotel" data-title="附近酒店" bindtap="openRecommendations">附近酒店</view>
+      <view class="card option" data-category="transport" data-title="交通出行" bindtap="openRecommendations">交通出行</view>
+      <view class="card option" data-category="attraction" data-title="周边景点" bindtap="openRecommendations">周边景点</view>
+    </view>
+  </view>
+  <view class="group">
+    <text class="group-title serif">开放与咨询</text>
+    <view class="card item"><text>开放时间</text><text class="muted">{{service.openingHours}}</text></view>
+    <view class="card service-item">
+      <view class="item-copy"><text>联系电话</text><text class="muted">{{service.phone}}</text></view>
+      <button class="single-action" bindtap="callPhone">拨打电话</button>
+    </view>
+  </view>
+  </block>
+</view>

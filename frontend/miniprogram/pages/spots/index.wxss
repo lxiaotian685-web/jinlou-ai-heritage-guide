@@ -1,0 +1,79 @@
+.heading { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 28rpx; }
+.heading .muted { font-size: 24rpx; }
+.offline-notice { margin-bottom:24rpx; padding:20rpx 24rpx; background:#fff4dc; color:#7b581b; border-color:#e3c98e; font-size:23rpx; line-height:1.5; }
+.progress-card { margin-bottom: 24rpx; padding: 24rpx; }
+.progress-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18rpx; }
+.progress-title { font-size: 30rpx; font-weight: 600; }
+.progress-count { color: #3a5a47; font-size: 25rpx; }
+.progress-track { height: 14rpx; background: #e7e0d2; border-radius: 999rpx; overflow: hidden; }
+.progress-value { height: 100%; background: #4b6955; border-radius: 999rpx; transition: width 200ms ease; }
+.tools { margin-bottom: 24rpx; padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; }
+.search-row { display: flex; align-items: center; gap: 16rpx; }
+.search-input { flex: 1; height: 72rpx; padding: 0 22rpx; background: #f6f1e7; border: 1rpx solid #ddd1b9; border-radius: 14rpx; font-size: 26rpx; }
+.reset-button { flex: none; margin: 0; padding: 0 10rpx; background: transparent; color: #7b581b; font-size: 24rpx; line-height: 72rpx; }
+.personal-filter-row { display: flex; gap: 12rpx; }
+.favorite-filter, .visit-filter { flex: 1; margin: 0; padding: 0 12rpx; background: #f6f1e7; border-radius: 999rpx; font-size: 22rpx; line-height: 58rpx; }
+.favorite-filter { color: #7b581b; border: 1rpx solid #cdbb98; }
+.favorite-filter.active { background: #7b581b; color: #fffaf0; border-color: #7b581b; }
+.visit-filter { color: #3a5a47; border: 1rpx solid #b9c5b6; }
+.visit-filter.active { background: #3a5a47; color: #fffaf0; border-color: #3a5a47; }
+.storage-note { color: #8a817b; font-size: 21rpx; }
+.sort-row { display:flex; align-items:center; flex-wrap:wrap; gap:8rpx; }.sort-row>text { color:#81766f; font-size:21rpx; margin-right:4rpx; }.sort-row button { flex:none; width:auto; margin:0; padding:0 16rpx; line-height:50rpx; border-radius:999rpx; background:#f2ede3; color:#5f554f; font-size:20rpx; }.sort-row button.active { background:#3a5a47; color:#fff; }
+.category-scroll { width: 100%; white-space: nowrap; }
+.category-list { display: inline-flex; gap: 12rpx; padding-right: 20rpx; }
+.category-button { flex: none; margin: 0; padding: 0 22rpx; background: #f6f1e7; color: #5f554f; border: 1rpx solid #ddd1b9; border-radius: 999rpx; font-size: 24rpx; line-height: 56rpx; }
+.category-button.active { background: #382c24; color: #fffaf0; border-color: #382c24; }
+.result-count { color: #727671; font-size: 23rpx; }
+.list { display: flex; flex-direction: column; gap: 24rpx; }
+.cover { width: 100%; height: 330rpx; }
+.content { padding: 28rpx; display: flex; flex-direction: column; gap: 12rpx; }
+.category { color: #7b581b; font-size: 22rpx; }
+.name { font-size: 36rpx; font-weight: 600; }
+.summary { color: #4e4540; font-size: 27rpx; line-height: 1.65; }
+.name-row { display:flex; align-items:baseline; flex-wrap:wrap; gap:12rpx; }
+.name-pronunciation { color:#8b5c16; font-size:21rpx; font-family:Arial, sans-serif; letter-spacing:.5rpx; }
+.tags { display: flex; gap: 12rpx; color: #3a5a47; font-size: 22rpx; }
+.tags text { border: 1rpx solid #d8ceb9; padding: 6rpx 12rpx; border-radius: 8rpx; }
+.tags .favorite-tag { color: #9a4d3f; border-color: #d8b2a7; background: #fbf0ea; }
+.tags .visited-tag { color: #3a5a47; border-color: #b9c5b6; background: #eef3eb; }
+.state { padding: 32rpx; display: flex; flex-direction: column; gap: 24rpx; font-size: 28rpx; }
+.empty { margin-top: 24rpx; text-align: center; }
+.empty-title { font-size: 32rpx; }
+
+/* 2026-09-28 仅调整视觉，保留搜索、筛选、排序、收藏与进度逻辑 */
+.page { background:#f5f7f2; color:#14231f; }
+.heading { margin:-36rpx -32rpx 28rpx; padding:50rpx 36rpx 38rpx; background:#102823; color:#fcfdf8; }
+.heading .section-title { font-size:48rpx; }
+.heading .muted { color:rgba(252,253,248,.7); }
+.offline-notice { border:0; border-radius:20rpx; background:#fff4d9; color:#704b12; }
+.progress-card { border:0; border-radius:24rpx; background:#fcfdf8; box-shadow:0 14rpx 38rpx rgba(16,40,35,.07); }
+.progress-title { color:#14231f; }.progress-count { color:#8b5c16; font-weight:700; }
+.progress-track { background:#dfe6e1; }.progress-value { background:#d39b3f; }
+.tools { padding:0; border:0; border-radius:0; overflow:visible; background:transparent; }
+.search-row { padding:0 0 16rpx; border-bottom:1rpx solid #bcc8c1; }
+.search-input { height:76rpx; background:#fcfdf8; border:1rpx solid #cbd4ce; border-radius:18rpx; color:#14231f; }
+.reset-button { color:#8b5c16; }
+.favorite-filter,.visit-filter { background:#edf1ed; border:0; border-radius:16rpx; color:#24443b; }
+.favorite-filter.active,.visit-filter.active { background:#102823; color:#fcfdf8; }
+.sort-row button,.category-button { background:transparent; border:1rpx solid #cbd4ce; border-radius:16rpx; color:#24443b; }
+.sort-row button.active,.category-button.active { background:#102823; color:#fcfdf8; border-color:#102823; }
+.result-count,.storage-note { color:#66756e; }
+.list { gap:28rpx; }
+.spot { border:0; border-radius:28rpx; background:#fcfdf8; box-shadow:0 18rpx 46rpx rgba(16,40,35,.09); }
+.cover { height:360rpx; }
+.content { padding:30rpx; }
+.category { color:#8b5c16; font-weight:700; }
+.name { color:#14231f; font-size:39rpx; }
+.summary { color:#66756e; }
+.tags { color:#24443b; flex-wrap:wrap; }.tags text { border:0; border-radius:10rpx; background:#edf1ed; }
+.tags .favorite-tag { color:#704b12; border:0; background:#fff4d9; }.tags .visited-tag { color:#24443b; border:0; background:#dfe9e3; }
+.state { border:0; border-radius:24rpx; background:#fcfdf8; box-shadow:0 14rpx 38rpx rgba(16,40,35,.07); }
+.primary-button { background:#d39b3f; color:#17251f; border-radius:18rpx; font-weight:700; }
+.high-contrast .heading { background:#111; color:#fff; }
+@keyframes visitor-page-fade { from { opacity:.72; } to { opacity:1; } }
+.page { animation:visitor-page-fade 260ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .page { animation:none; } }
+
+/* 用户反馈：整体绿色降低饱和度与明度反差 */
+.heading { background:#3a5a47; }
+.favorite-filter.active,.visit-filter.active,.sort-row button.active,.category-button.active { background:#3a5a47; border-color:#3a5a47; }

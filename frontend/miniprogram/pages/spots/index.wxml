@@ -1,0 +1,52 @@
+<view class="page section {{displayClass}}">
+  <view class="heading">
+    <text class="section-title serif">走进金楼</text>
+    <text class="muted">内容为开发阶段示例，待景区审核</text>
+  </view>
+  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
+  <view wx:if="{{loading}}" class="state card">正在读取景点…</view>
+  <view wx:elif="{{error}}" class="state card">
+    <text>{{error}}</text>
+    <button class="primary-button" bindtap="loadSpots">重新加载</button>
+  </view>
+  <block wx:else>
+    <view class="progress-card card">
+      <view class="progress-head"><text class="progress-title serif">我的参观进度</text><text class="progress-count">{{visitedIds.length}} / {{spots.length}}</text></view>
+      <view class="progress-track"><view class="progress-value" style="width:{{progressPercent}}%;"></view></view>
+    </view>
+    <view class="tools card">
+      <view class="search-row">
+        <input class="search-input" value="{{keyword}}" placeholder="搜索景点名称、类别或简介" confirm-type="search" bindinput="handleSearch" />
+        <button wx:if="{{keyword || activeCategory !== '全部' || favoritesOnly || unvisitedOnly || sortMode !== 'default'}}" class="reset-button" bindtap="resetFilters">清空</button>
+      </view>
+      <view class="personal-filter-row">
+        <button class="favorite-filter {{favoritesOnly ? 'active' : ''}}" bindtap="toggleFavoritesOnly">{{favoritesOnly ? '正在查看收藏' : '只看收藏'}} · {{favoriteIds.length}}</button>
+        <button class="visit-filter {{unvisitedOnly ? 'active' : ''}}" bindtap="toggleUnvisitedOnly">{{unvisitedOnly ? '正在查看未游览' : '只看未游览'}} · {{spots.length - visitedIds.length}}</button>
+      </view>
+      <text class="storage-note">收藏和参观进度保存在当前设备</text>
+      <view class="sort-row"><text>排序</text><button wx:for="{{sortOptions}}" wx:key="id" class="{{sortMode === item.id ? 'active' : ''}}" data-sort="{{item.id}}" bindtap="selectSort">{{item.label}}</button></view>
+      <scroll-view class="category-scroll" scroll-x show-scrollbar="{{false}}">
+        <view class="category-list">
+          <button wx:for="{{categories}}" wx:key="*this" class="category-button {{activeCategory === item ? 'active' : ''}}" data-category="{{item}}" bindtap="selectCategory">{{item}}</button>
+        </view>
+      </scroll-view>
+      <text class="result-count">找到 {{filteredSpots.length}} 个景点</text>
+    </view>
+    <view wx:if="{{!filteredSpots.length}}" class="state empty card">
+      <text class="empty-title serif">没有找到匹配景点</text>
+      <text class="muted">请更换关键词或清空筛选条件。</text>
+      <button class="primary-button" bindtap="resetFilters">查看全部景点</button>
+    </view>
+    <view wx:else class="list">
+      <view wx:for="{{filteredSpots}}" wx:key="id" class="spot card" data-id="{{item.id}}" bindtap="openSpot">
+        <image class="cover" src="{{item.coverImage}}" mode="aspectFill" />
+        <view class="content">
+          <text class="category">{{item.category}}</text>
+          <view class="name-row"><text class="name serif">{{item.name}}</text><text wx:if="{{item.namePronunciation}}" class="name-pronunciation">{{item.namePronunciation}}</text></view>
+          <text class="summary">{{item.summary}}</text>
+          <view class="tags"><text wx:if="{{item.isVisited}}" class="visited-tag">已游览</text><text wx:if="{{item.isFavorite}}" class="favorite-tag">已收藏</text><text wx:if="{{item.hasAudio}}">语音讲解</text><text wx:if="{{item.hasPanorama}}">全景漫游</text></view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

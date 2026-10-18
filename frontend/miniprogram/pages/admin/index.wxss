@@ -1,0 +1,15 @@
+.admin-page { box-sizing:border-box; }
+.heading { display:flex; flex-direction:column; gap:10rpx; margin-bottom:24rpx; }
+.heading .muted { font-size:23rpx; line-height:1.6; }
+.login-card, .edit-card { padding:28rpx; display:flex; flex-direction:column; gap:18rpx; }
+.card-title { font-size:32rpx; font-weight:600; }
+.login-card input, .edit-card input, .edit-card textarea, .picker { box-sizing:border-box; width:100%; padding:20rpx 22rpx; background:#f2ede3; border-radius:14rpx; font-size:27rpx; }
+.edit-card textarea { min-height:220rpx; line-height:1.65; }
+.label { margin-top:4rpx; color:#5f5550; font-size:23rpx; }
+.counter { text-align:right; color:#81766f; font-size:21rpx; }
+.toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18rpx; }
+.toolbar .status { color:#536657; font-size:23rpx; }
+.toolbar button { width:auto; margin:0; padding:0 18rpx; line-height:58rpx; color:#7b581b; background:#f2ede3; font-size:22rpx; }
+.message { margin-top:20rpx; padding:20rpx 24rpx; border-radius:14rpx; font-size:24rpx; line-height:1.5; }
+.success { color:#31583c; background:#e5f2e7; }
+.error { color:#93000a; background:#ffdad6; }

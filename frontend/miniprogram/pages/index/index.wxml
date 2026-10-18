@@ -1,0 +1,33 @@
+<view class="page {{displayClass}}">
+  <view class="hero">
+    <view class="hero-side-stage" wx:if="{{activeHero}}">
+      <image class="hero-card hero-card-left" src="{{activeHero.previousImage}}" mode="aspectFill" />
+      <image class="hero-card hero-card-right" src="{{activeHero.nextImage}}" mode="aspectFill" />
+    </view>
+    <swiper class="hero-swiper" circular autoplay interval="4800" duration="700" bindchange="handleHeroChange">
+      <swiper-item wx:for="{{heroSlides}}" wx:key="image">
+        <view class="hero-stage">
+          <image class="hero-card hero-card-main" src="{{item.image}}" mode="aspectFill" />
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="hero-shade"></view>
+    <view class="hero-copy">
+      <text class="eyebrow">顺德北滘</text>
+      <text class="title serif">{{home.title}}</text>
+      <text class="subtitle">{{home.subtitle}}</text>
+    </view>
+    <view class="hero-dots"><view wx:for="{{heroSlides}}" wx:key="image" class="hero-dot {{heroCurrent === index ? 'active' : ''}}"></view></view>
+  </view>
+  <view class="section intro card">
+    <text class="section-title serif">今天，怎么逛</text>
+    <text class="description">先从景点故事开始，也可以切换大字模式慢慢看。</text>
+    <view class="intro-actions"><button class="primary-button" bindtap="goToSpots">开始游览</button><button class="display-toggle" bindtap="toggleFontSize">{{displaySettings.fontSize === 'large' ? '标准字' : '大字'}}</button></view>
+  </view>
+  <view wx:if="{{continueCard}}" class="section continue-wrap"><view class="continue-card card"><view><text class="continue-label">继续游览</text><text class="continue-title serif">{{continueCard.title}}</text><text class="continue-description">{{continueCard.description}}</text></view><button bindtap="continueVisit">{{continueCard.buttonText}}</button></view></view>
+  <view class="section feature-grid">
+    <view class="feature card" bindtap="goToPanoramas"><text class="feature-title serif">全景漫游</text><text class="muted">体验交互框架</text></view>
+    <view class="feature card" bindtap="goToAssistant"><text class="feature-title serif">常见问题</text><text class="muted">查看景区资料答疑</text></view>
+    <view class="feature card visit-center" bindtap="goToVisitCenter"><text class="feature-title serif">我的游览</text><text class="muted">收藏、进度与当前路线</text></view>
+  </view>
+</view>

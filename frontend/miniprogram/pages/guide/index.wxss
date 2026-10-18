@@ -1,0 +1,56 @@
+.heading { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 28rpx; }
+.heading .muted { font-size: 24rpx; }
+.offline-notice { margin-bottom:24rpx; padding:20rpx 24rpx; background:#fff4dc; color:#7b581b; border-color:#e3c98e; font-size:23rpx; line-height:1.5; }
+.map { height: 686rpx; position: relative; background: #ede8de; }
+.map-art { position:absolute; z-index:0; inset:0; width:100%; height:100%; }.map-wash { position:absolute; z-index:1; inset:0; background:rgba(255,252,244,.08); }
+.route-canvas { position:absolute; z-index:2; inset:0; width:100%; height:100%; pointer-events:none; }
+.map-label { position: absolute; z-index:5; top: 28rpx; left: 28rpx; padding:6rpx 12rpx; border-radius:8rpx; background:rgba(255,252,246,.86); font-size: 30rpx; }
+.route-badge { position:absolute; z-index:5; top:28rpx; right:28rpx; padding:8rpx 16rpx; border-radius:20rpx; background:#7b581b; color:#fffaf0; font-size:21rpx; }
+.poi { position: absolute; z-index:4; background: #382c24; color: #fffaf0; min-width: 88rpx; padding: 12rpx 18rpx; border-radius: 30rpx; text-align: center; font-size: 22rpx; }
+.poi-one { left: 18%; top: 28%; }.poi-two { right: 16%; top: 45%; }.poi-three { left: 34%; bottom: 20%; }
+.route-poi { transform:translate(-50%, -50%); min-width:0; max-width:160rpx; padding:8rpx 12rpx; display:flex; align-items:center; gap:7rpx; border-radius:12rpx; font-size:18rpx; line-height:1.25; }.poi-number { flex:none; width:28rpx; height:28rpx; line-height:28rpx; border-radius:50%; background:#b58b4a; color:#fff; font-size:16rpx; }
+.route-poi.visited { background:#587761; opacity:.82; }.route-poi.current { background:#9a4d3f; box-shadow:0 0 0 5rpx rgba(154,77,63,.22); }.route-poi.current .poi-number { background:#fffaf0; color:#9a4d3f; }
+.site-dot { position:absolute; z-index:4; transform:translate(-50%, -50%); width:42rpx; height:42rpx; line-height:42rpx; text-align:center; border-radius:50%; background:#d7c25f; color:#30271f; font-size:19rpx; font-weight:600; border:2rpx solid #fff8db; }
+.notice { margin: 24rpx 0; padding: 24rpx; color: #727671; font-size: 25rpx; line-height: 1.6; }
+.map-status { margin-bottom:24rpx; padding:24rpx; display:flex; flex-direction:column; gap:14rpx; }.map-status-title { color:#7b581b; font-size:27rpx; font-weight:600; }.map-status-tags { display:flex; flex-wrap:wrap; gap:10rpx; }.map-status-tags text { padding:7rpx 12rpx; border-radius:8rpx; background:#fff3d9; color:#795c25; font-size:21rpx; }.map-source { color:#81766f; font-size:21rpx; line-height:1.5; }
+.point-sheet { margin-bottom:24rpx; padding:22rpx 24rpx; display:flex; justify-content:space-between; align-items:center; gap:20rpx; }.point-copy { display:flex; flex-direction:column; gap:6rpx; }.point-sheet-number { color:#7b581b; font-size:21rpx; }.point-sheet-name { font-size:32rpx; font-weight:600; }.point-actions { display:flex; gap:10rpx; flex:none; }.point-detail-button { margin:0; padding:0 18rpx; height:58rpx; line-height:58rpx; background:#382c24; color:#fffaf0; border-radius:12rpx; font-size:22rpx; }
+.point-list { margin-bottom:24rpx; padding:24rpx; display:grid; grid-template-columns:1fr 1fr; gap:16rpx 20rpx; }.point-item { display:flex; align-items:center; gap:10rpx; min-width:0; font-size:22rpx; }.point-number { flex:none; width:34rpx; height:34rpx; line-height:34rpx; text-align:center; border-radius:50%; background:#d7c25f; color:#30271f; font-size:17rpx; }
+.selected-route { margin-bottom:24rpx; padding:28rpx; }.selected-head { display:flex; justify-content:space-between; gap:20rpx; }.selected-copy { display:flex; flex-direction:column; gap:8rpx; }.selected-label { color:#7b581b; font-size:22rpx; }.selected-name { font-size:34rpx; font-weight:600; }.selected-theme { color:#5f5550; font-size:24rpx; }.clear-button { flex:none; margin:0; padding:0 18rpx; height:58rpx; line-height:58rpx; background:#eee7db; color:#736860; border-radius:12rpx; font-size:22rpx; }.selected-stops { display:flex; flex-direction:column; gap:14rpx; padding-top:22rpx; margin-top:22rpx; border-top:1rpx solid #e6dec8; }.selected-stop { display:flex; align-items:center; gap:14rpx; color:#453c36; font-size:25rpx; }.stop-number { width:38rpx; height:38rpx; line-height:38rpx; text-align:center; border-radius:50%; background:#382c24; color:#fffaf0; font-size:19rpx; }.selected-notice { display:block; margin-top:20rpx; color:#81766f; font-size:22rpx; }
+.route-progress { margin-top:24rpx; padding-top:22rpx; border-top:1rpx solid #e6dec8; }.progress-head { display:flex; justify-content:space-between; color:#3a5a47; font-size:23rpx; }.progress-track { height:14rpx; margin-top:14rpx; background:#e7e0d2; border-radius:999rpx; overflow:hidden; }.progress-value { height:100%; background:#4b6955; border-radius:999rpx; transition:width 200ms ease; }.route-now { display:flex; align-items:center; justify-content:space-between; gap:20rpx; margin-top:22rpx; }.now-copy { display:flex; flex-direction:column; gap:5rpx; }.now-label { color:#9a4d3f; font-size:21rpx; }.now-name { font-size:31rpx; font-weight:600; }.next-stop { color:#756a63; font-size:22rpx; }.current-button { flex:none; margin:0; padding:0 18rpx; background:#9a4d3f; color:#fffaf0; border-radius:12rpx; font-size:22rpx; line-height:62rpx; }.route-complete { display:flex; flex-direction:column; gap:8rpx; margin-top:22rpx; padding:20rpx; background:#eef3eb; color:#3a5a47; border-radius:14rpx; font-size:23rpx; }.complete-title { font-size:29rpx; font-weight:600; }.selected-stop.visited { color:#587761; }.selected-stop.current { color:#9a4d3f; font-weight:600; }.selected-stop.visited .stop-number { background:#587761; }.selected-stop.current .stop-number { background:#9a4d3f; }.stop-name { flex:1; }.stop-status { flex:none; font-size:21rpx; color:#857970; }
+.route-button { margin-top: 18rpx; background:#fffcf6; color:#382c24; border:1rpx solid #b58b4a; border-radius:16rpx; font-size:28rpx; }
+
+/* 2026-09-28 仅调整视觉，保留全部原有结构与事件绑定 */
+.page { background:#f5f7f2; color:#14231f; }
+.heading { margin:-36rpx -32rpx 28rpx; padding:50rpx 36rpx 34rpx; background:#102823; color:#fcfdf8; }
+.heading .section-title { font-size:48rpx; }
+.heading .muted { color:rgba(252,253,248,.7); }
+.offline-notice { border:0; border-radius:20rpx; background:#fff4d9; color:#704b12; }
+.map { height:686rpx; border:0; border-radius:28rpx; box-shadow:0 24rpx 60rpx rgba(16,40,35,.12); }
+.map-label { color:#14231f; border-radius:12rpx; background:rgba(252,253,248,.9); }
+.route-badge { background:#d39b3f; color:#17251f; }
+.site-dot { background:#102823; color:#fcfdf8; border-color:#efc675; box-shadow:0 8rpx 18rpx rgba(16,40,35,.24); }
+.route-poi { background:#102823; color:#fcfdf8; border-radius:18rpx; box-shadow:0 8rpx 18rpx rgba(16,40,35,.2); }
+.poi-number { background:#d39b3f; color:#17251f; }
+.route-poi.visited { background:#60756b; }.route-poi.current { background:#9d6b1f; box-shadow:0 0 0 7rpx rgba(211,155,63,.24); }
+.notice,.map-status,.point-sheet,.point-list,.selected-route { border:0; border-radius:24rpx; background:#fcfdf8; box-shadow:0 14rpx 38rpx rgba(16,40,35,.07); }
+.map-status-title,.point-sheet-number,.selected-label,.now-label { color:#8b5c16; }
+.map-status-tags text { background:#edf1ed; color:#24443b; }
+.point-detail-button,.current-button { background:#102823; color:#fcfdf8; border-radius:16rpx; }
+.clear-button { background:#edf1ed; color:#24443b; border-radius:16rpx; }
+.selected-name,.point-sheet-name,.now-name { color:#14231f; }
+.progress-head { color:#24443b; }.progress-track { background:#dfe6e1; }.progress-value { background:#d39b3f; }
+.selected-stop.current { color:#8b5c16; }.selected-stop.current .stop-number { background:#d39b3f; color:#17251f; }
+.selected-stop.visited .stop-number { background:#60756b; }
+.primary-button { background:#d39b3f; color:#17251f; border-radius:18rpx; font-weight:700; }
+.route-button { background:transparent; color:#102823; border-color:#102823; border-radius:18rpx; }
+.high-contrast .heading,.high-contrast .route-poi,.high-contrast .site-dot { background:#111; color:#fff; }
+@keyframes visitor-page-fade { from { opacity:.72; } to { opacity:1; } }
+.page { animation:visitor-page-fade 260ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .page { animation:none; } }
+
+/* 用户反馈：整体绿色降低饱和度与明度反差 */
+.heading { background:#3a5a47; }
+.site-dot,.route-poi { background:#3a5a47; }
+.route-poi.visited { background:#7f918b; }
+.point-detail-button,.current-button { background:#3a5a47; }
+.route-button { color:#3a5a47; border-color:#3a5a47; }

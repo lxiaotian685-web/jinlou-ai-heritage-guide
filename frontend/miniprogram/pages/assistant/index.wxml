@@ -1,0 +1,17 @@
+<view class="assistant-page {{displayClass}}">
+  <scroll-view class="content" scroll-y>
+    <view class="intro"><text class="serif title">景区常见问题</text><text>点击下方预设问题，查看已经整理的景区资料</text></view>
+    <view class="question-list">
+      <button wx:for="{{quickQuestions}}" wx:key="*this" class="question {{selectedQuestion === item ? 'active' : ''}}" data-question="{{item}}" bindtap="chooseQuickQuestion">{{item}}</button>
+    </view>
+    <view wx:if="{{sending}}" class="answer card muted">正在加载资料…</view>
+    <view wx:elif="{{answer}}" class="answer card {{answer.isError ? 'error' : ''}}">
+      <text class="answer-question serif">{{selectedQuestion}}</text>
+      <text wx:if="{{answer.notice}}" class="data-label">{{answer.notice}}</text>
+      <text>{{answer.text}}</text>
+      <text wx:if="{{answer.sourceText}}" class="sources">来源：{{answer.sourceText}}</text>
+      <text wx:if="{{answer.publicStatus}}" class="sources">公开状态：{{answer.publicStatus}}</text>
+    </view>
+    <view wx:else class="tip card"><text>请选择一个问题</text><text class="muted">本页面仅提供预设的景区资料，不支持自由提问。</text></view>
+  </scroll-view>
+</view>

@@ -1,0 +1,18 @@
+.viewer-page { min-height: 100vh; background: #17120e; color: #fffaf0; }
+.center-state { min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28rpx; color: #f6f1e7; }
+.retry, .sheet-button { background: #f6f1e7; color: #382c24; border-radius: 16rpx; font-size: 27rpx; }
+.viewer-head { height: 100rpx; padding: 0 30rpx; display: flex; align-items: center; justify-content: space-between; }
+.scene-name { font-size: 34rpx; font-weight: 600; }.demo-badge { font-size: 21rpx; color: #eebf78; border: 1rpx solid #b58b4a; padding: 7rpx 12rpx; border-radius: 8rpx; }
+.panorama-area { width: 100%; height: 760rpx; overflow: hidden; background: #0c0a08; }
+.panorama-canvas { width: 1400rpx; height: 760rpx; position: relative; }
+.panorama-image { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(.82); }
+.hotspot { position: absolute; transform: translate(-50%, -50%); min-width: 92rpx; height: 70rpx; padding: 0 16rpx; border-radius: 35rpx; font-size: 22rpx; color: #fffaf0; border: 2rpx solid #eebf78; background: rgba(56,44,36,.88); }
+.hotspot-scene { background: rgba(83,102,87,.92); }
+.help { position: absolute; top: 150rpx; left: 50%; transform: translateX(-50%); white-space: nowrap; background: rgba(34,24,16,.78); padding: 14rpx 22rpx; border-radius: 30rpx; font-size: 23rpx; }
+.notice { padding: 20rpx 30rpx 10rpx; color: #cfc5b9; font-size: 23rpx; line-height: 1.5; }
+.scene-strip { width: 100%; white-space: nowrap; padding: 18rpx 0 34rpx; }
+.scene-card { display: inline-flex; vertical-align: top; width: 220rpx; margin-left: 22rpx; flex-direction: column; gap: 10rpx; color: #cfc5b9; font-size: 23rpx; }
+.scene-card:last-child { margin-right: 22rpx; }.scene-card image { width: 220rpx; height: 130rpx; border-radius: 12rpx; opacity: .65; }.scene-card.active image { opacity: 1; outline: 3rpx solid #b58b4a; }.scene-card.active { color: #fffaf0; }
+.sheet-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; z-index: 20; }
+.sheet { width: 100%; box-sizing: border-box; padding: 38rpx 34rpx calc(34rpx + env(safe-area-inset-bottom)); background: #fffcf6; color: #382c24; border-radius: 32rpx 32rpx 0 0; display: flex; flex-direction: column; gap: 24rpx; }
+.sheet-title { font-size: 38rpx; font-weight: 600; }.sheet-content { color: #4e4540; font-size: 28rpx; line-height: 1.7; }

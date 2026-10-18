@@ -1,0 +1,17 @@
+<view class="page section">
+  <view class="heading"><text class="section-title serif">{{title}}</text><text class="muted">内容待景区审核与接入</text></view>
+  <view wx:if="{{loading}}" class="state card">正在读取推荐内容…</view>
+  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadRecommendations">重新加载</button></view>
+  <view wx:elif="{{!items.length}}" class="state card">暂无已审核上线的推荐内容</view>
+  <view wx:else class="list">
+    <view wx:for="{{items}}" wx:key="id" class="recommendation card">
+      <image src="{{item.image}}" mode="aspectFill" />
+      <view class="content">
+        <text class="type">{{item.type}}</text><text class="name serif">{{item.name}}</text>
+        <text class="muted">{{item.address}}</text><text class="muted">{{item.availability}}</text><text wx:if="{{item.description}}" class="muted">{{item.description}}</text>
+        <view class="actions"><button data-id="{{item.id}}" bindtap="showDetail">查看详情</button><button bindtap="showMapPending">打开地图</button></view>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{activeItem}}" class="mask" bindtap="closeDetail"><view class="sheet" catchtap="stopPropagation"><text class="sheet-title serif">{{activeItem.name}}</text><text>{{activeItem.description || '商家详细介绍待接入。'}}</text><text wx:if="{{activeItem.productName}}">推荐：{{activeItem.productName}}</text><text wx:if="{{activeItem.address}}">地址：{{activeItem.address}}</text><button wx:if="{{activeItem.phone}}" bindtap="callMerchant">拨打电话</button><button wx:if="{{activeItem.linkUrl}}" bindtap="copyMerchantLink">复制商家链接</button><button class="primary-button" bindtap="closeDetail">返回列表</button></view></view>
+</view>

@@ -1,0 +1,11 @@
+backend/node_modules/
+backend/data/
+frontend/project.private.config.json
+frontend/.verify-function/
+frontend/.verify-function-easy-upload/
+frontend/.verify-function-final/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store

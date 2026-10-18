@@ -1,0 +1,22 @@
+{
+  "envId": "cloud1-d8gmw1jur6dc98110",
+  "functionRoot": "./cloudfunctions",
+  "functions": [
+    {
+      "name": "bijiang-api",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 5,
+      "memorySize": 256,
+      "installDependency": true
+    },
+    {
+      "name": "bijiang-cloud-check",
+      "runtime": "Nodejs16.13",
+      "handler": "index.main",
+      "timeout": 5,
+      "memorySize": 256,
+      "installDependency": false
+    }
+  ]
+}
