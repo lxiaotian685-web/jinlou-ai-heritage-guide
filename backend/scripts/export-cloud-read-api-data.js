@@ -1,11 +1,13 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reviewedFaqs } from '../src/reviewed-faqs.js';
+import { buildVerifiedCloudAudioMap } from '../src/cloud-audio-assets.js';
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const backendDirectory = resolve(scriptDirectory, '..');
 const outputPath = resolve(backendDirectory, '../frontend/cloudfunctions/bijiang-api/data.json');
+const cloudAudioReportPath = resolve(backendDirectory, '../docs/cloud-audio-verification.json');
 const apiBaseUrl = process.env.BIJIANG_EXPORT_API || 'http://127.0.0.1:3000/api/v1';
 
 async function get(path) {
@@ -20,10 +22,32 @@ const spotDetails = {};
 const narrations = {};
 const craftGuides = {};
 const panoramaDetails = {};
+let verifiedCloudAudio = new Map();
+try {
+  const report = JSON.parse(await readFile(cloudAudioReportPath, 'utf8'));
+  verifiedCloudAudio = buildVerifiedCloudAudioMap(report);
+} catch (_error) {
+  // A missing or incomplete report intentionally keeps cloud preview audio disabled.
+}
 
 for (const spot of spots.data) {
   spotDetails[spot.id] = await get(`/spots/${encodeURIComponent(spot.id)}`);
-  narrations[spot.id] = await get(`/spots/${encodeURIComponent(spot.id)}/narrations`);
+  const narrationResource = await get(`/spots/${encodeURIComponent(spot.id)}/narrations`);
+  narrations[spot.id] = {
+    ...narrationResource,
+    data: (narrationResource.data || []).map((narration) => {
+      if (narration.audioType !== 'system-tts-preview') return narration;
+      const cloudFileId = verifiedCloudAudio.get(spot.id) || '';
+      return {
+        ...narration,
+        audioUrl: cloudFileId,
+        audioReady: Boolean(cloudFileId),
+        notice: cloudFileId
+          ? '普通话试听已通过云端文件校验，内容与发音仍待景区审核'
+          : '普通话试听尚未完成云端发布校验，请先阅读文字稿',
+      };
+    }),
+  };
   try { craftGuides[spot.id] = await get(`/spots/${encodeURIComponent(spot.id)}/craft-guide`); }
   catch (_error) { /* Most spots intentionally have no craft guide. */ }
 }
@@ -52,3 +76,4 @@ const snapshot = {
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 console.log(`云端只读数据已导出：${outputPath}`);
+console.log(`云端普通话试听：${verifiedCloudAudio.size}/15 已通过文件校验`);

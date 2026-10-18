@@ -3,6 +3,7 @@ import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { reviewedSpotContent } from './reviewed-spots.js';
 import { reviewedNarrations } from './reviewed-narrations.js';
+import { runDatabaseMigrations } from './migrations.js';
 import { reviewedFaqs } from './reviewed-faqs.js';
 
 const seedSpots = [
@@ -440,9 +441,7 @@ export function createDatabase(filename = ':memory:') {
     `);
     for (const narration of seedNarrations) insertNarration.run(...narration.slice(0, 6), narration[6] || 'draft', narration[7] || 'none');
   }
-  db.exec(`UPDATE spots SET has_audio = CASE WHEN EXISTS (
-    SELECT 1 FROM narrations WHERE narrations.spot_id = spots.id AND narrations.audio_url <> ''
-  ) THEN 1 ELSE 0 END`);
+  runDatabaseMigrations(db);
 
   const craftGuideCount = db.prepare('SELECT COUNT(*) AS total FROM craft_guides').get().total;
   if (craftGuideCount === 0) {

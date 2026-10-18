@@ -13,6 +13,8 @@ import { updateSpotContent } from '../scripts/update-spot.js';
 import { updateServiceContent } from '../scripts/update-service.js';
 import { applyReviewedSpots } from '../scripts/apply-reviewed-spots.js';
 import { applyReviewedNarrations } from '../scripts/apply-reviewed-narrations.js';
+import { MANDARIN_PREVIEW_AUDIO_MIGRATION } from '../src/migrations.js';
+import { buildVerifiedCloudAudioMap, CLOUD_AUDIO_ENV_ID, cloudAudioAssets } from '../src/cloud-audio-assets.js';
 
 let db;
 let server;
@@ -64,6 +66,40 @@ test('database restart preserves maintained spots, routes and map points', () =>
     assert.equal(persistentDb.prepare('SELECT position_x FROM site_points WHERE number = ?').get(4).position_x, 39);
   } finally {
     persistentDb?.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('database restart upgrades legacy Mandarin audio rows without overwriting maintained text', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-audio-migration-'));
+  const databasePath = join(directory, 'legacy.db');
+  const maintainedTranscript = '人工维护的金楼讲解文字，不应被数据迁移覆盖。';
+  let legacyDb;
+
+  try {
+    legacyDb = createDatabase(databasePath);
+    legacyDb.prepare('DELETE FROM schema_migrations WHERE id = ?').run(MANDARIN_PREVIEW_AUDIO_MIGRATION);
+    legacyDb.prepare("DELETE FROM narrations WHERE language_code = 'zh-CN' AND spot_id NOT IN ('jinlou', 'zhifangdi')").run();
+    legacyDb.prepare("UPDATE narrations SET audio_url = '', audio_type = 'none' WHERE language_code = 'zh-CN'").run();
+    legacyDb.prepare("UPDATE narrations SET transcript = ? WHERE spot_id = 'jinlou' AND language_code = 'zh-CN'").run(maintainedTranscript);
+    legacyDb.prepare('UPDATE spots SET has_audio = 0').run();
+    assert.equal(legacyDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_url <> ''").get().total, 0);
+    legacyDb.close();
+    legacyDb = null;
+
+    legacyDb = createDatabase(databasePath);
+    assert.equal(legacyDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_type = 'system-tts-preview' AND audio_url LIKE '/media/narrations/%-zh.wav'").get().total, 15);
+    assert.equal(legacyDb.prepare('SELECT COUNT(*) AS total FROM spots WHERE has_audio = 1').get().total, 15);
+    assert.equal(legacyDb.prepare("SELECT transcript FROM narrations WHERE spot_id = 'jinlou' AND language_code = 'zh-CN'").get().transcript, maintainedTranscript);
+    assert.equal(legacyDb.prepare('SELECT COUNT(*) AS total FROM schema_migrations WHERE id = ?').get(MANDARIN_PREVIEW_AUDIO_MIGRATION).total, 1);
+    legacyDb.close();
+    legacyDb = null;
+
+    legacyDb = createDatabase(databasePath);
+    assert.equal(legacyDb.prepare("SELECT transcript FROM narrations WHERE spot_id = 'jinlou' AND language_code = 'zh-CN'").get().transcript, maintainedTranscript);
+    assert.equal(legacyDb.prepare('SELECT COUNT(*) AS total FROM schema_migrations WHERE id = ?').get(MANDARIN_PREVIEW_AUDIO_MIGRATION).total, 1);
+  } finally {
+    legacyDb?.close();
     rmSync(directory, { recursive: true, force: true });
   }
 });
@@ -240,6 +276,27 @@ test('reviewed narration batch enables 15 labeled Mandarin preview audios and cr
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+test('cloud audio manifest requires all 15 byte-identical verified files', () => {
+  const files = cloudAudioAssets.map((asset, index) => ({
+    ...asset,
+    size: 1000 + index,
+    localSha256: `hash-${index}`,
+    downloadedSha256: `hash-${index}`,
+  }));
+  const report = { status: 'verified', environmentId: CLOUD_AUDIO_ENV_ID, files };
+  const verified = buildVerifiedCloudAudioMap(report);
+  assert.equal(verified.size, 15);
+  assert.equal(verified.get('jinlou'), cloudAudioAssets.find((item) => item.spotId === 'jinlou').cloudFileId);
+
+  const incomplete = buildVerifiedCloudAudioMap({ ...report, files: files.slice(0, 14) });
+  assert.equal(incomplete.size, 0);
+  const corrupted = buildVerifiedCloudAudioMap({
+    ...report,
+    files: files.map((item, index) => index === 3 ? { ...item, downloadedSha256: 'different' } : item),
+  });
+  assert.equal(corrupted.size, 0);
 });
 
 test('admin content API requires its token and saves a backed-up spot change', async () => {

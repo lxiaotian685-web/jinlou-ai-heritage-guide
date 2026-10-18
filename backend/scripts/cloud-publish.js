@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const apiBaseUrl = process.env.BIJIANG_EXPORT_API || 'http://127.0.0.1:3000/api/v1';
 
-function run(script, label) {
-  const result = spawnSync(process.execPath, [resolve(scriptDirectory, script)], {
+function run(script, label, args = []) {
+  const result = spawnSync(process.execPath, [resolve(scriptDirectory, script), ...args], {
     encoding: 'utf8',
     stdio: ['ignore', 'inherit', 'inherit'],
   });
@@ -29,10 +29,13 @@ try {
   process.exit(1);
 }
 
-console.log('第1步：从本地后端导出最新快照…');
+console.log('第1步：核验15个云端普通话试听文件…');
+run('cloud-audio-publish.js', '核验云端试听', ['--verify-only']);
+
+console.log('第2步：从本地后端导出最新快照…');
 run('export-cloud-read-api-data.js', '导出快照');
 
-console.log('第2步：写入云数据库…');
+console.log('第3步：写入云数据库…');
 run('cloud-db-seed.js', '写入云数据库');
 
 console.log('发布完成：小程序下次调用会读取最新云端内容（云函数缓存最长1分钟）。');

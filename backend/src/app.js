@@ -166,7 +166,7 @@ export function createApp(db, options = {}) {
       gaps: [
         { id: 'official-map', label: '官方高清地图与入口出口', ready: false },
         { id: 'authorized-images', label: '15景点授权图片', ready: false },
-        { id: 'formal-audio', label: '正式人工配音', ready: narrations.some((item) => item.audioUrl) },
+        { id: 'formal-audio', label: '正式人工配音', ready: narrations.some((item) => item.audioType === 'recorded' && item.reviewStatus === 'approved' && item.audioUrl) },
         { id: 'ticket', label: '官方订票入口', ready: getServiceConfig(db).ticket.enabled },
         { id: 'panorama', label: '真实360全景', ready: false },
       ],

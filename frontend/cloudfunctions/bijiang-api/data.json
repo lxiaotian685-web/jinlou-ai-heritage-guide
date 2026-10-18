@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T05:23:01.209Z",
+  "generatedAt": "2026-10-18T13:16:58.656Z",
   "spots": {
     "data": [
       {
@@ -315,11 +315,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到南山祠。南山祠是碧江金楼古建筑群中的祠堂建筑之一，体现古村宅第、祠堂、书塾与园林相互结合的空间特色。现有公开资料尚未确认其具体始建年代与祭祀对象。",
-          "audioUrl": "/media/narrations/nanshan-hall-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -331,11 +331,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到职方第。职方第是清代兵部职方员外郎苏丕文的宅第，建于清嘉庆、道光年间。建筑原有五进，现存四进，过亭、砖石牌坊及题刻是重点看点，是晚清珠三角广府民居建筑的代表。",
-          "audioUrl": "/media/narrations/zhifangdi-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         },
         {
           "id": "zhifangdi-yue",
@@ -371,11 +371,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到对朝。对朝屋位于碧江金楼景区内，已作为清代古建筑列入顺德区第四次全国文物普查新发现不可移动文物名录。具体用途、格局和展陈说明仍待景区审核资料补充。",
-          "audioUrl": "/media/narrations/duizhao-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -387,11 +387,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到金楼。金楼原名赋鹤楼，是苏丕文所建的藏书楼。楼内保存花罩、帘架、藻井和天花等木雕构件，运用浮雕、线刻、镂雕及玻璃镶嵌等技法，并施以泥金和贴金装饰。",
-          "audioUrl": "/media/narrations/jinlou-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         },
         {
           "id": "jinlou-yue",
@@ -427,11 +427,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到守清屋。守清屋位于碧江金楼景区内，是与顺德自梳女历史相关的清代古建筑，现有空间曾用于女性独立生活主题展览。建筑细部、人物故事及展览开放状态以景区现场说明为准。",
-          "audioUrl": "/media/narrations/shouqingwu-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -443,11 +443,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到伯韶医馆。伯韶医馆是景区内的清代古建筑，展陈以苏伯韶的生平与行医经历为线索，并复原看诊、会客和诊疗空间。现有公开资料显示其由前园、天井、廊道、中厅及大座等空间组成。",
-          "audioUrl": "/media/narrations/boshao-clinic-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -459,11 +459,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到泥楼。泥楼始建于明代，是两层三间两廊式民居。墙体以泥、沙等材料夯筑，兼具隔热性能；20世纪初改建的两廊引入拱券和罗马柱等元素，是顺德少见的高层干打垒建筑。",
-          "audioUrl": "/media/narrations/nilou-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -475,11 +475,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到镬耳民居。镬耳民居点位用于观察岭南传统民居的镬耳山墙、青砖墙面及院落关系。该名称来自景区现场分布牌，具体建筑年代、原住户和修缮沿革仍待景区资料确认。",
-          "audioUrl": "/media/narrations/wokear-residence-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -491,11 +491,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到镬耳大屋。镬耳大屋对应景区内的苏氏镬耳屋，是顺德区第四次全国文物普查记录的清代古建筑。其具体格局、原住户及建筑演变仍待景区审核资料补充。",
-          "audioUrl": "/media/narrations/wokear-house-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -507,11 +507,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到亦渔遗塾。亦渔遗塾是清代苏氏三兴堂家塾，规模较一般书塾大。建筑由三间两廊式房屋和明字屋组成，隔扇木门雕有花草、瑞兽图案，体现碧江古村的耕读传统。",
-          "audioUrl": "/media/narrations/yiyu-school-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -523,11 +523,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到民居构件展示。民居构件展示点集中帮助游客辨认传统建筑中的门窗、隔扇、梁架、砖雕和木雕等构件。具体构件名称、年代、来源及修缮信息仍须以景区展签和审核资料为准。",
-          "audioUrl": "/media/narrations/components-exhibit-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -539,11 +539,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到二十四咏。《碧江二十四咏》源自清代文人苏鹤描绘碧江人文与自然景观的二十四首诗。景区以诗作为线索制作铜壁雕，呈现旧时碧江的水乡生活与历史景观。",
-          "audioUrl": "/media/narrations/twenty-four-odes-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -555,11 +555,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到抱月亭。抱月亭位于景区园林区域，是游人观赏池水、回廊和园林层次的亭阁点位。其建造年代、名称沿革和原有用途目前缺少可靠公开资料，待景区说明确认。",
-          "audioUrl": "/media/narrations/baoyue-pavilion-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -571,11 +571,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到叠趣亭。叠趣亭位于景区园林区域，名称见于景区相关游览资料。游客可在此观察亭、廊、水体与植物构成的园林空间；具体年代和营造故事仍待景区审核。",
-          "audioUrl": "/media/narrations/diequ-pavilion-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     },
@@ -587,11 +587,11 @@
           "languageCode": "zh-CN",
           "languageLabel": "普通话",
           "transcript": "欢迎来到后花园。后花园保留池水、回廊、亭阁与古树等园林要素，并陈列《碧江二十四咏》铜壁雕。公开资料显示现存园林为修复后的部分范围，具体开放区域以景区现场安排为准。",
-          "audioUrl": "/media/narrations/garden-zh.wav",
-          "audioReady": true,
+          "audioUrl": "",
+          "audioReady": false,
           "reviewStatus": "pending",
           "audioType": "system-tts-preview",
-          "notice": "普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿"
+          "notice": "普通话试听尚未完成云端发布校验，请先阅读文字稿"
         }
       ]
     }

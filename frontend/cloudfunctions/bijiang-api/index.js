@@ -61,6 +61,23 @@ async function uploadAdminImage(body) {
 
 let cache = { snapshot: null, loadedAt: 0, source: 'bundled-snapshot' };
 
+function normalizeCloudAudio(snapshot) {
+  const narrations = Object.fromEntries(Object.entries(snapshot.narrations || {}).map(([spotId, resource]) => [spotId, {
+    ...resource,
+    data: (resource.data || []).map((item) => {
+      const remotelyPlayable = typeof item.audioUrl === 'string' && (item.audioUrl.startsWith('cloud://') || /^https:\/\//i.test(item.audioUrl));
+      if (item.audioType !== 'system-tts-preview' || remotelyPlayable) return item;
+      return {
+        ...item,
+        audioUrl: '',
+        audioReady: false,
+        notice: '普通话试听尚未完成云端发布校验，请先阅读文字稿',
+      };
+    }),
+  }]));
+  return { ...snapshot, narrations };
+}
+
 function rebuildSnapshot(documents) {
   const snapshot = { faqs: [] };
   for (const document of documents) {
@@ -86,10 +103,10 @@ async function getSnapshot() {
     const result = await database.collection(COLLECTION).limit(100).get();
     const documents = result.data || [];
     if (!documents.length) throw new Error('云数据库集合为空');
-    cache = { snapshot: rebuildSnapshot(documents), loadedAt: Date.now(), source: 'cloud-database' };
+    cache = { snapshot: normalizeCloudAudio(rebuildSnapshot(documents)), loadedAt: Date.now(), source: 'cloud-database' };
   } catch (readError) {
     console.warn('读取云数据库失败，回退到打包快照：', readError.message);
-    cache = { snapshot: bundledSnapshot, loadedAt: Date.now(), source: 'bundled-snapshot' };
+    cache = { snapshot: normalizeCloudAudio(bundledSnapshot), loadedAt: Date.now(), source: 'bundled-snapshot' };
   }
   return cache;
 }

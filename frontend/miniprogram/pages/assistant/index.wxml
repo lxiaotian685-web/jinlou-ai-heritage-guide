@@ -1,6 +1,6 @@
 <view class="assistant-page {{displayClass}}">
   <scroll-view class="content" scroll-y>
-    <view class="intro"><text class="serif title">AI 研学问答</text><text>输入问题或选择推荐问题。回答只使用已登记资料，资料不足时会明确提示待核对。</text></view>
+    <view class="intro"><text class="serif title">研学资料问答</text><text>输入问题或选择推荐问题。当前为受控资料检索，不调用生成式模型；资料不足时会明确提示待核对。</text></view>
     <view class="question-form card">
       <input class="question-input" maxlength="200" value="{{inputQuestion}}" placeholder="例如：金楼的木雕有什么特色？" confirm-type="send" bindinput="handleQuestionInput" bindconfirm="submitQuestion" disabled="{{sending}}" />
       <view class="form-footer"><text>{{questionLength}}/200</text><button class="ask-button" bindtap="submitQuestion" loading="{{sending}}" disabled="{{sending}}">提问</button></view>

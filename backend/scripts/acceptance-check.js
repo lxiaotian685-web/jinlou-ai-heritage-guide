@@ -48,6 +48,7 @@ try {
   check('字号设置兼容', displaySettings.getDisplaySettings().fontSize === 'large');
   const assistantTemplate = readFileSync(resolve(frontendRoot, 'pages/assistant/index.wxml'), 'utf8');
   check('推荐问题与自由提问', assistantTemplate.includes('wx:for="{{quickQuestions}}"') && assistantTemplate.includes('maxlength="200"') && assistantTemplate.includes('bindconfirm="submitQuestion"'));
+  check('固定规则能力如实命名', assistantTemplate.includes('研学资料问答') && !assistantTemplate.includes('AI 研学问答'));
   const assistantStyles = readFileSync(resolve(frontendRoot, 'pages/assistant/index.wxss'), 'utf8');
   check('问答重试与来源展示', assistantTemplate.includes('retryLastQuestion') && assistantTemplate.includes('answer.sources') && assistantTemplate.includes('copySourceUrl') && assistantStyles.includes('.question-form'));
   const privacyTemplate = readFileSync(resolve(frontendRoot, 'pages/privacy/index.wxml'), 'utf8');
@@ -57,7 +58,7 @@ try {
   const homeTemplate = readFileSync(resolve(frontendRoot, 'pages/index/index.wxml'), 'utf8');
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
   const spotDetailScript = readFileSync(resolve(frontendRoot, 'pages/spot-detail/index.js'), 'utf8');
-  check('后台讲解音频地址接入', spotDetailScript.includes("configuredCloudUrl.startsWith('cloud://')") && spotDetailScript.includes('fileID: configuredCloudUrl'));
+  check('讲解音频地址由接口显式提供', spotDetailScript.includes("configuredUrl.startsWith('cloud://')") && spotDetailScript.includes('fileID: configuredUrl') && !spotDetailScript.includes('CLOUD_AUDIO_ROOT'));
   const spotDetailTemplate = readFileSync(resolve(frontendRoot, 'pages/spot-detail/index.wxml'), 'utf8');
   check('音频失败保留文字降级', spotDetailScript.includes('audioError') && spotDetailTemplate.includes('{{audioError}}') && spotDetailTemplate.includes('讲解文字稿'));
   const spotImages = require(resolve(frontendRoot, 'utils/spot-images.js'));
@@ -91,6 +92,7 @@ try {
   check('云端首页支持轮播数组', cloudApi.includes('heroImages') && cloudApi.includes('slice(0, 8)'));
   check('云端保存景点上一张封面', cloudApi.includes('coverImageChanged') && cloudApi.includes('previousCoverImage: currentCoverImage'));
   check('云端问答推荐与来源同步', cloudApi.includes("path === '/assistant/suggestions'") && cloudApi.includes('resolveKnowledgeSources') && existsSync(resolve(frontendRoot, '../cloudfunctions/bijiang-api/knowledge-sources.js')));
+  check('云音频发布必须先完成文件校验', cloudApi.includes('normalizeCloudAudio') && existsSync(resolve('scripts/cloud-audio-publish.js')) && existsSync(resolve('../docs/CLOUD_AUDIO_REAL_DEVICE_CHECKLIST.md')));
   delete globalThis.wx;
 
   const launchProfile = JSON.parse(readFileSync(resolve('config/launch-profile.example.json'), 'utf8'));
