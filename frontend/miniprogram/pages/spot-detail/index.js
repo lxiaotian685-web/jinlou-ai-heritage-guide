@@ -6,21 +6,8 @@ const { recordRecentSpot } = require('../../utils/recent-spots');
 const { getSpotNote, saveSpotNote, removeSpotNote } = require('../../utils/spot-notes');
 
 const PLAYBACK_RATES = [0.75, 1, 1.25, 1.5];
-const CLOUD_AUDIO_ROOT = 'cloud://cloud1-d8gmw1jur6dc98110.636c-cloud1-d8gmw1jur6dc98110-1470332055/bijiang-heritage/audio';
-const createCloudAudio = (spotId) => ({
-  fileID: `${CLOUD_AUDIO_ROOT}/${spotId}-zh.wav`,
-  cacheKey: `cloudAudioCache:${spotId}:zh-CN`,
-});
-const CLOUD_AUDIO_SPOT_IDS = [
-  'nanshan-hall', 'zhifangdi', 'duizhao', 'jinlou', 'shouqingwu',
-  'boshao-clinic', 'nilou', 'wokear-residence', 'wokear-house', 'yiyu-school',
-  'components-exhibit', 'twenty-four-odes', 'baoyue-pavilion', 'diequ-pavilion', 'garden',
-];
-const CLOUD_AUDIO = {};
-for (const spotId of CLOUD_AUDIO_SPOT_IDS) CLOUD_AUDIO[`${spotId}:zh-CN`] = createCloudAudio(spotId);
-
 Page({
-  data: { spot: null, narrations: [], activeNarration: null, isFavorite: false, isVisited: false, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00', playbackRates: PLAYBACK_RATES, playbackRate: 1, ratingOptions: [1, 2, 3, 4, 5], spotNote: { rating: 0, text: '' }, offlineNotice: '', loading: true, error: '' },
+  data: { spot: null, narrations: [], activeNarration: null, isFavorite: false, isVisited: false, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00', audioStatus: '', audioError: '', playbackRates: PLAYBACK_RATES, playbackRate: 1, ratingOptions: [1, 2, 3, 4, 5], spotNote: { rating: 0, text: '' }, offlineNotice: '', loading: true, error: '' },
   onLoad(options) {
     this.spotId = options.id || (options.scene ? decodeURIComponent(options.scene) : '');
     this.loadSpot();
@@ -73,12 +60,12 @@ Page({
     const activeNarration = this.data.narrations.find((item) => item.languageCode === event.currentTarget.dataset.code);
     if (activeNarration) {
       this.destroyAudio();
-      this.setData({ activeNarration, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00' });
+      this.setData({ activeNarration, isPlaying: false, audioProgress: 0, audioTime: '00:00 / 00:00', audioStatus: '', audioError: '' });
     }
   },
   async handleAudio() {
     if (!this.data.activeNarration?.audioReady) {
-      wx.showToast({ title: '正式讲解音频待录制', icon: 'none' });
+      this.setData({ audioStatus: '', audioError: '暂无可播放音频，请直接阅读下方讲解文字稿。' });
       return;
     }
     if (this.audio) {
@@ -88,23 +75,26 @@ Page({
     }
     if (this.audioLoading) return;
     this.audioLoading = true;
+    this.setData({ audioStatus: '正在准备普通话试听…', audioError: '' });
     try {
       const source = await this.resolveAudioSource();
-      this.createAudio(source.url, source.canFallback);
+      this.createAudio(source.url);
       this.audio.play();
+    } catch (error) {
+      console.error('Audio source resolution failed', error);
+      this.setData({ audioStatus: '', audioError: '音频暂时无法播放，请直接阅读下方讲解文字稿。' });
     } finally {
       this.audioLoading = false;
     }
   },
   async resolveAudioSource() {
-    const configuredCloudUrl = this.data.activeNarration.audioUrl || '';
-    const cloudAudio = configuredCloudUrl.startsWith('cloud://')
-      ? { fileID: configuredCloudUrl, cacheKey: `cloudAudioCache:${configuredCloudUrl}` }
-      : CLOUD_AUDIO[`${this.spotId}:${this.data.activeNarration.languageCode}`];
-    if (!cloudAudio || !getApp().globalData.cloudReady) return { url: this.getLocalAudioUrl(), canFallback: false };
+    const configuredUrl = this.data.activeNarration.audioUrl || '';
+    if (!configuredUrl.startsWith('cloud://')) return { url: this.getLocalAudioUrl() };
+    if (!getApp().globalData.cloudReady) throw new Error('云开发未连接，无法读取云端试听');
+    const cloudAudio = { fileID: configuredUrl, cacheKey: `cloudAudioCache:${configuredUrl}` };
 
     const cachedPath = wx.getStorageSync(cloudAudio.cacheKey);
-    if (cachedPath && await this.canAccessFile(cachedPath)) return { url: cachedPath, canFallback: true };
+    if (cachedPath && await this.canAccessFile(cachedPath)) return { url: cachedPath };
     if (cachedPath) wx.removeStorageSync(cloudAudio.cacheKey);
 
     try {
@@ -113,15 +103,14 @@ Page({
       try {
         const saved = await wx.saveFile({ tempFilePath: download.tempFilePath });
         wx.setStorageSync(cloudAudio.cacheKey, saved.savedFilePath);
-        return { url: saved.savedFilePath, canFallback: true };
+        return { url: saved.savedFilePath };
       } catch (saveError) {
         console.warn('Cloud audio cache failed, using temporary file', saveError);
-        return { url: download.tempFilePath, canFallback: true };
+        return { url: download.tempFilePath };
       }
     } catch (error) {
-      console.warn('Cloud audio download failed, using local API fallback', error);
-      wx.showToast({ title: '云音频不可用，尝试本地讲解', icon: 'none' });
-      return { url: this.getLocalAudioUrl(), canFallback: false };
+      console.warn('Cloud audio download failed', error);
+      throw error;
     }
   },
   canAccessFile(filePath) {
@@ -134,14 +123,14 @@ Page({
     const audioUrl = this.data.activeNarration.audioUrl;
     return /^https?:\/\//.test(audioUrl) ? audioUrl : `${apiBaseUrl.replace(/\/api\/v1$/, '')}${audioUrl}`;
   },
-  createAudio(sourceUrl, canFallback = false) {
+  createAudio(sourceUrl) {
     this.audio = wx.createInnerAudioContext();
     this.audio.src = sourceUrl;
     this.audio.playbackRate = this.data.playbackRate;
-    this.audio.onPlay(() => this.setData({ isPlaying: true }));
-    this.audio.onPause(() => this.setData({ isPlaying: false }));
-    this.audio.onStop(() => this.setData({ isPlaying: false }));
-    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100 }));
+    this.audio.onPlay(() => this.setData({ isPlaying: true, audioStatus: '正在播放普通话试听。', audioError: '' }));
+    this.audio.onPause(() => this.setData({ isPlaying: false, audioStatus: '讲解已暂停。' }));
+    this.audio.onStop(() => this.setData({ isPlaying: false, audioStatus: '' }));
+    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: '普通话试听已播放完毕。' }));
     this.audio.onTimeUpdate(() => {
       const duration = this.audio.duration || 0;
       const current = this.audio.currentTime || 0;
@@ -153,13 +142,7 @@ Page({
     this.audio.onError(() => {
       this.setData({ isPlaying: false });
       this.destroyAudio();
-      if (canFallback) {
-        wx.showToast({ title: '已切换本地讲解', icon: 'none' });
-        this.createAudio(this.getLocalAudioUrl(), false);
-        this.audio.play();
-        return;
-      }
-      wx.showToast({ title: '音频加载失败，请检查网络', icon: 'none' });
+      this.setData({ audioStatus: '', audioError: '音频加载失败，请检查网络，或直接阅读下方讲解文字稿。' });
     });
   },
   seekAudio(event) {

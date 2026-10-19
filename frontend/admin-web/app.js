@@ -104,7 +104,7 @@
     $('click-count').textContent = state.analytics?.last7Days || 0;
     $('trend-total').textContent = `${state.analytics?.total || 0} 次`;
     $('cover-health').textContent = `${data.spots.filter((item) => !placeholderSpotImage.test(item.coverImage || '') || bundledSpotCovers[item.id]).length} / ${data.spots.length}`;
-    $('audio-health').textContent = `${data.narrations.filter((item) => item.audioReady || item.audioUrl).length} / ${data.narrations.length}`;
+    $('audio-health').textContent = `${data.narrations.filter((item) => item.audioType === 'recorded' && item.reviewStatus === 'approved' && item.audioUrl).length} / ${data.narrations.length}`;
     $('ad-health').textContent = `${data.recommendations.filter((item) => item.status === 'online').length} 条`;
     setValue('home-title', data.home.title);
     setValue('home-subtitle', data.home.subtitle);

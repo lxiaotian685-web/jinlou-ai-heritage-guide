@@ -41,10 +41,13 @@ npm.cmd start
 - `GET /api/v1/panoramas/:id`
 - `GET /api/v1/service`
 - `GET /api/v1/recommendations?category=food|hotel|transport|attraction`
+- `GET /api/v1/assistant/suggestions`
 - `POST /api/v1/assistant/chat`
 - `GET /api/v1/routes`
 
 当前景点文字是明确标注的演示内容，正式发布前须由景区审核。
+
+研学资料问答只检索已登记的审核资料，不调用模型、向量检索或生成式 RAG。回答会返回结构化来源和审核状态；无法从现有资料确认时固定提示“未找到可靠资料”。15 个普通话音频为系统语音合成试听，正式发布前仍需景区审稿、云端文件校验和真机逐条试听。来源、音频清单和测试边界见 `docs/STUDY_KNOWLEDGE_QA.md`。
 
 数据库中的初始示例只会在对应数据表为空时写入。修改景点、路线或地图点位后，正常重启后端不会再被示例数据覆盖。
 

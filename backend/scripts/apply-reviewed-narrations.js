@@ -15,7 +15,7 @@ export function applyReviewedNarrations({ databasePath, backupDirectory }) {
     const upsert = db.prepare(`
       INSERT INTO narrations
         (id, spot_id, language_code, language_label, transcript, audio_url, review_status, audio_type)
-      VALUES (?, ?, ?, ?, ?, ?, 'pending', 'none')
+      VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
       ON CONFLICT(spot_id, language_code) DO UPDATE SET
         id = excluded.id,
         language_label = excluded.language_label,
@@ -27,9 +27,11 @@ export function applyReviewedNarrations({ databasePath, backupDirectory }) {
     db.exec('BEGIN IMMEDIATE');
     try {
       for (const item of reviewedNarrations) {
-        upsert.run(item.id, item.spotId, item.languageCode, item.languageLabel, item.transcript, item.audioUrl);
+        upsert.run(item.id, item.spotId, item.languageCode, item.languageLabel, item.transcript, item.audioUrl, item.audioType);
       }
-      db.exec('UPDATE spots SET has_audio = 0');
+      db.exec(`UPDATE spots SET has_audio = CASE WHEN EXISTS (
+        SELECT 1 FROM narrations WHERE narrations.spot_id = spots.id AND narrations.audio_url <> ''
+      ) THEN 1 ELSE 0 END`);
       db.exec('COMMIT');
     } catch (error) {
       db.exec('ROLLBACK');

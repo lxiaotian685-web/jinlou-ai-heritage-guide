@@ -13,6 +13,8 @@ import { updateSpotContent } from '../scripts/update-spot.js';
 import { updateServiceContent } from '../scripts/update-service.js';
 import { applyReviewedSpots } from '../scripts/apply-reviewed-spots.js';
 import { applyReviewedNarrations } from '../scripts/apply-reviewed-narrations.js';
+import { MANDARIN_PREVIEW_AUDIO_MIGRATION } from '../src/migrations.js';
+import { buildVerifiedCloudAudioMap, CLOUD_AUDIO_ENV_ID, cloudAudioAssets } from '../src/cloud-audio-assets.js';
 
 let db;
 let server;
@@ -64,6 +66,40 @@ test('database restart preserves maintained spots, routes and map points', () =>
     assert.equal(persistentDb.prepare('SELECT position_x FROM site_points WHERE number = ?').get(4).position_x, 39);
   } finally {
     persistentDb?.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('database restart upgrades legacy Mandarin audio rows without overwriting maintained text', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-audio-migration-'));
+  const databasePath = join(directory, 'legacy.db');
+  const maintainedTranscript = '人工维护的金楼讲解文字，不应被数据迁移覆盖。';
+  let legacyDb;
+
+  try {
+    legacyDb = createDatabase(databasePath);
+    legacyDb.prepare('DELETE FROM schema_migrations WHERE id = ?').run(MANDARIN_PREVIEW_AUDIO_MIGRATION);
+    legacyDb.prepare("DELETE FROM narrations WHERE language_code = 'zh-CN' AND spot_id NOT IN ('jinlou', 'zhifangdi')").run();
+    legacyDb.prepare("UPDATE narrations SET audio_url = '', audio_type = 'none' WHERE language_code = 'zh-CN'").run();
+    legacyDb.prepare("UPDATE narrations SET transcript = ? WHERE spot_id = 'jinlou' AND language_code = 'zh-CN'").run(maintainedTranscript);
+    legacyDb.prepare('UPDATE spots SET has_audio = 0').run();
+    assert.equal(legacyDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_url <> ''").get().total, 0);
+    legacyDb.close();
+    legacyDb = null;
+
+    legacyDb = createDatabase(databasePath);
+    assert.equal(legacyDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_type = 'system-tts-preview' AND audio_url LIKE '/media/narrations/%-zh.wav'").get().total, 15);
+    assert.equal(legacyDb.prepare('SELECT COUNT(*) AS total FROM spots WHERE has_audio = 1').get().total, 15);
+    assert.equal(legacyDb.prepare("SELECT transcript FROM narrations WHERE spot_id = 'jinlou' AND language_code = 'zh-CN'").get().transcript, maintainedTranscript);
+    assert.equal(legacyDb.prepare('SELECT COUNT(*) AS total FROM schema_migrations WHERE id = ?').get(MANDARIN_PREVIEW_AUDIO_MIGRATION).total, 1);
+    legacyDb.close();
+    legacyDb = null;
+
+    legacyDb = createDatabase(databasePath);
+    assert.equal(legacyDb.prepare("SELECT transcript FROM narrations WHERE spot_id = 'jinlou' AND language_code = 'zh-CN'").get().transcript, maintainedTranscript);
+    assert.equal(legacyDb.prepare('SELECT COUNT(*) AS total FROM schema_migrations WHERE id = ?').get(MANDARIN_PREVIEW_AUDIO_MIGRATION).total, 1);
+  } finally {
+    legacyDb?.close();
     rmSync(directory, { recursive: true, force: true });
   }
 });
@@ -218,7 +254,7 @@ test('reviewed spot batch updates all spots in one backed-up transaction', () =>
   }
 });
 
-test('reviewed narration batch keeps 15 Mandarin transcripts without draft audio and creates one backup', () => {
+test('reviewed narration batch enables 15 labeled Mandarin preview audios and creates one backup', () => {
   const directory = mkdtempSync(join(tmpdir(), 'bijiang-narrations-'));
   const databasePath = join(directory, 'content.db');
   const backupDirectory = join(directory, 'backups');
@@ -232,14 +268,35 @@ test('reviewed narration batch keeps 15 Mandarin transcripts without draft audio
     });
     assert.equal(result.updated, 15);
     const updatedDb = new DatabaseSync(databasePath, { readOnly: true });
-    assert.equal(updatedDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_type = 'none' AND audio_url = ''").get().total, 15);
-    assert.equal(updatedDb.prepare('SELECT COUNT(*) AS total FROM spots WHERE has_audio = 1').get().total, 0);
+    assert.equal(updatedDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_type = 'system-tts-preview' AND audio_url LIKE '/media/narrations/%-zh.wav'").get().total, 15);
+    assert.equal(updatedDb.prepare('SELECT COUNT(*) AS total FROM spots WHERE has_audio = 1').get().total, 15);
     assert.match(updatedDb.prepare("SELECT transcript FROM narrations WHERE spot_id = 'nilou' AND language_code = 'zh-CN'").get().transcript, /干打垒/);
     updatedDb.close();
     assert.ok(existsSync(result.backupPath));
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+test('cloud audio manifest requires all 15 byte-identical verified files', () => {
+  const files = cloudAudioAssets.map((asset, index) => ({
+    ...asset,
+    size: 1000 + index,
+    localSha256: `hash-${index}`,
+    downloadedSha256: `hash-${index}`,
+  }));
+  const report = { status: 'verified', environmentId: CLOUD_AUDIO_ENV_ID, files };
+  const verified = buildVerifiedCloudAudioMap(report);
+  assert.equal(verified.size, 15);
+  assert.equal(verified.get('jinlou'), cloudAudioAssets.find((item) => item.spotId === 'jinlou').cloudFileId);
+
+  const incomplete = buildVerifiedCloudAudioMap({ ...report, files: files.slice(0, 14) });
+  assert.equal(incomplete.size, 0);
+  const corrupted = buildVerifiedCloudAudioMap({
+    ...report,
+    files: files.map((item, index) => index === 3 ? { ...item, downloadedSha256: 'different' } : item),
+  });
+  assert.equal(corrupted.size, 0);
 });
 
 test('admin content API requires its token and saves a backed-up spot change', async () => {
@@ -398,7 +455,9 @@ test('assistant endpoint answers from the current knowledge base with a source',
   assert.equal(response.status, 200);
   assert.equal(body.data.mode, 'knowledge-base');
   assert.match(body.data.answer, /木雕/);
-  assert.deepEqual(body.data.sources, ['当前景点资料库', '当前工艺导览资料']);
+  assert.deepEqual(body.data.sources.map((source) => source.id), ['shunde-museum-jinlou', 'project-craft-guide']);
+  assert.equal(body.data.sources[0].organization, '佛山市顺德区博物馆');
+  assert.match(body.data.sources[0].url, /^https:\/\//);
   assert.equal(body.data.reviewStatus, 'pending-scenic-review');
   assert.equal(body.data.publicStatus, 'review-draft');
 });
@@ -406,12 +465,12 @@ test('assistant endpoint answers from the current knowledge base with a source',
 test('assistant covers reviewed visitor questions and keeps unknown policies pending', async () => {
   const cases = [
     ['金楼为什么叫金楼？', /赋鹤楼/, 'review-draft'],
-    ['这些建筑是什么年代？', /泥楼始建于明代/, 'review-draft'],
+    ['这些建筑是什么年代？', /清嘉庆、道光年间/, 'review-draft'],
     ['有哪些重要人物？', /苏丕文/, 'review-draft'],
     ['重点看什么？', /饰金木雕/, 'review-draft'],
     ['建议游览多久？', /参考值/, 'review-draft'],
-    ['几点开放？', /开放时段/, 'review-draft'],
-    ['怎么坐车去？', /地址/, 'review-draft'],
+    ['几点开放？', /开放时间/, 'not-ready'],
+    ['怎么坐车去？', /地址/, 'not-ready'],
     ['门票多少钱？', /尚未配置/, 'not-ready'],
     ['可以用闪光灯拍照吗？', /尚未确认/, 'not-ready'],
     ['轮椅可以走吗？', /无障碍设施尚待景区确认/, 'not-ready'],
@@ -430,6 +489,29 @@ test('assistant covers reviewed visitor questions and keeps unknown policies pen
   }
 });
 
+test('assistant suggestions expose structured study prompts and input boundary', async () => {
+  const response = await fetch(`${baseUrl}/api/v1/assistant/suggestions`);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.ok(body.data.length >= 6);
+  assert.ok(body.data.every((item) => item.id && item.question && item.category));
+  assert.equal(body.meta.maxQuestionLength, 200);
+  assert.equal(body.meta.answerMode, 'controlled-knowledge-base');
+});
+
+test('assistant unknown question explicitly reports missing reliable material without sources', async () => {
+  const response = await fetch(`${baseUrl}/api/v1/assistant/chat`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ question: '这里有没有夜间灯光秀？' }),
+  });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.match(body.data.answer, /^未找到可靠资料/);
+  assert.deepEqual(body.data.sources, []);
+  assert.equal(body.data.publicStatus, 'not-ready');
+});
+
 test('assistant retrieves a named spot and current route summary', async () => {
   const spotResponse = await fetch(`${baseUrl}/api/v1/assistant/chat`, {
     method: 'POST',
@@ -438,7 +520,7 @@ test('assistant retrieves a named spot and current route summary', async () => {
   });
   const spotBody = await spotResponse.json();
   assert.match(spotBody.data.answer, /祠堂建筑/);
-  assert.deepEqual(spotBody.data.sources, ['当前景点资料库']);
+  assert.deepEqual(spotBody.data.sources.map((source) => source.id), ['project-spot-records']);
 
   const routeResponse = await fetch(`${baseUrl}/api/v1/assistant/chat`, {
     method: 'POST',
@@ -447,7 +529,7 @@ test('assistant retrieves a named spot and current route summary', async () => {
   });
   const routeBody = await routeResponse.json();
   assert.match(routeBody.data.answer, /3条参考路线/);
-  assert.deepEqual(routeBody.data.sources, ['当前推荐路线资料库']);
+  assert.deepEqual(routeBody.data.sources.map((source) => source.id), ['project-route-plan']);
 });
 
 test('assistant endpoint rejects an empty question', async () => {
@@ -459,6 +541,17 @@ test('assistant endpoint rejects an empty question', async () => {
   const body = await response.json();
   assert.equal(response.status, 400);
   assert.equal(body.error.code, 'QUESTION_REQUIRED');
+});
+
+test('assistant endpoint rejects questions longer than 200 characters', async () => {
+  const response = await fetch(`${baseUrl}/api/v1/assistant/chat`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ question: '木'.repeat(201) }),
+  });
+  const body = await response.json();
+  assert.equal(response.status, 400);
+  assert.equal(body.error.code, 'QUESTION_TOO_LONG');
 });
 
 test('launch readiness requires identity, privacy and authorization data', () => {
@@ -532,9 +625,10 @@ test('narrations endpoint returns three languages for the main building', async 
   const body = await response.json();
   assert.equal(response.status, 200);
   assert.deepEqual(body.data.map((item) => item.languageCode), ['zh-CN', 'yue', 'en']);
-  assert.equal(body.data[0].audioReady, false);
-  assert.equal(body.data[0].audioType, 'none');
-  assert.equal(body.data[0].notice, '讲解文字已整理，正式音频待录制');
+  assert.equal(body.data[0].audioReady, true);
+  assert.equal(body.data[0].audioType, 'system-tts-preview');
+  assert.equal(body.data[0].audioUrl, '/media/narrations/jinlou-zh.wav');
+  assert.match(body.data[0].notice, /系统语音合成/);
 });
 
 test('narrations endpoint returns 404 for an unknown spot', async () => {
