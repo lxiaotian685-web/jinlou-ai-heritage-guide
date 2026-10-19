@@ -1,0 +1,387 @@
+/* ==========================================================================
+   B · 蚝壳青灰 —— 档案式视觉层
+   只提供变量与装饰类，不覆盖页面既有布局。
+   页面按需 @import "../../styles/archive.wxss";
+   ========================================================================== */
+
+page {
+  --arc-oyster: #f2ede4;
+  --arc-cream: #faf6ee;
+  --arc-paper: #e7e1d5;
+  --arc-ink: #243029;
+  --arc-blue: #5c6b66;
+  --arc-muted: #6e7a72;
+  --arc-line: #d8d2c6;
+  --arc-line-strong: #b9b3a5;
+  --arc-red: #a6402d;
+  --arc-radius: 16rpx;
+  --arc-radius-lg: 24rpx;
+}
+
+/* ---------- 页面底 ---------- */
+.arc-page {
+  min-height: 100vh;
+  background: var(--arc-oyster);
+  color: var(--arc-ink);
+}
+
+/* 24px 图纸网格（低对比，不抢内容） */
+.arc-grid-bg {
+  background-color: var(--arc-oyster);
+  background-image:
+    linear-gradient(rgba(36, 48, 41, 0.045) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(36, 48, 41, 0.045) 1rpx, transparent 1rpx);
+  background-size: 48rpx 48rpx;
+}
+
+/* ---------- 眉标与标题 ---------- */
+.arc-eyebrow {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.6;
+  letter-spacing: 5rpx;
+  text-transform: uppercase;
+  color: var(--arc-muted);
+}
+
+.arc-title {
+  display: block;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 52rpx;
+  line-height: 1.22;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.arc-title-sm {
+  font-size: 38rpx;
+  line-height: 1.3;
+}
+
+.arc-lede {
+  display: block;
+  font-size: 26rpx;
+  line-height: 1.9;
+  color: var(--arc-muted);
+}
+
+/* ---------- 章节头：编号 + 标题 + 长横线 ---------- */
+.arc-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--arc-line-strong);
+}
+
+.arc-head__index {
+  flex: none;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-red);
+}
+
+.arc-head__label {
+  flex: none;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 32rpx;
+  letter-spacing: 4rpx;
+  color: var(--arc-ink);
+}
+
+.arc-head__rule {
+  flex: 1;
+  height: 1rpx;
+  margin-bottom: 8rpx;
+  background: var(--arc-line);
+}
+
+.arc-head__meta {
+  flex: none;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 卡片：细边 + 对角刻度 ---------- */
+.arc-card {
+  position: relative;
+  box-sizing: border-box;
+  background: var(--arc-cream);
+  border: 1rpx solid var(--arc-line);
+  border-radius: var(--arc-radius);
+}
+
+/* 左上 / 右下 两个角标，像档案卡的裁切标记 */
+.arc-card--ticks::before,
+.arc-card--ticks::after {
+  content: "";
+  position: absolute;
+  width: 14rpx;
+  height: 14rpx;
+  pointer-events: none;
+}
+
+.arc-card--ticks::before {
+  top: 8rpx;
+  left: 8rpx;
+  border-top: 1rpx solid var(--arc-red);
+  border-left: 1rpx solid var(--arc-red);
+}
+
+.arc-card--ticks::after {
+  right: 8rpx;
+  bottom: 8rpx;
+  border-right: 1rpx solid var(--arc-red);
+  border-bottom: 1rpx solid var(--arc-red);
+}
+
+/* ---------- 细线分隔 ---------- */
+.arc-hair {
+  height: 1rpx;
+  background: var(--arc-line);
+}
+
+.arc-hair--dot {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  height: auto;
+  background: transparent;
+}
+
+.arc-hair--dot::before,
+.arc-hair--dot::after {
+  content: "";
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line);
+}
+
+.arc-hair--dot text {
+  flex: none;
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 印章 ---------- */
+.arc-seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76rpx;
+  height: 76rpx;
+  box-sizing: border-box;
+  border: 2rpx solid var(--arc-red);
+  box-shadow: inset 0 0 0 4rpx var(--arc-cream), inset 0 0 0 5rpx var(--arc-red);
+  border-radius: 6rpx;
+  transform: rotate(-3deg);
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 22rpx;
+  line-height: 1.15;
+  letter-spacing: 1rpx;
+  color: var(--arc-red);
+  text-align: center;
+}
+
+.arc-seal--ghost {
+  opacity: 0.42;
+}
+
+/* ---------- 水印数字 ---------- */
+.arc-ghost-num {
+  position: absolute;
+  right: 8rpx;
+  bottom: -18rpx;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 150rpx;
+  line-height: 1;
+  color: rgba(36, 48, 41, 0.06);
+  pointer-events: none;
+}
+
+/* ---------- 标签 ---------- */
+.arc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 4rpx 12rpx;
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 4rpx;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: var(--arc-blue);
+  background: transparent;
+}
+
+.arc-tag--red {
+  border-color: rgba(166, 64, 45, 0.45);
+  color: var(--arc-red);
+}
+
+.arc-tag--solid {
+  border-color: var(--arc-ink);
+  background: var(--arc-ink);
+  color: var(--arc-cream);
+}
+
+.arc-tag__dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 待审核：不刺眼，但一眼能看出不是正式内容 */
+.arc-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 3rpx 10rpx;
+  border: 1rpx dashed rgba(166, 64, 45, 0.4);
+  border-radius: 4rpx;
+  font-size: 17rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  color: var(--arc-red);
+}
+
+/* ---------- 照片框：双线 + 铭牌 ---------- */
+.arc-photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--arc-paper);
+  border: 1rpx solid var(--arc-line-strong);
+}
+
+.arc-photo::after {
+  content: "";
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  bottom: 10rpx;
+  left: 10rpx;
+  border: 1rpx solid rgba(250, 246, 238, 0.45);
+  pointer-events: none;
+}
+
+.arc-photo image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.arc-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 10rpx;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 竖排小标 ---------- */
+.arc-vertical {
+  writing-mode: vertical-rl;
+  letter-spacing: 6rpx;
+  font-size: 20rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 空状态 ---------- */
+.arc-empty {
+  border: 1rpx dashed var(--arc-line-strong);
+  border-radius: var(--arc-radius);
+  background: rgba(250, 246, 238, 0.6);
+  padding: 44rpx 32rpx;
+  text-align: center;
+}
+
+.arc-empty__rule {
+  width: 56rpx;
+  height: 1rpx;
+  margin: 22rpx auto;
+  background: var(--arc-line-strong);
+}
+
+/* ---------- 底部弹层 ---------- */
+.arc-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  background: rgba(20, 28, 24, 0.48);
+}
+
+.arc-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 31;
+  box-sizing: border-box;
+  padding: 12rpx 32rpx calc(28rpx + env(safe-area-inset-bottom));
+  background: var(--arc-cream);
+  border-radius: 20rpx 20rpx 0 0;
+  border-top: 1rpx solid var(--arc-line-strong);
+}
+
+.arc-sheet__handle {
+  width: 64rpx;
+  height: 6rpx;
+  margin: 6rpx auto 22rpx;
+  border-radius: 999rpx;
+  background: var(--arc-line-strong);
+}
+
+/* ---------- 按钮 ---------- */
+.arc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  box-sizing: border-box;
+  min-height: 84rpx;
+  margin: 0;
+  padding: 0 24rpx;
+  border: 1rpx solid var(--arc-ink);
+  border-radius: 8rpx;
+  background: var(--arc-ink);
+  color: var(--arc-cream);
+  font-size: 27rpx;
+  line-height: 1.3;
+  letter-spacing: 2rpx;
+}
+
+.arc-btn--ghost {
+  background: transparent;
+  color: var(--arc-ink);
+  border-color: var(--arc-line-strong);
+}
+
+.arc-btn--red {
+  background: var(--arc-red);
+  border-color: var(--arc-red);
+  color: var(--arc-cream);
+}
+
+.arc-btn[disabled] {
+  background: transparent;
+  border-color: var(--arc-line);
+  color: var(--arc-muted);
+  opacity: 0.75;
+}
+
+/* ---------- 大字模式适配 ---------- */
+.font-large .arc-eyebrow { font-size: 26rpx; }
+.font-large .arc-lede { font-size: 34rpx; line-height: 1.8; }
+.font-large .arc-head__label { font-size: 40rpx; }
+.font-large .arc-tag,
+.font-large .arc-pending { font-size: 24rpx; }
+.font-large .arc-btn { min-height: 96rpx; font-size: 32rpx; }

@@ -18,15 +18,15 @@
   "lazyCodeLoading": "requiredComponents",
   "window": {
     "navigationBarTitleText": "碧江金楼",
-    "navigationBarBackgroundColor": "#f6f1e7",
+    "navigationBarBackgroundColor": "#f2ede4",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f6f1e7",
+    "backgroundColor": "#f2ede4",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#80756f",
-    "selectedColor": "#382c24",
-    "backgroundColor": "#fffcf6",
+    "color": "#6e7a72",
+    "selectedColor": "#243029",
+    "backgroundColor": "#faf6ee",
     "borderStyle": "white",
     "list": [
       { "pagePath": "pages/index/index", "text": "首页" },

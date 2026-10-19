@@ -1,37 +1,219 @@
-<view class="page section {{displayClass}}">
-  <text class="section-title serif">游览服务</text>
-  <view wx:if="{{loading}}" class="state card">正在读取服务信息…</view>
-  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadService">重新加载</button></view>
+<view class="page arc-page arc-grid-bg svc-page {{displayClass}}">
+  <view class="svc-head">
+    <view class="svc-head__top">
+      <text class="arc-eyebrow">SERVICE / 到访</text>
+      <text class="svc-head__folio">NO. 04</text>
+    </view>
+    <view class="svc-head__main">
+      <view class="svc-head__copy">
+        <text class="arc-title serif svc-head__title">服务</text>
+        <text class="arc-lede">官方票务、到访信息与近邻去处，一页查阅。</text>
+      </view>
+      <view class="arc-seal svc-head__seal">碧江</view>
+    </view>
+    <view class="svc-head__rule">
+      <view class="svc-head__rule-line"></view>
+      <text class="svc-head__rule-meta">VISITOR INFORMATION</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="svc-state">
+    <view class="arc-card arc-card--ticks svc-state__card">
+      <text class="arc-eyebrow">LOADING</text>
+      <text class="svc-state__title serif">正在读取服务信息…</text>
+      <view class="svc-state__line"></view>
+    </view>
+  </view>
+
+  <view wx:elif="{{error}}" class="arc-empty svc-error">
+    <text class="arc-eyebrow">SERVICE UNAVAILABLE</text>
+    <text class="svc-error__title serif">服务信息未能送达</text>
+    <text class="arc-lede">{{error}}</text>
+    <view class="arc-empty__rule"></view>
+    <button class="arc-btn" bindtap="loadService">重新加载</button>
+  </view>
+
   <block wx:else>
-  <view class="ticket card">
-    <text class="card-title serif">景区订票</text>
-    <text class="muted">官方订票平台与票务信息待景区确认</text>
-    <button class="primary-button" bindtap="handleTicket">{{service.ticket.label}}</button>
-  </view>
-  <view class="group">
-    <text class="group-title serif">到访与导航</text>
-    <view class="card service-item">
-      <view class="item-copy"><text>景区地址</text><text class="muted">{{service.address}}</text></view>
-      <view class="action-row"><button bindtap="copyAddress">复制地址</button><button bindtap="openMap">打开地图</button></view>
+    <view class="ticket-panel arc-card arc-card--ticks">
+      <text class="arc-ghost-num ticket-panel__ghost">04</text>
+      <view class="ticket-panel__seal">票</view>
+      <text class="arc-eyebrow ticket-panel__eyebrow">OFFICIAL TICKET · 官方票务</text>
+      <text class="ticket-panel__title serif">官方购票入口</text>
+      <view class="ticket-panel__state">
+        <view class="ticket-panel__dot"></view>
+        <text>{{ticketStateLine}}</text>
+      </view>
+      <view class="ticket-panel__actions">
+        <button class="arc-btn ticket-panel__primary {{ticketState === 'pending' ? 'is-disabled' : ''}}" bindtap="handleTicket">{{ticketPrimaryLabel}}</button>
+        <button class="arc-btn ticket-panel__secondary" bindtap="copyTicketLink">复制官方链接</button>
+      </view>
+      <view class="ticket-panel__rule"></view>
+      <text class="ticket-panel__disclaimer">票价、开放时间、退改规则以官方平台为准</text>
+      <text class="ticket-panel__note">本小程序不代售、不收款</text>
     </view>
-    <view class="card item"><text>交通与停车</text><text class="muted">{{service.transport}}</text></view>
-  </view>
-  <view class="group">
-    <text class="group-title serif">周边推荐</text>
-    <view class="grid">
-      <view class="card option" data-category="food" data-title="附近美食" bindtap="openRecommendations">附近美食</view>
-      <view class="card option" data-category="hotel" data-title="附近酒店" bindtap="openRecommendations">附近酒店</view>
-      <view class="card option" data-category="transport" data-title="交通出行" bindtap="openRecommendations">交通出行</view>
-      <view class="card option" data-category="attraction" data-title="周边景点" bindtap="openRecommendations">周边景点</view>
+
+    <view class="ticket-matrix">
+      <view class="ticket-matrix__head">
+        <text class="ticket-matrix__label">TICKET STATES</text>
+        <view class="ticket-matrix__rule"></view>
+        <text class="ticket-matrix__meta">三态对照</text>
+      </view>
+      <view class="ticket-matrix__grid">
+        <view wx:for="{{ticketStates}}" wx:key="key" class="ticket-state {{ticketState === item.key ? 'is-active' : ''}}">
+          <text class="ticket-state__index">{{item.index}}</text>
+          <text class="ticket-state__name">{{item.name}}</text>
+          <text class="ticket-state__meta">{{item.meta}}</text>
+        </view>
+      </view>
     </view>
-  </view>
-  <view class="group">
-    <text class="group-title serif">开放与咨询</text>
-    <view class="card item"><text>开放时间</text><text class="muted">{{service.openingHours}}</text></view>
-    <view class="card service-item">
-      <view class="item-copy"><text>联系电话</text><text class="muted">{{service.phone}}</text></view>
-      <button class="single-action" bindtap="callPhone">拨打电话</button>
+
+    <view class="arc-head svc-section-head">
+      <text class="arc-head__index">01</text>
+      <text class="arc-head__label">到访</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">ARRIVAL</text>
     </view>
-  </view>
+
+    <view class="arc-card arc-card--ticks visit-card">
+      <view class="visit-card__row">
+        <text class="visit-card__label">地址</text>
+        <view class="visit-card__value">
+          <text class="visit-card__text">{{service.address}}</text>
+          <text class="arc-pending">待确认</text>
+        </view>
+      </view>
+      <view class="arc-hair"></view>
+      <view class="visit-actions">
+        <button class="arc-btn arc-btn--ghost visit-action {{service.actions.copyAddress ? '' : 'is-disabled'}}" bindtap="copyAddress">复制地址</button>
+        <button class="arc-btn arc-btn--ghost visit-action {{service.actions.callPhone ? '' : 'is-disabled'}}" bindtap="callPhone">电话</button>
+        <button class="arc-btn arc-btn--ghost visit-action {{service.actions.openMap ? '' : 'is-disabled'}}" bindtap="openMap">地图</button>
+      </view>
+    </view>
+
+    <view class="arc-card visit-transport">
+      <view class="visit-transport__mark">交</view>
+      <view class="visit-transport__copy">
+        <text class="visit-card__label">交通与停车</text>
+        <text class="visit-card__text">{{service.transport}}</text>
+      </view>
+      <text class="arc-pending">待接入</text>
+    </view>
+
+    <view class="plate">
+      <view class="plate__frame">
+        <view class="plate__grid"></view>
+        <view class="plate__block plate__block--a"></view>
+        <view class="plate__block plate__block--b"></view>
+        <view class="plate__block plate__block--c"></view>
+        <view class="plate__ring"></view>
+        <view class="plate__pin"></view>
+        <text class="plate__north">N</text>
+        <text class="plate__micro">ABSTRACT SITE PLAN</text>
+      </view>
+      <view class="arc-caption plate__caption">
+        <text>位置示意 · 导航能力待接入</text>
+        <text>SCHEMATIC</text>
+      </view>
+    </view>
+
+    <view class="arc-head svc-section-head">
+      <text class="arc-head__index">02</text>
+      <text class="arc-head__label">周边</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">NEARBY</text>
+    </view>
+
+    <scroll-view class="nearby-strip" scroll-x show-scrollbar="{{false}}">
+      <view class="nearby-track">
+        <view wx:for="{{nearby}}" wx:key="name" class="nearby-card arc-card arc-card--ticks">
+          <view class="arc-photo nearby-card__photo">
+            <image src="{{item.image}}" mode="aspectFill" />
+          </view>
+          <text class="nearby-card__index">0{{index + 1}}</text>
+          <text class="nearby-card__name serif">{{item.name}}</text>
+          <text class="nearby-card__meta">园区内 · 官方资料</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="nearby-link" data-category="food" data-title="附近推荐" bindtap="openRecommendations">
+      <text class="nearby-link__text">美食与住宿见「附近推荐」</text>
+      <text class="nearby-link__arrow">→</text>
+    </view>
+
+    <view class="arc-head svc-section-head">
+      <text class="arc-head__index">03</text>
+      <text class="arc-head__label">开放与咨询</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">VISIT</text>
+    </view>
+
+    <view class="arc-card arc-card--ticks info-card">
+      <view class="info-row">
+        <text class="info-row__label">开放时间</text>
+        <text class="info-row__value serif">{{service.openingHours}}</text>
+      </view>
+      <view class="arc-hair"></view>
+      <view class="info-row">
+        <view class="info-row__copy">
+          <text class="info-row__label">联系电话</text>
+          <text class="info-row__value serif">{{service.phone}}</text>
+        </view>
+        <button class="arc-btn arc-btn--ghost info-row__action {{service.actions.callPhone ? '' : 'is-disabled'}}" bindtap="callPhone">拨打电话</button>
+      </view>
+      <view class="arc-hair"></view>
+      <view class="info-source">
+        <text class="arc-tag">官方接口</text>
+        <text class="info-source__text">信息来源 · 景区接口</text>
+      </view>
+    </view>
+
+    <view class="svc-foot">
+      <view class="arc-hair arc-hair--dot"><text>END OF SERVICE</text></view>
+      <text class="svc-foot__note">本页信息以景区最新公告与官方平台为准</text>
+    </view>
   </block>
+
+  <view wx:if="{{ticketSheet}}" class="arc-mask" bindtap="closeTicketSheet"></view>
+  <view wx:if="{{ticketSheet}}" class="arc-sheet ticket-sheet" catchtap="noop">
+    <view class="arc-sheet__handle"></view>
+    <view class="ticket-sheet__head">
+      <view class="ticket-sheet__copy">
+        <text class="arc-eyebrow">TICKET · FALLBACK</text>
+        <text class="ticket-sheet__title serif">无法打开官方购票</text>
+      </view>
+      <view class="arc-seal arc-seal--ghost">票</view>
+    </view>
+    <text class="ticket-sheet__lede">小程序跳转失败，或业务域名尚未配置。你可以复制官方链接，在微信内打开后粘贴访问。</text>
+    <view class="ticket-linkfield">
+      <view class="ticket-linkfield__copy">
+        <text class="ticket-linkfield__label">{{service.ticket.url ? '官方购票链接' : '官方购票链接 · 待景区配置'}}</text>
+        <text class="ticket-linkfield__value">{{service.ticket.url || '链接尚未配置，请以景区公告为准'}}</text>
+      </view>
+      <button class="ticket-linkfield__action" bindtap="copyTicketLinkFromSheet">{{linkCopied ? '已复制' : '复制'}}</button>
+    </view>
+    <view wx:if="{{linkCopied}}" class="ticket-copied">
+      <view class="ticket-copied__dot"></view>
+      <text>已复制，可前往微信粘贴访问</text>
+    </view>
+    <view class="ticket-steps">
+      <view class="ticket-step">
+        <text class="ticket-step__num">01</text>
+        <text class="ticket-step__text">复制链接</text>
+      </view>
+      <view class="ticket-step">
+        <text class="ticket-step__num">02</text>
+        <text class="ticket-step__text">打开微信</text>
+      </view>
+      <view class="ticket-step">
+        <text class="ticket-step__num">03</text>
+        <text class="ticket-step__text">粘贴访问</text>
+      </view>
+    </view>
+    <text class="ticket-sheet__disclaimer">票价、开放时间、退改规则以官方平台为准</text>
+    <view class="ticket-sheet__actions">
+      <button class="arc-btn" bindtap="copyTicketLinkFromSheet">{{linkCopied ? '已复制' : '复制官方链接'}}</button>
+      <button class="arc-btn arc-btn--ghost" bindtap="closeTicketSheet">返回服务页</button>
+    </view>
+  </view>
 </view>

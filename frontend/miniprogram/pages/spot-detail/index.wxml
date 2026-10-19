@@ -1,40 +1,189 @@
-<view class="page {{displayClass}}">
-  <view wx:if="{{loading}}" class="section">正在读取…</view>
-  <view wx:elif="{{error}}" class="section state card"><text>{{error}}</text><button class="primary-button" bindtap="loadSpot">重新加载</button></view>
+<view class="page arc-page arc-grid-bg {{displayClass}}">
+  <view wx:if="{{loading}}" class="state-wrap">
+    <view class="state arc-card arc-card--ticks">
+      <text class="arc-eyebrow">ARCHIVE</text>
+      <text class="state-text">正在读取…</text>
+      <view class="arc-hair arc-hair--dot"><text>SPOT FILE</text></view>
+    </view>
+  </view>
+  <view wx:elif="{{error}}" class="state-wrap">
+    <view class="state arc-card arc-card--ticks">
+      <text class="arc-eyebrow">READ ERROR</text>
+      <text class="state-text">{{error}}</text>
+      <button class="primary-button arc-btn" bindtap="loadSpot">重新加载</button>
+    </view>
+  </view>
   <block wx:else>
-    <view wx:if="{{offlineNotice}}" class="section"><view class="offline-notice card">{{offlineNotice}}</view></view>
-    <image class="cover" src="{{spot.coverImage}}" mode="aspectFill" />
-    <view class="section detail">
-      <text class="category">{{spot.category}}</text>
+    <view class="cover arc-photo">
+      <image class="cover-image" src="{{spot.coverImage}}" mode="aspectFill" />
+      <view class="cover-grade"></view>
+      <view class="cover-scrim"></view>
+      <view class="cover-vertical arc-vertical">
+        <text>{{spot.category}}</text>
+        <text class="cover-vertical__dot">·</text>
+        <text>导览</text>
+      </view>
+      <view class="arc-seal cover-seal"><text>金</text><text>楼</text></view>
+      <view class="cover-meta">
+        <view class="cover-meta__line"></view>
+        <text class="cover-meta__text">SPOT</text>
+      </view>
+    </view>
+
+    <view class="title-block">
+      <view class="title-top">
+        <text class="arc-eyebrow">{{spot.category}} · 景点档案</text>
+        <text class="spot-mark">SPOT</text>
+      </view>
       <text class="title serif">{{spot.name}}</text>
       <text class="summary">{{spot.summary}}</text>
-      <view class="personal-actions">
-        <button class="favorite-button {{isFavorite ? 'active' : ''}}" bindtap="toggleFavorite">{{isFavorite ? '已收藏' : '收藏景点'}}</button>
-        <button class="visited-button {{isVisited ? 'active' : ''}}" bindtap="toggleVisited">{{isVisited ? '已游览' : '标记已游览'}}</button>
+      <view wx:if="{{activeNarration || spot.hasPanorama}}" class="title-tags">
+        <view wx:if="{{activeNarration}}" class="arc-tag">
+          <view class="arc-tag__dot"></view>
+          <text>语音讲解</text>
+        </view>
+        <view wx:if="{{spot.hasPanorama}}" class="arc-tag arc-tag--red">
+          <view class="arc-tag__dot"></view>
+          <text>全景</text>
+        </view>
       </view>
-      <button class="share-button" open-type="share">分享这个景点</button>
-      <view wx:if="{{activeNarration}}" class="narration card">
+    </view>
+
+    <view wx:if="{{offlineNotice}}" class="offline-notice">{{offlineNotice}}</view>
+
+    <view wx:if="{{activeNarration}}" class="block">
+      <view class="arc-head">
+        <text class="arc-head__index">01</text>
+        <text class="arc-head__label">语音讲解</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">{{activeNarration.languageLabel}}</text>
+      </view>
+      <view class="narration arc-card arc-card--ticks">
+        <text class="arc-ghost-num narration-ghost">01</text>
         <view class="languages">
           <button wx:for="{{narrations}}" wx:key="languageCode" class="language {{activeNarration.languageCode === item.languageCode ? 'active' : ''}}" data-code="{{item.languageCode}}" bindtap="switchLanguage">{{item.languageLabel}}</button>
         </view>
-        <text class="narration-title serif">语音讲解</text>
         <text wx:if="{{activeNarration.notice}}" class="audio-notice">{{activeNarration.notice}}</text>
         <text class="transcript">{{activeNarration.transcript}}</text>
         <view wx:if="{{activeNarration.audioReady}}" class="audio-progress"><view class="audio-progress-fill" style="width: {{audioProgress}}%"></view></view>
-        <text wx:if="{{activeNarration.audioReady}}" class="audio-time">{{audioTime}}</text>
-        <button class="audio-button" bindtap="handleAudio">{{activeNarration.audioReady ? (isPlaying ? '暂停讲解' : '播放讲解') : '音频待录制'}}</button>
-        <view wx:if="{{activeNarration.audioReady}}" class="audio-tools"><button data-seconds="-15" bindtap="seekAudio">后退15秒</button><button wx:for="{{playbackRates}}" wx:key="*this" class="{{playbackRate === item ? 'active' : ''}}" data-rate="{{item}}" bindtap="setPlaybackRate">{{item}}×</button><button data-seconds="15" bindtap="seekAudio">前进15秒</button></view>
+        <view wx:if="{{activeNarration.audioReady}}" class="audio-meta">
+          <text class="audio-time">{{audioTime}}</text>
+          <text class="audio-rate">RATE {{playbackRate}}×</text>
+        </view>
+        <button class="audio-button {{activeNarration.audioReady ? '' : 'is-pending'}}" bindtap="handleAudio">{{activeNarration.audioReady ? (isPlaying ? '暂停讲解' : '播放讲解') : '音频待录制'}}</button>
+        <view wx:if="{{activeNarration.audioReady}}" class="audio-tools">
+          <button data-seconds="-15" bindtap="seekAudio">后退15秒</button>
+          <button wx:for="{{playbackRates}}" wx:key="*this" class="{{playbackRate === item ? 'active' : ''}}" data-rate="{{item}}" bindtap="setPlaybackRate">{{item}}×</button>
+          <button data-seconds="15" bindtap="seekAudio">前进15秒</button>
+        </view>
       </view>
-      <view class="personal-note card">
-        <view class="note-head"><view><text class="narration-title serif">我的私人记录</text><text>只保存在当前手机</text></view><button wx:if="{{spotNote.rating || spotNote.text}}" bindtap="clearPersonalNote">清除</button></view>
-        <view class="rating-row"><button wx:for="{{ratingOptions}}" wx:key="*this" class="{{spotNote.rating >= item ? 'active' : ''}}" data-rating="{{item}}" bindtap="selectRating">★</button><text>{{spotNote.rating ? spotNote.rating + ' 星' : '未评分'}}</text></view>
-        <textarea maxlength="500" value="{{spotNote.text}}" placeholder="记录你的参观感受、想再看的细节……" bindinput="handleNoteInput"></textarea>
+    </view>
+
+    <view class="action-grid {{spot.hasPanorama ? 'action-grid--4' : 'action-grid--3'}}">
+      <button class="action-cell {{isFavorite ? 'is-active' : ''}}" bindtap="toggleFavorite">
+        <view class="ico ico-heart"></view>
+        <text class="action-label">{{isFavorite ? '已收藏' : '收藏'}}</text>
+        <text class="action-sub">FAVORITE</text>
+      </button>
+      <button class="action-cell {{isVisited ? 'is-active' : ''}}" bindtap="toggleVisited">
+        <view class="ico ico-check"></view>
+        <text class="action-label">{{isVisited ? '已游览' : '标记游览'}}</text>
+        <text class="action-sub">VISITED</text>
+      </button>
+      <button wx:if="{{spot.hasPanorama}}" class="action-cell is-disabled" disabled>
+        <view class="ico ico-pano"></view>
+        <text class="action-label">全景</text>
+        <text class="action-sub">待接入</text>
+      </button>
+      <button class="action-cell" open-type="share">
+        <view class="ico ico-share"></view>
+        <text class="action-label">分享</text>
+        <text class="action-sub">SHARE</text>
+      </button>
+    </view>
+
+    <view class="block">
+      <view class="arc-head">
+        <text class="arc-head__index">02</text>
+        <text class="arc-head__label">私人记录</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">LOCAL</text>
+      </view>
+      <view class="personal-note arc-card arc-card--ticks">
+        <text class="arc-ghost-num note-ghost">02</text>
+        <view class="note-head">
+          <view class="note-head__copy">
+            <text class="note-title serif">我的私人记录</text>
+            <text class="note-sub">只保存在当前手机</text>
+          </view>
+          <button wx:if="{{spotNote.rating || spotNote.text}}" class="note-clear" bindtap="clearPersonalNote">清除</button>
+        </view>
+        <view class="rating-row">
+          <view class="rating-stars">
+            <button wx:for="{{ratingOptions}}" wx:key="*this" class="rating-star {{spotNote.rating >= item ? 'active' : ''}}" data-rating="{{item}}" bindtap="selectRating">★</button>
+          </view>
+          <text class="rating-value">{{spotNote.rating ? spotNote.rating + ' 星' : '未评分'}}</text>
+        </view>
+        <textarea class="note-textarea" maxlength="500" value="{{spotNote.text}}" placeholder="记录你的参观感受、想再看的细节……" bindinput="handleNoteInput"></textarea>
         <button class="save-note-button" bindtap="savePersonalNote">保存私人记录</button>
       </view>
-      <view class="notice card">详细历史、开放信息与正式讲解素材待景区审核和接入。</view>
-      <button wx:if="{{spot.id === 'jinlou'}}" class="secondary-button" bindtap="openCraftGuide">查看木雕工艺图解</button>
-      <button wx:if="{{spot.hasPanorama}}" class="primary-button" disabled>全景素材待接入</button>
-      <view class="adjacent-nav"><button wx:if="{{previousSpot}}" data-id="{{previousSpot.id}}" bindtap="openAdjacentSpot">上一站 · {{previousSpot.name}}</button><button wx:if="{{nextSpot}}" data-id="{{nextSpot.id}}" bindtap="openAdjacentSpot">下一站 · {{nextSpot.name}}</button></view>
+    </view>
+
+    <view class="block">
+      <view class="arc-head">
+        <text class="arc-head__index">03</text>
+        <text class="arc-head__label">到访提示</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">VISIT</text>
+      </view>
+      <view class="visit-info arc-card">
+        <text class="arc-ghost-num visit-ghost">03</text>
+        <view class="visit-row">
+          <text class="visit-label">开放时间</text>
+          <text class="visit-value">以景区最新公告为准</text>
+        </view>
+        <view class="visit-row">
+          <text class="visit-label">地址</text>
+          <text class="visit-value">待景区确认</text>
+        </view>
+        <view class="visit-row">
+          <text class="visit-label">提示</text>
+          <text class="visit-value">请勿触碰金漆木雕与灰塑</text>
+        </view>
+        <view class="visit-foot">
+          <view class="arc-pending">待景区审核</view>
+          <text class="visit-foot__text">详细历史、开放信息与正式讲解素材待景区审核和接入。</text>
+        </view>
+      </view>
+    </view>
+
+    <button wx:if="{{spot.id === 'jinlou'}}" class="craft-link" bindtap="openCraftGuide">
+      <view class="craft-link__copy">
+        <text class="arc-eyebrow">工艺档案</text>
+        <text class="craft-link__title serif">查看木雕工艺图解</text>
+      </view>
+      <view class="adj-arrow adj-arrow--next"></view>
+    </button>
+
+    <view wx:if="{{previousSpot || nextSpot}}" class="adjacent-nav">
+      <button wx:if="{{previousSpot}}" class="adjacent-cell" data-id="{{previousSpot.id}}" bindtap="openAdjacentSpot">
+        <view class="adj-arrow adj-arrow--prev"></view>
+        <view class="adjacent-copy">
+          <text class="adjacent-label">上一站</text>
+          <text class="adjacent-name serif">{{previousSpot.name}}</text>
+        </view>
+      </button>
+      <button wx:if="{{nextSpot}}" class="adjacent-cell adjacent-cell--next" data-id="{{nextSpot.id}}" bindtap="openAdjacentSpot">
+        <view class="adjacent-copy">
+          <text class="adjacent-label">下一站</text>
+          <text class="adjacent-name serif">{{nextSpot.name}}</text>
+        </view>
+        <view class="adj-arrow adj-arrow--next"></view>
+      </button>
+    </view>
+
+    <view class="page-footer">
+      <view class="arc-hair arc-hair--dot"><text>碧江金楼 · 导览手记</text></view>
     </view>
   </block>
 </view>

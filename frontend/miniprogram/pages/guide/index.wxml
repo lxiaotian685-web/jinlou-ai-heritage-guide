@@ -1,74 +1,171 @@
-<view class="page section {{displayClass}}">
-  <view class="heading">
-    <text class="section-title serif">园区导览</text>
-    <text class="muted">手绘布局示意 · 不作为现场导航</text>
-  </view>
-  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
-  <view class="map card">
-    <image class="map-art" src="/images/bijiang-handdrawn-map-v1.jpg" mode="aspectFit" />
-    <view class="map-wash"></view>
-    <canvas id="routeCanvas" type="2d" class="route-canvas"></canvas>
-    <text class="map-label serif">手绘示意图</text>
-    <text wx:if="{{selectedRoute}}" class="route-badge">游线预览</text>
-    <block wx:if="{{selectedRoute}}">
-      <view wx:for="{{routeDisplayPoints}}" wx:key="number" class="poi route-poi {{item.isVisited ? 'visited' : ''}} {{item.isCurrent ? 'current' : ''}}" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.siteNumber}}" bindtap="selectPoint">
-        <text class="poi-number">{{item.number}}</text><text>{{item.name}}</text>
+<view class="page arc-page arc-grid-bg guide-page {{displayClass}}">
+  <view class="guide-head">
+    <view class="guide-head__top">
+      <text class="arc-eyebrow guide-head__eyebrow">GUIDE / 园区</text>
+      <text class="guide-head__folio">NO. 02</text>
+    </view>
+    <view class="guide-head__main">
+      <view class="guide-head__copy">
+        <text class="arc-title serif guide-head__title">园区导览</text>
+        <text class="guide-head__lede">点选地图编号，查看对应景点。</text>
       </view>
-    </block>
-    <block wx:else>
-      <view wx:for="{{sitePoints}}" wx:key="number" class="site-dot" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.number}}" bindtap="selectPoint">{{item.number}}</view>
-    </block>
-  </view>
-  <view class="notice card">{{mapNotice || '正在读取现场景点分布…'}}</view>
-  <view wx:if="{{mapMeta}}" class="map-status card">
-    <text class="map-status-title">地图资料状态</text>
-    <view class="map-status-tags"><text>官方高清图：待提供</text><text>入口出口：待确认</text><text>无障碍通道：待确认</text></view>
-    <text class="map-source">点位依据：{{mapMeta.source}}；核对至 {{mapMeta.lastReviewed}}</text>
-  </view>
-  <view wx:if="{{activePoint}}" class="point-sheet card">
-    <view class="point-copy"><text class="point-sheet-number">景点 {{activePoint.number}}</text><text class="point-sheet-name serif">{{activePoint.name}}</text></view>
-    <view class="point-actions">
-      <button class="clear-button" bindtap="clearPoint">关闭</button>
-      <button class="point-detail-button" bindtap="openPointSpot">查看景点</button>
+      <view class="arc-seal guide-head__seal">导览</view>
+    </view>
+    <view class="guide-head__rule">
+      <view class="guide-head__rule-line"></view>
+      <text class="guide-head__rule-meta">BIJIANG · SITE MAP</text>
     </view>
   </view>
-  <view wx:if="{{sitePoints.length}}" class="point-list card">
-    <view wx:for="{{sitePoints}}" wx:key="number" class="point-item"><text class="point-number">{{item.number}}</text><text>{{item.name}}</text></view>
-  </view>
-  <view wx:if="{{selectedRoute}}" class="selected-route card">
-    <view class="selected-head">
-      <view class="selected-copy">
-        <text class="selected-label">当前推荐游线</text>
-        <text class="selected-name serif">{{selectedRoute.name}}</text>
-        <text class="selected-theme">{{selectedRoute.theme}}</text>
+
+  <view class="guide-body">
+    <view wx:if="{{offlineNotice}}" class="guide-offline">{{offlineNotice}}</view>
+
+    <view class="map-plate">
+      <view class="map-plate__inner">
+        <image class="map-art" src="/images/bijiang-handdrawn-map-v1.jpg" mode="aspectFit" />
+        <view class="map-wash"></view>
+        <canvas id="routeCanvas" type="2d" class="route-canvas"></canvas>
+        <text class="map-label serif">手绘示意图</text>
+        <text wx:if="{{selectedRoute}}" class="route-badge">游线预览</text>
+        <block wx:if="{{selectedRoute}}">
+          <view wx:for="{{routeDisplayPoints}}" wx:key="number" class="poi route-poi {{item.isVisited ? 'visited' : ''}} {{item.isCurrent ? 'current' : ''}}" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.siteNumber}}" bindtap="selectPoint">
+            <text class="poi-number">{{item.number}}</text><text>{{item.name}}</text>
+          </view>
+        </block>
+        <block wx:else>
+          <view wx:for="{{sitePoints}}" wx:key="number" class="site-dot" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.number}}" bindtap="selectPoint">{{item.number}}</view>
+        </block>
       </view>
-      <button class="clear-button" bindtap="clearRoute">清除</button>
+      <view class="arc-caption map-caption">
+        <text>手绘布局示意 · 不作为现场导航</text>
+        <text>PLATE / 01</text>
+      </view>
     </view>
-    <view wx:if="{{routeProgress}}" class="route-progress">
-      <view class="progress-head"><text>路线进度</text><text>{{routeProgress.completedCount}} / {{routeProgress.totalCount}}</text></view>
-      <view class="progress-track"><view class="progress-value" style="width:{{routeProgress.progressPercent}}%;"></view></view>
-      <view wx:if="{{routeProgress.isComplete}}" class="route-complete">
-        <text class="complete-title serif">这条路线已全部游览</text>
-        <text>你可以选择另一条推荐路线继续探索。</text>
+
+    <view class="guide-notice">
+      <view class="guide-notice__mark"></view>
+      <text class="guide-notice__text">{{mapNotice || '正在读取现场景点分布…'}}</text>
+    </view>
+
+    <view class="arc-head guide-heading">
+      <text class="arc-head__index">01</text>
+      <text class="arc-head__label">点位</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">{{sitePoints.length}} SITES</text>
+    </view>
+
+    <view wx:if="{{activePoint}}" class="point-sheet arc-card arc-card--ticks">
+      <view class="point-sheet__top">
+        <text class="arc-eyebrow">景点 {{activePoint.number}} · SELECTED</text>
+        <button class="text-btn" bindtap="clearPoint">关闭</button>
       </view>
-      <view wx:else class="route-now">
-        <view class="now-copy">
-          <text class="now-label">当前站</text>
-          <text class="now-name serif">{{routeProgress.currentStop.name}}</text>
-          <text class="next-stop">下一站：{{routeProgress.nextStop ? routeProgress.nextStop.name : '本路线终点'}}</text>
+      <text class="point-sheet__name serif">{{activePoint.name}}</text>
+      <view class="arc-hair point-sheet__hair"></view>
+      <view class="point-sheet__foot">
+        <text class="point-sheet__note">地图点位 · 手绘示意</text>
+        <button class="arc-btn point-sheet__open" bindtap="openPointSpot">查看景点</button>
+      </view>
+    </view>
+
+    <view wx:if="{{sitePoints.length}}" class="point-list arc-card">
+      <view class="point-list__head">
+        <text class="arc-eyebrow">POINT INDEX</text>
+        <text class="point-list__count">{{sitePoints.length}} 处</text>
+      </view>
+      <view class="arc-hair"></view>
+      <view class="point-list__grid">
+        <view wx:for="{{sitePoints}}" wx:key="number" class="point-item">
+          <text class="point-number serif">{{item.number}}</text>
+          <text class="point-name">{{item.name}}</text>
         </view>
-        <button class="current-button" bindtap="openCurrentStop">查看当前站</button>
       </view>
     </view>
-    <view class="selected-stops">
-      <view wx:for="{{routeDisplayPoints}}" wx:key="number" class="selected-stop {{item.isVisited ? 'visited' : ''}} {{item.isCurrent ? 'current' : ''}}">
-        <text class="stop-number">{{item.number}}</text>
-        <text class="stop-name">{{item.name}}</text>
-        <text class="stop-status">{{item.isVisited ? '已完成' : (item.isCurrent ? '当前站' : '待游览')}}</text>
+
+    <view wx:if="{{mapMeta}}" class="map-status arc-card">
+      <view class="map-status__head">
+        <text class="arc-eyebrow">MAP RECORD</text>
+        <text class="map-status__title serif">地图资料状态</text>
       </view>
+      <view class="arc-hair"></view>
+      <view class="map-status__rows">
+        <view class="map-status__row">
+          <text class="map-status__key">官方高清图</text>
+          <text class="map-status__val">待提供</text>
+        </view>
+        <view class="map-status__row">
+          <text class="map-status__key">入口出口</text>
+          <text class="map-status__val">待确认</text>
+        </view>
+        <view class="map-status__row">
+          <text class="map-status__key">无障碍通道</text>
+          <text class="map-status__val">待确认</text>
+        </view>
+      </view>
+      <view class="arc-hair"></view>
+      <text class="map-status__source">点位依据：{{mapMeta.source}}；核对至 {{mapMeta.lastReviewed}}</text>
     </view>
-    <text class="selected-notice">编号不代表游览顺序；路线为资料参考，须景区确认和现场实走</text>
+
+    <block wx:if="{{selectedRoute}}">
+      <view class="arc-head guide-heading">
+        <text class="arc-head__index">02</text>
+        <text class="arc-head__label">当前游线</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">ROUTE</text>
+      </view>
+
+      <view class="selected-route arc-card arc-card--ticks">
+        <text class="arc-ghost-num selected-route__ghost">02</text>
+        <view class="selected-head">
+          <view class="selected-copy">
+            <text class="arc-eyebrow">当前推荐游线</text>
+            <text class="selected-name serif">{{selectedRoute.name}}</text>
+            <text class="selected-theme">{{selectedRoute.theme}}</text>
+          </view>
+          <button class="text-btn" bindtap="clearRoute">清除</button>
+        </view>
+
+        <view wx:if="{{routeProgress}}" class="route-progress">
+          <view class="progress-head">
+            <text class="progress-label">路线进度</text>
+            <view class="progress-nums">
+              <text class="progress-completed serif">{{routeProgress.completedCount}}</text>
+              <text class="progress-total serif">/ {{routeProgress.totalCount}}</text>
+            </view>
+          </view>
+          <view class="progress-track"><view class="progress-value" style="width:{{routeProgress.progressPercent}}%;"></view></view>
+          <view wx:if="{{routeProgress.isComplete}}" class="route-complete">
+            <text class="complete-title serif">这条路线已全部游览</text>
+            <text class="complete-note">你可以选择另一条推荐路线继续探索。</text>
+          </view>
+          <view wx:else class="route-now">
+            <view class="now-copy">
+              <text class="now-label">当前站</text>
+              <text class="now-name serif">{{routeProgress.currentStop.name}}</text>
+              <text class="next-stop">下一站：{{routeProgress.nextStop ? routeProgress.nextStop.name : '本路线终点'}}</text>
+            </view>
+            <button class="arc-btn route-now__btn" bindtap="openCurrentStop">查看当前站</button>
+          </view>
+        </view>
+
+        <view class="selected-stops">
+          <view wx:for="{{routeDisplayPoints}}" wx:key="number" class="selected-stop {{item.isVisited ? 'visited' : ''}} {{item.isCurrent ? 'current' : ''}}">
+            <text class="stop-number serif">{{item.number}}</text>
+            <text class="stop-name">{{item.name}}</text>
+            <text class="stop-status">{{item.isVisited ? '已完成' : (item.isCurrent ? '当前站' : '待游览')}}</text>
+          </view>
+        </view>
+        <text class="selected-notice">编号不代表游览顺序；路线为资料参考，须景区确认和现场实走</text>
+      </view>
+    </block>
+
+    <view class="guide-actions">
+      <button class="arc-btn guide-actions__primary" bindtap="openSpots">查看全部景点</button>
+      <button class="arc-btn arc-btn--ghost guide-actions__secondary" bindtap="openRoutes">查看推荐游线</button>
+    </view>
+
+    <view class="guide-foot">
+      <view class="arc-hair arc-hair--dot"><text>END OF GUIDE</text></view>
+      <text class="guide-foot__note">点位与游线以景区现场标识为准</text>
+    </view>
   </view>
-  <button class="primary-button" bindtap="openSpots">查看全部景点</button>
-  <button class="route-button" bindtap="openRoutes">查看推荐游线</button>
 </view>

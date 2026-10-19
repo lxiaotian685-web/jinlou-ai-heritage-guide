@@ -131,10 +131,10 @@ const seedHotspots = [
 ];
 
 const seedRecommendations = [
-  ['food-1', 'food', '推荐美食待接入', '餐饮', '地址待接入', '营业信息待接入', '/images/jinlou-01.jpg'],
-  ['hotel-1', 'hotel', '推荐酒店待接入', '住宿', '地址待接入', '营业信息待接入', '/images/jinlou-02.jpg'],
-  ['transport-1', 'transport', '交通方案待接入', '交通', '路线待接入', '班次信息待接入', '/images/jinlou-03.jpg'],
-  ['attraction-1', 'attraction', '周边景点待接入', '景点', '地址待接入', '开放信息待接入', '/images/jinlou-01.jpg'],
+  ['food-1', 'food', '推荐美食待接入', '餐饮', '地址待接入', '营业信息待接入', '/images/jinlou-01.jpg', '', '', '', '', 10, 'pending-review', '景区接口 · 占位数据'],
+  ['hotel-1', 'hotel', '推荐酒店待接入', '住宿', '地址待接入', '营业信息待接入', '/images/jinlou-02.jpg', '', '', '', '', 20, 'pending-review', '景区接口 · 占位数据'],
+  ['transport-1', 'transport', '交通方案待接入', '交通', '路线待接入', '班次信息待接入', '/images/jinlou-03.jpg', '', '', '', '', 30, 'pending-review', '景区接口 · 占位数据'],
+  ['attraction-1', 'attraction', '周边景点待接入', '景点', '地址待接入', '开放信息待接入', '/images/jinlou-01.jpg', '', '', '', '', 40, 'pending-review', '景区接口 · 占位数据'],
 ];
 
 const seedRoutes = [
@@ -258,6 +258,8 @@ export function createDatabase(filename = ':memory:') {
     CREATE TABLE IF NOT EXISTS service_config (
       id INTEGER PRIMARY KEY CHECK (id = 1),
       ticket_url TEXT NOT NULL DEFAULT '',
+      ticket_app_id TEXT NOT NULL DEFAULT '',
+      ticket_path TEXT NOT NULL DEFAULT '',
       address TEXT NOT NULL,
       opening_hours TEXT NOT NULL,
       phone TEXT NOT NULL,
@@ -272,7 +274,16 @@ export function createDatabase(filename = ':memory:') {
       type TEXT NOT NULL,
       address TEXT NOT NULL,
       availability TEXT NOT NULL,
-      image TEXT NOT NULL
+      image TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending-review',
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      description TEXT NOT NULL DEFAULT '',
+      phone TEXT NOT NULL DEFAULT '',
+      link_url TEXT NOT NULL DEFAULT '',
+      product_name TEXT NOT NULL DEFAULT '',
+      latitude REAL,
+      longitude REAL,
+      source_note TEXT NOT NULL DEFAULT ''
     ) STRICT;
     CREATE TABLE IF NOT EXISTS tour_routes (
       id TEXT PRIMARY KEY,
@@ -339,6 +350,18 @@ export function createDatabase(filename = ':memory:') {
   const serviceColumns = new Set(db.prepare('PRAGMA table_info(service_config)').all().map((column) => column.name));
   if (!serviceColumns.has('latitude')) db.exec('ALTER TABLE service_config ADD COLUMN latitude REAL');
   if (!serviceColumns.has('longitude')) db.exec('ALTER TABLE service_config ADD COLUMN longitude REAL');
+  if (!serviceColumns.has('ticket_app_id')) db.exec("ALTER TABLE service_config ADD COLUMN ticket_app_id TEXT NOT NULL DEFAULT ''");
+  if (!serviceColumns.has('ticket_path')) db.exec("ALTER TABLE service_config ADD COLUMN ticket_path TEXT NOT NULL DEFAULT ''");
+  const recommendationColumns = new Set(db.prepare('PRAGMA table_info(recommendations)').all().map((column) => column.name));
+  if (!recommendationColumns.has('status')) db.exec("ALTER TABLE recommendations ADD COLUMN status TEXT NOT NULL DEFAULT 'pending-review'");
+  if (!recommendationColumns.has('sort_order')) db.exec('ALTER TABLE recommendations ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0');
+  if (!recommendationColumns.has('description')) db.exec("ALTER TABLE recommendations ADD COLUMN description TEXT NOT NULL DEFAULT ''");
+  if (!recommendationColumns.has('phone')) db.exec("ALTER TABLE recommendations ADD COLUMN phone TEXT NOT NULL DEFAULT ''");
+  if (!recommendationColumns.has('link_url')) db.exec("ALTER TABLE recommendations ADD COLUMN link_url TEXT NOT NULL DEFAULT ''");
+  if (!recommendationColumns.has('product_name')) db.exec("ALTER TABLE recommendations ADD COLUMN product_name TEXT NOT NULL DEFAULT ''");
+  if (!recommendationColumns.has('latitude')) db.exec('ALTER TABLE recommendations ADD COLUMN latitude REAL');
+  if (!recommendationColumns.has('longitude')) db.exec('ALTER TABLE recommendations ADD COLUMN longitude REAL');
+  if (!recommendationColumns.has('source_note')) db.exec("ALTER TABLE recommendations ADD COLUMN source_note TEXT NOT NULL DEFAULT ''");
   const narrationColumns = new Set(db.prepare('PRAGMA table_info(narrations)').all().map((column) => column.name));
   if (!narrationColumns.has('review_status')) db.exec("ALTER TABLE narrations ADD COLUMN review_status TEXT NOT NULL DEFAULT 'draft'");
   if (!narrationColumns.has('audio_type')) db.exec("ALTER TABLE narrations ADD COLUMN audio_type TEXT NOT NULL DEFAULT 'none'");
@@ -401,8 +424,9 @@ export function createDatabase(filename = ':memory:') {
   const recommendationCount = db.prepare('SELECT COUNT(*) AS total FROM recommendations').get().total;
   if (recommendationCount === 0) {
     const insertRecommendation = db.prepare(`
-      INSERT INTO recommendations (id, category, name, type, address, availability, image)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO recommendations
+        (id, category, name, type, address, availability, image, description, phone, link_url, product_name, sort_order, status, source_note)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     for (const recommendation of seedRecommendations) insertRecommendation.run(...recommendation);
   }
@@ -527,6 +551,8 @@ export function getServiceConfig(db) {
       enabled: Boolean(row.ticket_url),
       url: row.ticket_url,
       label: row.ticket_url ? '前往订票' : '订票入口准备中',
+      appId: row.ticket_app_id,
+      path: row.ticket_path,
     },
     address: row.address,
     openingHours: row.opening_hours,
@@ -544,8 +570,8 @@ export function getServiceConfig(db) {
 
 export function listRecommendations(db, category) {
   const rows = category
-    ? db.prepare('SELECT * FROM recommendations WHERE category = ? ORDER BY rowid').all(category)
-    : db.prepare('SELECT * FROM recommendations ORDER BY rowid').all();
+    ? db.prepare('SELECT * FROM recommendations WHERE category = ? ORDER BY sort_order, rowid').all(category)
+    : db.prepare('SELECT * FROM recommendations ORDER BY sort_order, rowid').all();
   return rows.map((row) => ({
     id: row.id,
     category: row.category,
@@ -554,6 +580,15 @@ export function listRecommendations(db, category) {
     address: row.address,
     availability: row.availability,
     image: row.image,
+    sortOrder: row.sort_order,
+    description: row.description,
+    phone: row.phone,
+    linkUrl: row.link_url,
+    productName: row.product_name,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    status: row.status,
+    sourceNote: row.source_note,
   }));
 }
 

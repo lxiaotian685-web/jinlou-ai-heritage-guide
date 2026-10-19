@@ -1,6 +1,936 @@
-.ticket { margin-top: 28rpx; padding: 30rpx; display: flex; flex-direction: column; gap: 20rpx; }
-.card-title, .group-title { font-size: 32rpx; font-weight: 600; }.ticket .muted { font-size: 25rpx; }
-.group { margin-top: 34rpx; display: flex; flex-direction: column; gap: 16rpx; }.item { padding: 26rpx; display: flex; justify-content: space-between; font-size: 27rpx; }.item .muted { font-size: 25rpx; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; }.option { padding: 32rpx 20rpx; text-align: center; font-size: 27rpx; }
-.state { margin-top: 28rpx; padding: 30rpx; display: flex; flex-direction: column; gap: 20rpx; }
-.service-item { padding:26rpx; display:flex; flex-direction:column; gap:20rpx; }.item-copy { display:flex; justify-content:space-between; gap:24rpx; font-size:27rpx; }.item-copy .muted { font-size:25rpx; text-align:right; }.action-row { display:flex; gap:16rpx; }.action-row button, .single-action { flex:1; margin:0; padding:0 18rpx; line-height:64rpx; border-radius:12rpx; background:#ede8de; color:#382c24; font-size:24rpx; }.single-action { width:100%; }
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   服务页 · B 蚝壳青灰
+   ========================================================================== */
+
+.svc-page {
+  --svc-gold: #c6a15b;
+  box-sizing: border-box;
+  padding: 0 0 calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* ---------- 页头 ---------- */
+.svc-head {
+  padding: 36rpx 32rpx 0;
+}
+
+.svc-head__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.svc-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.svc-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 14rpx;
+}
+
+.svc-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.svc-head__title {
+  font-size: 64rpx;
+  letter-spacing: 6rpx;
+}
+
+.svc-head__seal {
+  flex: none;
+  margin-top: 6rpx;
+}
+
+.svc-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 26rpx;
+}
+
+.svc-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.svc-head__rule-meta {
+  flex: none;
+  font-size: 17rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 加载 / 错误 ---------- */
+.svc-state {
+  padding: 28rpx 32rpx 0;
+}
+
+.svc-state__card {
+  padding: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.svc-state__title {
+  font-size: 34rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.svc-state__line {
+  width: 88rpx;
+  height: 2rpx;
+  background: var(--arc-red);
+}
+
+.svc-error {
+  margin: 28rpx 32rpx 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.svc-error__title {
+  font-size: 36rpx;
+  color: var(--arc-ink);
+}
+
+/* ---------- 官方购票面板 ---------- */
+.ticket-panel {
+  position: relative;
+  margin: 30rpx 32rpx 0;
+  padding: 34rpx 30rpx 28rpx;
+  overflow: hidden;
+  background: var(--arc-ink);
+  background-image: linear-gradient(158deg, rgba(250, 246, 238, 0.07), rgba(250, 246, 238, 0) 58%);
+  border: 1rpx solid var(--arc-ink);
+  border-radius: 20rpx;
+  color: var(--arc-cream);
+}
+
+.ticket-panel.arc-card--ticks::before,
+.ticket-panel.arc-card--ticks::after {
+  border-color: var(--svc-gold);
+  opacity: 0.8;
+}
+
+.ticket-panel__ghost {
+  right: 12rpx;
+  bottom: -30rpx;
+  font-size: 200rpx;
+  color: rgba(250, 246, 238, 0.05);
+}
+
+.ticket-panel__seal {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84rpx;
+  height: 84rpx;
+  box-sizing: border-box;
+  border: 1rpx solid rgba(198, 161, 91, 0.6);
+  box-shadow: inset 0 0 0 6rpx var(--arc-ink), inset 0 0 0 7rpx rgba(198, 161, 91, 0.4);
+  border-radius: 8rpx;
+  transform: rotate(4deg);
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 30rpx;
+  color: var(--svc-gold);
+}
+
+.ticket-panel__eyebrow {
+  color: var(--svc-gold);
+  letter-spacing: 4rpx;
+}
+
+.ticket-panel__title {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 48rpx;
+  line-height: 1.3;
+  letter-spacing: 3rpx;
+  color: var(--arc-cream);
+}
+
+.ticket-panel__state {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 14rpx;
+  font-size: 21rpx;
+  letter-spacing: 2rpx;
+  color: rgba(250, 246, 238, 0.68);
+}
+
+.ticket-panel__dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: var(--svc-gold);
+}
+
+.ticket-panel__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 28rpx;
+}
+
+.ticket-panel__primary {
+  min-height: 92rpx;
+  background: var(--arc-cream);
+  border-color: var(--arc-cream);
+  color: var(--arc-ink);
+  font-size: 28rpx;
+  letter-spacing: 3rpx;
+}
+
+.ticket-panel__primary.is-disabled {
+  background: transparent;
+  border-color: rgba(250, 246, 238, 0.26);
+  color: rgba(250, 246, 238, 0.56);
+}
+
+.ticket-panel__secondary {
+  min-height: 84rpx;
+  background: transparent;
+  border-color: rgba(250, 246, 238, 0.34);
+  color: rgba(250, 246, 238, 0.86);
+  font-size: 25rpx;
+  letter-spacing: 3rpx;
+}
+
+.ticket-panel__rule {
+  height: 1rpx;
+  margin: 24rpx 0 16rpx;
+  background: rgba(250, 246, 238, 0.16);
+}
+
+.ticket-panel__disclaimer {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: rgba(250, 246, 238, 0.62);
+}
+
+.ticket-panel__note {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 19rpx;
+  letter-spacing: 2rpx;
+  color: rgba(198, 161, 91, 0.85);
+}
+
+/* ---------- 购票三态对照 ---------- */
+.ticket-matrix {
+  margin: 22rpx 32rpx 0;
+}
+
+.ticket-matrix__head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 10rpx;
+}
+
+.ticket-matrix__label {
+  flex: none;
+  font-size: 17rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-matrix__rule {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line);
+}
+
+.ticket-matrix__meta {
+  flex: none;
+  font-size: 17rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-matrix__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1rpx solid var(--arc-line-strong);
+  border-bottom: 1rpx solid var(--arc-line);
+  background: rgba(250, 246, 238, 0.5);
+}
+
+.ticket-state {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3rpx;
+  padding: 16rpx 14rpx 15rpx;
+  border-left: 1rpx solid var(--arc-line);
+}
+
+.ticket-state:first-child {
+  border-left: 0;
+}
+
+.ticket-state__index {
+  font-size: 16rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-state__name {
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 25rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-blue);
+}
+
+.ticket-state__meta {
+  font-size: 16rpx;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-state.is-active {
+  background: rgba(166, 64, 45, 0.05);
+}
+
+.ticket-state.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1rpx;
+  height: 2rpx;
+  background: var(--arc-red);
+}
+
+.ticket-state.is-active .ticket-state__index {
+  color: var(--arc-red);
+}
+
+.ticket-state.is-active .ticket-state__name {
+  color: var(--arc-ink);
+}
+
+/* ---------- 章节头 ---------- */
+.svc-section-head {
+  margin: 46rpx 32rpx 18rpx;
+}
+
+/* ---------- 到访 ---------- */
+.visit-card {
+  margin: 0 32rpx;
+  padding: 8rpx 26rpx 22rpx;
+}
+
+.visit-card__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  padding: 22rpx 0;
+}
+
+.visit-card__label {
+  flex: none;
+  width: 132rpx;
+  padding-top: 4rpx;
+  font-size: 19rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.visit-card__value {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.visit-card__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: var(--arc-ink);
+}
+
+.visit-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  padding-top: 22rpx;
+}
+
+.visit-action {
+  min-height: 84rpx;
+  padding: 0 8rpx;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+}
+
+.is-disabled {
+  border-color: var(--arc-line) !important;
+  color: var(--arc-muted) !important;
+  background: transparent !important;
+  opacity: 0.72;
+}
+
+/* ---------- 交通与停车 ---------- */
+.visit-transport {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin: 16rpx 32rpx 0;
+  padding: 24rpx 26rpx;
+}
+
+.visit-transport__mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 4rpx;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 26rpx;
+  color: var(--arc-blue);
+}
+
+.visit-transport__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.visit-transport__copy .visit-card__label {
+  width: auto;
+  padding-top: 0;
+}
+
+/* ---------- 位置示意 ---------- */
+.plate {
+  margin: 20rpx 32rpx 0;
+}
+
+.plate__frame {
+  position: relative;
+  height: 300rpx;
+  overflow: hidden;
+  background: var(--arc-cream);
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 12rpx;
+}
+
+.plate__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(36, 48, 41, 0.05) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(36, 48, 41, 0.05) 1rpx, transparent 1rpx);
+  background-size: 48rpx 48rpx;
+}
+
+.plate__block {
+  position: absolute;
+  border: 1rpx solid rgba(36, 48, 41, 0.42);
+}
+
+.plate__block--a {
+  left: 42rpx;
+  top: 52rpx;
+  width: 150rpx;
+  height: 96rpx;
+  background: rgba(36, 48, 41, 0.03);
+}
+
+.plate__block--b {
+  left: 70rpx;
+  bottom: 44rpx;
+  width: 210rpx;
+  height: 72rpx;
+}
+
+.plate__block--c {
+  right: 64rpx;
+  top: 40rpx;
+  width: 96rpx;
+  height: 128rpx;
+  border-style: dashed;
+}
+
+.plate__ring {
+  position: absolute;
+  right: 96rpx;
+  bottom: 34rpx;
+  width: 190rpx;
+  height: 190rpx;
+  border: 1rpx dashed rgba(92, 107, 102, 0.55);
+  border-radius: 50% 50% 46% 54% / 54% 46% 54% 46%;
+}
+
+.plate__pin {
+  position: absolute;
+  right: 176rpx;
+  bottom: 114rpx;
+  width: 26rpx;
+  height: 26rpx;
+  box-sizing: border-box;
+  border: 2rpx solid var(--arc-red);
+  border-radius: 50%;
+  background: rgba(166, 64, 45, 0.12);
+}
+
+.plate__pin::after {
+  content: "";
+  position: absolute;
+  left: 52rpx;
+  top: 11rpx;
+  width: 120rpx;
+  height: 1rpx;
+  background: rgba(166, 64, 45, 0.5);
+}
+
+.plate__pin::before {
+  content: "";
+  position: absolute;
+  left: 11rpx;
+  top: 52rpx;
+  width: 1rpx;
+  height: 52rpx;
+  background: rgba(166, 64, 45, 0.5);
+}
+
+.plate__north {
+  position: absolute;
+  right: 22rpx;
+  top: 18rpx;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-blue);
+}
+
+.plate__north::after {
+  content: "";
+  display: block;
+  width: 1rpx;
+  height: 26rpx;
+  margin: 6rpx auto 0;
+  background: var(--arc-blue);
+}
+
+.plate__micro {
+  position: absolute;
+  left: 22rpx;
+  bottom: 16rpx;
+  font-size: 15rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.plate__caption {
+  margin-top: 10rpx;
+}
+
+/* ---------- 周边 ---------- */
+.nearby-strip {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.nearby-track {
+  display: inline-flex;
+  gap: 16rpx;
+  padding: 0 32rpx 8rpx;
+}
+
+.nearby-card {
+  flex: none;
+  width: 280rpx;
+  padding: 12rpx 12rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.nearby-card__photo {
+  width: 100%;
+  height: 220rpx;
+  border: 1rpx solid var(--arc-line);
+}
+
+.nearby-card__index {
+  margin-top: 10rpx;
+  font-size: 16rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-red);
+}
+
+.nearby-card__name {
+  font-size: 30rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.nearby-card__meta {
+  font-size: 17rpx;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+.nearby-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin: 16rpx 32rpx 0;
+  padding: 22rpx 4rpx;
+  border-top: 1rpx solid var(--arc-line);
+  border-bottom: 1rpx solid var(--arc-line);
+}
+
+.nearby-link__text {
+  font-size: 24rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.nearby-link__arrow {
+  font-size: 28rpx;
+  color: var(--arc-red);
+}
+
+/* ---------- 开放与咨询 ---------- */
+.info-card {
+  margin: 0 32rpx;
+  padding: 4rpx 26rpx 8rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 22rpx 0;
+}
+
+.info-row__label {
+  display: block;
+  font-size: 19rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.info-row__value {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 27rpx;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.info-row__copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-row__action {
+  flex: none;
+  min-width: 168rpx;
+  min-height: 84rpx;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+}
+
+.info-source {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 20rpx 0;
+}
+
+.info-source__text {
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 页脚 ---------- */
+.svc-foot {
+  margin: 46rpx 32rpx 0;
+}
+
+.svc-foot .arc-hair--dot text {
+  font-size: 15rpx;
+  letter-spacing: 3rpx;
+}
+
+.svc-foot__note {
+  display: block;
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 购票降级弹层 ---------- */
+.ticket-sheet {
+  max-height: 86vh;
+  overflow-y: auto;
+}
+
+.ticket-sheet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.ticket-sheet__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.ticket-sheet__title {
+  font-size: 42rpx;
+  line-height: 1.3;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.ticket-sheet__lede {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  line-height: 1.85;
+  color: var(--arc-muted);
+}
+
+.ticket-linkfield {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 22rpx;
+  padding: 16rpx 16rpx 16rpx 20rpx;
+  background: var(--arc-oyster);
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 8rpx;
+}
+
+.ticket-linkfield__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.ticket-linkfield__label {
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-linkfield__value {
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: var(--arc-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ticket-linkfield__action {
+  flex: none;
+  min-width: 128rpx;
+  min-height: 84rpx;
+  margin: 0;
+  padding: 0 20rpx;
+  background: var(--arc-ink);
+  color: var(--arc-cream);
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  line-height: 1.3;
+  letter-spacing: 2rpx;
+}
+
+.ticket-copied {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 14rpx;
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--arc-red);
+}
+
+.ticket-copied__dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: var(--arc-red);
+}
+
+.ticket-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 24rpx;
+  border-top: 1rpx solid var(--arc-line);
+  border-bottom: 1rpx solid var(--arc-line);
+}
+
+.ticket-step {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding: 18rpx 14rpx;
+  border-left: 1rpx solid var(--arc-line);
+}
+
+.ticket-step:first-child {
+  border-left: 0;
+}
+
+.ticket-step__num {
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-red);
+}
+
+.ticket-step__text {
+  font-size: 19rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-sheet__disclaimer {
+  display: block;
+  margin-top: 20rpx;
+  font-size: 19rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+.ticket-sheet__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+  margin-top: 20rpx;
+}
+
+.ticket-sheet__actions .arc-btn {
+  min-height: 88rpx;
+  font-size: 25rpx;
+  letter-spacing: 2rpx;
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .svc-head__title {
+  font-size: 76rpx;
+}
+
+.font-large .ticket-panel__title {
+  font-size: 58rpx;
+}
+
+.font-large .ticket-panel__state,
+.font-large .ticket-panel__disclaimer,
+.font-large .ticket-panel__note {
+  font-size: 28rpx;
+  line-height: 1.8;
+}
+
+.font-large .ticket-state__name {
+  font-size: 32rpx;
+}
+
+.font-large .ticket-state__meta,
+.font-large .ticket-state__index {
+  font-size: 22rpx;
+}
+
+.font-large .visit-card__text,
+.font-large .visit-card__label,
+.font-large .info-row__label {
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+.font-large .visit-actions {
+  grid-template-columns: 1fr;
+}
+
+.font-large .info-row {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.font-large .info-row__action {
+  width: 100%;
+}
+
+.font-large .nearby-card {
+  width: 320rpx;
+}
+
+.font-large .nearby-link__text,
+.font-large .info-source__text {
+  font-size: 28rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.high-contrast .ticket-panel {
+  background: #111;
+  background-image: none;
+}
+
+.high-contrast .arc-card,
+.high-contrast .plate__frame {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .ticket-matrix__grid {
+  background: #fff;
+}
+
+.high-contrast .visit-card__text,
+.high-contrast .info-row__value,
+.high-contrast .nearby-link__text {
+  color: #111;
+}
