@@ -1,5 +1,351 @@
-.heading { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 28rpx; }.heading .muted { font-size: 24rpx; }
-.list { display: flex; flex-direction: column; gap: 24rpx; }.preview { width: 100%; height: 350rpx; }
-.content { padding: 28rpx; display: flex; flex-direction: column; gap: 18rpx; }.row { display: flex; justify-content: space-between; align-items: center; }
-.name { font-size: 36rpx; font-weight: 600; }.badge { color: #7b581b; border: 1rpx solid #b58b4a; border-radius: 8rpx; padding: 6rpx 12rpx; font-size: 22rpx; }
-.summary { color: #4e4540; font-size: 27rpx; line-height: 1.6; }.state { padding: 30rpx; display: flex; flex-direction: column; gap: 20rpx; }
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   全景列表 · B 蚝壳青灰
+   纸面档案页头 + 全幅照片卡；数据与进入事件保持原样。
+   ========================================================================== */
+
+.panoramas-page {
+  box-sizing: border-box;
+  padding: 0 32rpx calc(52rpx + env(safe-area-inset-bottom));
+}
+
+/* ---------- 页头 ---------- */
+.pano-head {
+  padding: 36rpx 0 0;
+}
+
+.pano-head__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.pano-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.pano-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 14rpx;
+}
+
+.pano-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.pano-head__title {
+  font-size: 64rpx;
+  line-height: 1.2;
+  letter-spacing: 6rpx;
+}
+
+.pano-head__seal {
+  flex: none;
+  margin-top: 6rpx;
+}
+
+.pano-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 26rpx;
+}
+
+.pano-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.pano-head__rule-meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 加载 / 错误 / 空 ---------- */
+.pano-state {
+  padding-top: 30rpx;
+}
+
+.pano-state__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding: 34rpx 30rpx;
+}
+
+.pano-state__title {
+  font-size: 36rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.pano-state__line {
+  width: 88rpx;
+  height: 2rpx;
+  background: var(--arc-red);
+}
+
+.pano-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14rpx;
+  margin-top: 30rpx;
+}
+
+.pano-error__title {
+  font-size: 36rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.pano-error__body {
+  font-size: 24rpx;
+  line-height: 1.75;
+  color: var(--arc-muted);
+}
+
+.pano-error__btn {
+  width: auto;
+  min-width: 260rpx;
+  min-height: 88rpx;
+  margin-top: 4rpx;
+}
+
+.pano-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 30rpx;
+}
+
+.pano-empty__title {
+  font-size: 34rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.pano-empty__body {
+  font-size: 24rpx;
+  line-height: 1.75;
+  color: var(--arc-muted);
+}
+
+/* ---------- 场景档案卡 ---------- */
+.pano-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+  margin-top: 30rpx;
+}
+
+.pano-card {
+  overflow: hidden;
+}
+
+.pano-card.arc-card--ticks::before,
+.pano-card.arc-card--ticks::after {
+  z-index: 5;
+}
+
+.pano-card__media {
+  position: relative;
+  width: 100%;
+  height: 320rpx;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+}
+
+.pano-card__cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pano-card__shade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(180deg, rgba(20, 28, 24, 0.1) 0%, rgba(20, 28, 24, 0) 44%, rgba(20, 28, 24, 0.16) 100%);
+  pointer-events: none;
+}
+
+.pano-card__body {
+  display: flex;
+  flex-direction: column;
+  padding: 20rpx 24rpx 24rpx;
+}
+
+.pano-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.pano-card__folio {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+}
+
+.pano-card__folio-label {
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.pano-card__folio-num {
+  font-size: 26rpx;
+  line-height: 1;
+  color: var(--arc-red);
+}
+
+.pano-card__tag {
+  flex: none;
+}
+
+.pano-card__name {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 44rpx;
+  line-height: 1.34;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.pano-card__summary {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 25rpx;
+  line-height: 1.78;
+  color: var(--arc-blue);
+}
+
+.pano-card__hair {
+  margin-top: 20rpx;
+}
+
+.pano-card__cta {
+  width: 100%;
+  min-height: 92rpx;
+  margin-top: 20rpx;
+  font-size: 27rpx;
+  letter-spacing: 3rpx;
+}
+
+/* ---------- 页脚 ---------- */
+.pano-foot {
+  margin-top: 40rpx;
+}
+
+.pano-foot .arc-hair--dot text {
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .pano-head__title {
+  font-size: 76rpx;
+}
+
+.font-large .pano-head__folio,
+.font-large .pano-head__rule-meta {
+  font-size: 22rpx;
+}
+
+.font-large .pano-state__title,
+.font-large .pano-error__title,
+.font-large .pano-empty__title {
+  font-size: 42rpx;
+}
+
+.font-large .pano-error__body,
+.font-large .pano-empty__body {
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+.font-large .pano-card__folio-label {
+  font-size: 22rpx;
+}
+
+.font-large .pano-card__folio-num {
+  font-size: 32rpx;
+}
+
+.font-large .pano-card__name {
+  font-size: 52rpx;
+}
+
+.font-large .pano-card__summary {
+  font-size: 32rpx;
+}
+
+.font-large .pano-card__cta {
+  min-height: 100rpx;
+  font-size: 32rpx;
+}
+
+.font-large .pano-foot .arc-hair--dot text {
+  font-size: 22rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.panoramas-page.high-contrast {
+  background-color: #fff;
+  background-image: none;
+}
+
+.high-contrast .arc-card,
+.high-contrast .arc-empty {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .pano-head__folio,
+.high-contrast .pano-head__rule-meta,
+.high-contrast .pano-card__folio-label,
+.high-contrast .pano-foot .arc-hair--dot text,
+.high-contrast .pano-error__body,
+.high-contrast .pano-empty__body {
+  color: #222;
+}
+
+.high-contrast .pano-card__summary {
+  color: #243029;
+}
+
+.high-contrast .pano-card__media {
+  border-color: #393939;
+}
+
+.high-contrast .arc-tag {
+  border-color: #393939;
+  color: #111;
+}

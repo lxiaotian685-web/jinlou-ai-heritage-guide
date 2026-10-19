@@ -28,12 +28,12 @@
         <text class="map-label serif">手绘示意图</text>
         <text wx:if="{{selectedRoute}}" class="route-badge">游线预览</text>
         <block wx:if="{{selectedRoute}}">
-          <view wx:for="{{routeDisplayPoints}}" wx:key="number" class="poi route-poi {{item.isVisited ? 'visited' : ''}} {{item.isCurrent ? 'current' : ''}}" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.siteNumber}}" bindtap="selectPoint">
+          <view wx:for="{{routeDisplayPoints}}" wx:key="number" class="poi route-poi {{item.isVisited ? 'visited' : ''}} {{item.isCurrent ? 'current' : ''}}" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.siteNumber}}" bindtap="selectPoint" hover-class="route-poi--press" aria-role="button" aria-label="景点 {{item.name}}">
             <text class="poi-number">{{item.number}}</text><text>{{item.name}}</text>
           </view>
         </block>
         <block wx:else>
-          <view wx:for="{{sitePoints}}" wx:key="number" class="site-dot" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.number}}" bindtap="selectPoint">{{item.number}}</view>
+          <view wx:for="{{sitePoints}}" wx:key="number" class="site-dot" style="left:{{item.positionX}}%;top:{{item.positionY}}%;" data-number="{{item.number}}" bindtap="selectPoint" hover-class="site-dot--press" aria-role="button" aria-label="地图点位 {{item.number}}">{{item.number}}</view>
         </block>
       </view>
       <view class="arc-caption map-caption">
@@ -74,7 +74,7 @@
       </view>
       <view class="arc-hair"></view>
       <view class="point-list__grid">
-        <view wx:for="{{sitePoints}}" wx:key="number" class="point-item">
+        <view wx:for="{{sitePoints}}" wx:key="number" class="point-item" data-number="{{item.number}}" bindtap="selectPoint" hover-class="point-item--press" hover-stay-time="80" aria-role="button" aria-label="点位 {{item.number}}，{{item.name}}">
           <text class="point-number serif">{{item.number}}</text>
           <text class="point-name">{{item.name}}</text>
         </view>
@@ -159,8 +159,8 @@
     </block>
 
     <view class="guide-actions">
-      <button class="arc-btn guide-actions__primary" bindtap="openSpots">查看全部景点</button>
-      <button class="arc-btn arc-btn--ghost guide-actions__secondary" bindtap="openRoutes">查看推荐游线</button>
+      <button class="arc-btn" bindtap="openSpots">查看全部景点</button>
+      <button class="arc-btn arc-btn--ghost" bindtap="openRoutes">查看推荐游线</button>
     </view>
 
     <view class="guide-foot">

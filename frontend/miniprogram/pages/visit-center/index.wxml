@@ -1,43 +1,209 @@
-<view class="page section {{displayClass}}">
-  <view class="heading"><text class="section-title serif">我的游览</text><text class="muted">记录只保存在当前手机，不登录、不跨设备同步</text></view>
-  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
-  <view wx:if="{{loading}}" class="state card">正在整理游览记录…</view>
-  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadData">重新加载</button></view>
-  <block wx:else>
-    <view class="progress-card card">
-      <view class="progress-head"><view><text class="progress-label">15点游览进度</text><text class="progress-count serif">{{visitedCount}} / {{totalCount}}</text></view><text class="progress-percent">{{progressPercent}}%</text></view>
-      <view class="progress-track"><view class="progress-value" style="width:{{progressPercent}}%;"></view></view>
+<view class="page arc-page arc-grid-bg visit-page {{displayClass}}">
+  <view class="vc-head">
+    <view class="vc-head__top">
+      <text class="arc-eyebrow">VISIT LOG / 游览</text>
+      <text class="vc-head__folio">NO. 08</text>
     </view>
-
-    <view wx:if="{{selectedRoute}}" class="route-card card">
-      <view class="card-head"><view><text class="card-label">当前路线</text><text class="card-title serif">{{selectedRoute.name}}</text></view><button class="text-button" bindtap="clearRoute">清除路线</button></view>
-      <view wx:if="{{routeProgress}}" class="route-summary">
-        <text>已完成 {{routeProgress.completedCount}} / {{routeProgress.totalCount}}</text>
-        <text wx:if="{{routeProgress.currentStop}}">当前站：{{routeProgress.currentStop.name}}</text>
-        <text wx:if="{{routeProgress.nextStop}}">下一站：{{routeProgress.nextStop.name}}</text>
-        <text wx:if="{{routeProgress.isComplete}}">路线已全部完成</text>
+    <view class="vc-head__main">
+      <view class="vc-head__copy">
+        <text class="arc-title serif vc-head__title">我的游览</text>
+        <text class="arc-lede">记录只保存在当前手机，不登录、不跨设备同步</text>
       </view>
-      <button class="secondary-button" bindtap="openRoute">返回路线导览</button>
+      <view class="arc-seal vc-head__seal">记</view>
     </view>
-    <view wx:else class="empty-card card"><text class="card-title serif">还没有选择路线</text><text>可以从“推荐路线”选择一条路线后开始游览。</text></view>
-
-    <view class="list-card card">
-      <view class="card-head"><view><text class="card-label">我的收藏</text><text class="card-title serif">{{favoriteSpots.length}} 个景点</text></view><button wx:if="{{favoriteSpots.length}}" class="text-button" bindtap="clearFavorites">全部清除</button></view>
-      <view wx:if="{{favoriteSpots.length}}" class="spot-list"><view wx:for="{{favoriteSpots}}" wx:key="id" class="spot-row"><view class="spot-copy" data-id="{{item.id}}" bindtap="openSpot"><text>{{item.name}}</text><text>{{item.category}}</text></view><button data-id="{{item.id}}" bindtap="removeFavorite">取消收藏</button></view></view>
-      <text wx:else class="empty-text">还没有收藏景点</text>
+    <view class="vc-head__rule">
+      <view class="vc-head__rule-line"></view>
+      <text class="vc-head__rule-meta">LOCAL · VISIT LOG</text>
     </view>
-    <view class="list-card card"><view class="card-head"><view><text class="card-label">最近浏览</text><text class="card-title serif">最近 {{recentSpots.length}} 个景点</text></view></view><view wx:if="{{recentSpots.length}}" class="spot-list"><view wx:for="{{recentSpots}}" wx:key="id" class="spot-row"><view class="spot-copy" data-id="{{item.id}}" bindtap="openSpot"><text>{{item.name}}</text><text>{{item.category}}</text></view></view></view><text wx:else class="empty-text">还没有浏览记录</text></view>
+  </view>
 
-    <view class="list-card card"><view class="card-head"><view><text class="card-label">私人记录</text><text class="card-title serif">{{notedSpots.length}} 个景点</text></view><button wx:if="{{notedSpots.length}}" class="text-button" bindtap="clearNotes">全部清除</button></view><view wx:if="{{notedSpots.length}}" class="spot-list"><view wx:for="{{notedSpots}}" wx:key="id" class="note-row" data-id="{{item.id}}" bindtap="openSpot"><view><text>{{item.name}}</text><text>{{item.ratingText}}</text></view><text class="note-preview">{{item.noteText || '只保存了评分'}}</text></view></view><text wx:else class="empty-text">还没有评分或私人笔记</text></view>
+  <view class="vc-body">
+    <view wx:if="{{offlineNotice}}" class="vc-offline">{{offlineNotice}}</view>
 
-    <view class="list-card card">
-      <view class="card-head"><view><text class="card-label">已游览</text><text class="card-title serif">{{visitedSpots.length}} 个景点</text></view><button wx:if="{{visitedSpots.length}}" class="text-button" bindtap="clearVisited">清空进度</button></view>
-      <view wx:if="{{visitedSpots.length}}" class="spot-list"><view wx:for="{{visitedSpots}}" wx:key="id" class="spot-row"><view class="spot-copy" data-id="{{item.id}}" bindtap="openSpot"><text>{{item.name}}</text><text>{{item.category}}</text></view><button data-id="{{item.id}}" bindtap="removeVisited">取消记录</button></view></view>
-      <text wx:else class="empty-text">还没有已游览记录</text>
+    <view wx:if="{{loading}}" class="vc-state arc-card arc-card--ticks">
+      <text class="arc-eyebrow">READING VISIT LOG</text>
+      <text class="vc-state__title serif">正在整理游览记录…</text>
+      <view class="vc-state__line"></view>
     </view>
 
-    <view class="data-card card"><text class="card-title serif">本机数据管理</text><text>只清除这台手机中的收藏、游览进度、路线、浏览记录和私人笔记，不会修改景区内容。</text><button class="danger-button" bindtap="clearAll">清空全部本机游览记录</button></view>
-    <view class="data-card card"><text class="card-title serif">显示设置</text><text>设置会保存在当前手机，也可以在首页快速切换。</text><view class="display-buttons"><button class="{{displaySettings.fontSize === 'normal' ? 'active' : ''}}" data-size="normal" bindtap="setFontSize">标准</button><button class="{{displaySettings.fontSize === 'large' ? 'active' : ''}}" data-size="large" bindtap="setFontSize">大字</button></view><button class="contrast-button {{displaySettings.highContrast ? 'active' : ''}}" bindtap="toggleContrast">{{displaySettings.highContrast ? '关闭高对比度' : '开启高对比度'}}</button></view>
-    <button class="privacy-button" bindtap="openPrivacy">隐私与本地数据</button>
-  </block>
+    <view wx:elif="{{error}}" class="arc-empty vc-error">
+      <text class="arc-eyebrow">LOG UNAVAILABLE</text>
+      <text class="vc-error__title serif">游览记录未能读取</text>
+      <text class="vc-error__body">{{error}}</text>
+      <view class="arc-empty__rule"></view>
+      <button class="arc-btn vc-error__btn" bindtap="loadData">重新加载</button>
+    </view>
+
+    <block wx:else>
+      <view class="vc-progress arc-card arc-card--ticks">
+        <view class="vc-progress__head">
+          <view class="vc-progress__copy">
+            <text class="arc-eyebrow">VISIT PROGRESS</text>
+            <text class="vc-progress__title serif">15点游览进度</text>
+          </view>
+          <view class="vc-progress__nums">
+            <text class="vc-progress__count serif">{{visitedCount}}</text>
+            <text class="vc-progress__total serif">/ {{totalCount}}</text>
+          </view>
+        </view>
+        <view class="vc-progress__track">
+          <view class="vc-progress__fill" style="width:{{progressPercent}}%;"></view>
+        </view>
+        <view class="vc-progress__foot">
+          <text class="vc-progress__percent">{{progressPercent}}%</text>
+          <text class="vc-progress__note">LOCAL VISIT RECORD</text>
+        </view>
+      </view>
+
+      <view wx:if="{{selectedRoute}}" class="vc-route arc-card arc-card--ticks">
+        <view class="vc-route__head">
+          <view class="vc-route__copy">
+            <text class="arc-eyebrow">CURRENT ROUTE</text>
+            <text class="vc-route__name serif">{{selectedRoute.name}}</text>
+          </view>
+          <button class="vc-text-action" bindtap="clearRoute">清除路线</button>
+        </view>
+        <view wx:if="{{routeProgress}}" class="vc-route__summary">
+          <view class="vc-route__row">
+            <text class="vc-route__key">已完成</text>
+            <text class="vc-route__val serif">{{routeProgress.completedCount}} / {{routeProgress.totalCount}}</text>
+          </view>
+          <view wx:if="{{routeProgress.currentStop}}" class="vc-route__row">
+            <text class="vc-route__key">当前站</text>
+            <text class="vc-route__val serif">{{routeProgress.currentStop.name}}</text>
+          </view>
+          <view wx:if="{{routeProgress.nextStop}}" class="vc-route__row">
+            <text class="vc-route__key">下一站</text>
+            <text class="vc-route__val serif">{{routeProgress.nextStop.name}}</text>
+          </view>
+          <view wx:if="{{routeProgress.isComplete}}" class="vc-route__done">
+            <view class="vc-route__done-dot"></view>
+            <text>路线已全部完成</text>
+          </view>
+        </view>
+        <button class="arc-btn arc-btn--ghost vc-route__btn" bindtap="openRoute">返回路线导览</button>
+      </view>
+
+      <view wx:else class="arc-empty vc-route-empty">
+        <text class="arc-eyebrow">NO ROUTE</text>
+        <text class="vc-empty__title serif">还没有选择路线</text>
+        <view class="arc-empty__rule"></view>
+        <text class="vc-empty__note">可以从“推荐路线”选择一条路线后开始游览。</text>
+        <button class="arc-btn arc-btn--ghost vc-route-empty__btn" bindtap="openRoute">去选一条路线</button>
+      </view>
+
+      <view class="vc-card arc-card">
+        <view class="vc-card__head">
+          <view class="vc-card__heading">
+            <text class="arc-eyebrow">01 · FAVORITES / 收藏</text>
+            <text class="vc-card__title serif">我的收藏 · {{favoriteSpots.length}}</text>
+          </view>
+          <button wx:if="{{favoriteSpots.length}}" class="vc-text-action" bindtap="clearFavorites">全部清除</button>
+        </view>
+        <view wx:if="{{favoriteSpots.length}}" class="vc-list">
+          <view wx:for="{{favoriteSpots}}" wx:key="id" class="vc-row">
+            <view class="vc-row__copy" data-id="{{item.id}}" bindtap="openSpot" hover-class="vc-row__copy--press" hover-stay-time="80" aria-role="button" aria-label="查看景点 {{item.name}}">
+              <text class="vc-row__name">{{item.name}}</text>
+              <text class="vc-row__meta">{{item.category}}</text>
+            </view>
+            <button class="arc-btn arc-btn--ghost vc-row__action" data-id="{{item.id}}" bindtap="removeFavorite">取消收藏</button>
+          </view>
+        </view>
+        <view wx:else class="arc-empty vc-list-empty">
+          <text class="vc-empty__title serif">还没有收藏景点</text>
+          <view class="arc-empty__rule"></view>
+        </view>
+      </view>
+
+      <view class="vc-card arc-card">
+        <view class="vc-card__head">
+          <view class="vc-card__heading">
+            <text class="arc-eyebrow">02 · RECENT / 浏览</text>
+            <text class="vc-card__title serif">最近浏览 · {{recentSpots.length}}</text>
+          </view>
+        </view>
+        <view wx:if="{{recentSpots.length}}" class="vc-list">
+          <view wx:for="{{recentSpots}}" wx:key="id" class="vc-row">
+            <view class="vc-row__copy" data-id="{{item.id}}" bindtap="openSpot" hover-class="vc-row__copy--press" hover-stay-time="80" aria-role="button" aria-label="查看景点 {{item.name}}">
+              <text class="vc-row__name">{{item.name}}</text>
+              <text class="vc-row__meta">{{item.category}}</text>
+            </view>
+          </view>
+        </view>
+        <view wx:else class="arc-empty vc-list-empty">
+          <text class="vc-empty__title serif">还没有浏览记录</text>
+          <view class="arc-empty__rule"></view>
+        </view>
+      </view>
+
+      <view class="vc-card arc-card">
+        <view class="vc-card__head">
+          <view class="vc-card__heading">
+            <text class="arc-eyebrow">03 · NOTES / 手记</text>
+            <text class="vc-card__title serif">私人记录 · {{notedSpots.length}}</text>
+          </view>
+          <button wx:if="{{notedSpots.length}}" class="vc-text-action" bindtap="clearNotes">全部清除</button>
+        </view>
+        <view wx:if="{{notedSpots.length}}" class="vc-list">
+          <view wx:for="{{notedSpots}}" wx:key="id" class="vc-note-row" data-id="{{item.id}}" bindtap="openSpot" hover-class="vc-note-row--press" hover-stay-time="80" aria-role="button" aria-label="查看景点 {{item.name}} 的私人记录">
+            <view class="vc-note-row__top">
+              <text class="vc-row__name">{{item.name}}</text>
+              <text class="vc-note-row__rating">{{item.ratingText}}</text>
+            </view>
+            <text class="vc-note-row__preview">{{item.noteText || '只保存了评分'}}</text>
+          </view>
+        </view>
+        <view wx:else class="arc-empty vc-list-empty">
+          <text class="vc-empty__title serif">还没有评分或私人笔记</text>
+          <view class="arc-empty__rule"></view>
+        </view>
+      </view>
+
+      <view class="vc-card arc-card">
+        <view class="vc-card__head">
+          <view class="vc-card__heading">
+            <text class="arc-eyebrow">04 · VISITED / 足迹</text>
+            <text class="vc-card__title serif">已游览 · {{visitedSpots.length}}</text>
+          </view>
+          <button wx:if="{{visitedSpots.length}}" class="vc-text-action" bindtap="clearVisited">清空进度</button>
+        </view>
+        <view wx:if="{{visitedSpots.length}}" class="vc-list">
+          <view wx:for="{{visitedSpots}}" wx:key="id" class="vc-row">
+            <view class="vc-row__copy" data-id="{{item.id}}" bindtap="openSpot" hover-class="vc-row__copy--press" hover-stay-time="80" aria-role="button" aria-label="查看景点 {{item.name}}">
+              <text class="vc-row__name">{{item.name}}</text>
+              <text class="vc-row__meta">{{item.category}}</text>
+            </view>
+            <button class="arc-btn arc-btn--ghost vc-row__action" data-id="{{item.id}}" bindtap="removeVisited">取消记录</button>
+          </view>
+        </view>
+        <view wx:else class="arc-empty vc-list-empty">
+          <text class="vc-empty__title serif">还没有已游览记录</text>
+          <view class="arc-empty__rule"></view>
+        </view>
+      </view>
+
+      <view class="vc-data arc-card">
+        <text class="arc-eyebrow">LOCAL DATA / 本机</text>
+        <text class="vc-data__title serif">本机数据管理</text>
+        <text class="vc-data__body">只清除这台手机中的收藏、游览进度、路线、浏览记录和私人笔记，不会修改景区内容。</text>
+        <button class="arc-btn arc-btn--ghost vc-danger" bindtap="clearAll">清空全部本机游览记录</button>
+      </view>
+
+      <view class="vc-display arc-card">
+        <text class="arc-eyebrow">DISPLAY / 显示</text>
+        <text class="vc-display__title serif">显示设置</text>
+        <text class="vc-display__body">设置会保存在当前手机，也可以在首页快速切换。</text>
+        <view class="vc-segmented" aria-role="group" aria-label="字号设置">
+          <button class="vc-segment {{displaySettings.fontSize === 'normal' ? 'is-active' : ''}}" data-size="normal" bindtap="setFontSize">标准</button>
+          <button class="vc-segment {{displaySettings.fontSize === 'large' ? 'is-active' : ''}}" data-size="large" bindtap="setFontSize">大字</button>
+        </view>
+        <button class="vc-contrast {{displaySettings.highContrast ? 'is-active' : ''}}" bindtap="toggleContrast">{{displaySettings.highContrast ? '关闭高对比度' : '开启高对比度'}}</button>
+      </view>
+
+      <view class="vc-foot">
+        <view class="arc-hair arc-hair--dot"><text>END OF VISIT LOG</text></view>
+        <button class="arc-btn arc-btn--ghost vc-privacy" bindtap="openPrivacy">隐私与本地数据</button>
+      </view>
+    </block>
+  </view>
 </view>

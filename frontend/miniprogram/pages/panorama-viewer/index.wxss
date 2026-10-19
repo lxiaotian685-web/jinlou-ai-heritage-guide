@@ -1,18 +1,552 @@
-.viewer-page { min-height: 100vh; background: #17120e; color: #fffaf0; }
-.center-state { min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28rpx; color: #f6f1e7; }
-.retry, .sheet-button { background: #f6f1e7; color: #382c24; border-radius: 16rpx; font-size: 27rpx; }
-.viewer-head { height: 100rpx; padding: 0 30rpx; display: flex; align-items: center; justify-content: space-between; }
-.scene-name { font-size: 34rpx; font-weight: 600; }.demo-badge { font-size: 21rpx; color: #eebf78; border: 1rpx solid #b58b4a; padding: 7rpx 12rpx; border-radius: 8rpx; }
-.panorama-area { width: 100%; height: 760rpx; overflow: hidden; background: #0c0a08; }
-.panorama-canvas { width: 1400rpx; height: 760rpx; position: relative; }
-.panorama-image { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(.82); }
-.hotspot { position: absolute; transform: translate(-50%, -50%); min-width: 92rpx; height: 70rpx; padding: 0 16rpx; border-radius: 35rpx; font-size: 22rpx; color: #fffaf0; border: 2rpx solid #eebf78; background: rgba(56,44,36,.88); }
-.hotspot-scene { background: rgba(83,102,87,.92); }
-.help { position: absolute; top: 150rpx; left: 50%; transform: translateX(-50%); white-space: nowrap; background: rgba(34,24,16,.78); padding: 14rpx 22rpx; border-radius: 30rpx; font-size: 23rpx; }
-.notice { padding: 20rpx 30rpx 10rpx; color: #cfc5b9; font-size: 23rpx; line-height: 1.5; }
-.scene-strip { width: 100%; white-space: nowrap; padding: 18rpx 0 34rpx; }
-.scene-card { display: inline-flex; vertical-align: top; width: 220rpx; margin-left: 22rpx; flex-direction: column; gap: 10rpx; color: #cfc5b9; font-size: 23rpx; }
-.scene-card:last-child { margin-right: 22rpx; }.scene-card image { width: 220rpx; height: 130rpx; border-radius: 12rpx; opacity: .65; }.scene-card.active image { opacity: 1; outline: 3rpx solid #b58b4a; }.scene-card.active { color: #fffaf0; }
-.sheet-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; z-index: 20; }
-.sheet { width: 100%; box-sizing: border-box; padding: 38rpx 34rpx calc(34rpx + env(safe-area-inset-bottom)); background: #fffcf6; color: #382c24; border-radius: 32rpx 32rpx 0 0; display: flex; flex-direction: column; gap: 24rpx; }
-.sheet-title { font-size: 38rpx; font-weight: 600; }.sheet-content { color: #4e4540; font-size: 28rpx; line-height: 1.7; }
+@import "../../styles/archive.wxss";
+
+page {
+  background-color: #141b17;
+}
+
+/* ==========================================================================
+   全景查看器 · B 蚝壳青灰 · 墨色场景
+   墨底、米白字、朱砂细线；交互结构、坐标与事件绑定保持原样。
+   ========================================================================== */
+
+.viewer-page {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: 0;
+  background-color: #141b17;
+  background-image: linear-gradient(180deg, rgba(250, 246, 238, 0.035) 0%, rgba(250, 246, 238, 0) 34%);
+  color: var(--arc-cream);
+}
+
+/* ---------- 加载 / 错误 ---------- */
+.viewer-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 80rpx 40rpx calc(80rpx + env(safe-area-inset-bottom));
+}
+
+.viewer-state__card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 40rpx 32rpx;
+  background-color: rgba(250, 246, 238, 0.04);
+  border: 1rpx solid rgba(250, 246, 238, 0.18);
+  border-radius: var(--arc-radius);
+}
+
+.viewer-state__card--error {
+  border-left: 3rpx solid var(--arc-red);
+}
+
+.viewer-state__eyebrow {
+  display: block;
+  font-size: 18rpx;
+  line-height: 1.6;
+  letter-spacing: 4rpx;
+  color: rgba(250, 246, 238, 0.5);
+  text-transform: uppercase;
+}
+
+.viewer-state__title {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 38rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-cream);
+}
+
+.viewer-state__body {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  line-height: 1.8;
+  color: rgba(250, 246, 238, 0.68);
+}
+
+.viewer-state__line {
+  width: 88rpx;
+  height: 2rpx;
+  margin-top: 20rpx;
+  background-color: var(--arc-red);
+}
+
+.viewer-state__btn {
+  width: 100%;
+  min-height: 92rpx;
+  margin-top: 26rpx;
+  background-color: var(--arc-cream);
+  border-color: var(--arc-cream);
+  color: var(--arc-ink);
+  font-size: 27rpx;
+  letter-spacing: 2rpx;
+}
+
+/* ---------- 场景页头 ---------- */
+.viewer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 30rpx 32rpx 24rpx;
+  background-color: #171f1a;
+  border-bottom: 1rpx solid rgba(166, 64, 45, 0.5);
+}
+
+.viewer-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.viewer-head__eyebrow {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.6;
+  letter-spacing: 5rpx;
+  color: rgba(250, 246, 238, 0.52);
+  text-transform: uppercase;
+}
+
+.viewer-head__name {
+  display: block;
+  font-size: 40rpx;
+  line-height: 1.3;
+  letter-spacing: 2rpx;
+  color: var(--arc-cream);
+}
+
+.viewer-head__badge {
+  flex: none;
+  margin-top: 4rpx;
+  padding: 8rpx 12rpx;
+  background-color: rgba(20, 27, 23, 0.9);
+  border: 1rpx solid rgba(250, 246, 238, 0.24);
+  border-radius: 4rpx;
+  font-size: 18rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  color: rgba(250, 246, 238, 0.66);
+}
+
+/* ---------- 全景画布 ---------- */
+.panorama-area {
+  position: relative;
+  width: 100%;
+  height: 760rpx;
+  overflow: hidden;
+  background-color: #0d130f;
+  border-bottom: 1rpx solid rgba(250, 246, 238, 0.12);
+}
+
+.panorama-canvas {
+  position: relative;
+  width: 1400rpx;
+  height: 760rpx;
+}
+
+.panorama-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: brightness(0.84) saturate(0.92);
+}
+
+/* ---------- 场景标记 ---------- */
+.hotspot {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 112rpx;
+  min-height: 88rpx;
+  margin: 0;
+  padding: 0 20rpx;
+  transform: translate(-50%, -50%);
+  background-color: rgba(20, 27, 23, 0.72);
+  border: 2rpx solid rgba(250, 246, 238, 0.82);
+  border-radius: 999rpx;
+  box-shadow: 0 6rpx 20rpx rgba(10, 14, 12, 0.45);
+  color: var(--arc-cream);
+  font-size: 24rpx;
+  line-height: 1.3;
+  letter-spacing: 2rpx;
+}
+
+.hotspot--press {
+  background-color: rgba(166, 64, 45, 0.78);
+  border-color: rgba(250, 246, 238, 0.98);
+}
+
+.hotspot-scene {
+  background-color: rgba(92, 107, 102, 0.82);
+  border-color: rgba(92, 107, 102, 0.94);
+}
+
+.hotspot-scene.hotspot--press {
+  background-color: rgba(166, 64, 45, 0.78);
+  border-color: rgba(250, 246, 238, 0.98);
+}
+
+/* ---------- 操作提示 ---------- */
+.viewer-help {
+  position: absolute;
+  top: 232rpx;
+  left: 50%;
+  z-index: 6;
+  max-width: calc(100% - 64rpx);
+  padding: 14rpx 24rpx;
+  transform: translateX(-50%);
+  background-color: rgba(20, 27, 23, 0.9);
+  border: 1rpx solid rgba(250, 246, 238, 0.28);
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  white-space: nowrap;
+  color: rgba(250, 246, 238, 0.9);
+}
+
+.viewer-help--press {
+  background-color: rgba(166, 64, 45, 0.8);
+}
+
+/* ---------- 说明 ---------- */
+.viewer-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 24rpx 32rpx 0;
+}
+
+.viewer-notice__mark {
+  flex: none;
+  width: 2rpx;
+  height: 24rpx;
+  margin-top: 8rpx;
+  background-color: rgba(166, 64, 45, 0.9);
+}
+
+.viewer-notice__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  line-height: 1.75;
+  letter-spacing: 0.5rpx;
+  color: rgba(250, 246, 238, 0.62);
+}
+
+/* ---------- 场景索引 ---------- */
+.viewer-index {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 26rpx 32rpx 0;
+}
+
+.viewer-index__label {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: rgba(250, 246, 238, 0.5);
+}
+
+.viewer-index__rule {
+  flex: 1;
+  height: 1rpx;
+  background-color: rgba(250, 246, 238, 0.16);
+}
+
+.viewer-index__meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: rgba(250, 246, 238, 0.5);
+}
+
+/* ---------- 场景条 ---------- */
+.scene-strip {
+  width: 100%;
+  padding: 16rpx 0 calc(30rpx + env(safe-area-inset-bottom));
+  white-space: nowrap;
+}
+
+.scene-strip__track {
+  display: inline-flex;
+  gap: 18rpx;
+  padding: 0 32rpx;
+  vertical-align: top;
+}
+
+.scene-card {
+  flex: none;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 10rpx;
+  box-sizing: border-box;
+  width: 220rpx;
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: rgba(250, 246, 238, 0.64);
+}
+
+.scene-card image {
+  display: block;
+  width: 220rpx;
+  height: 130rpx;
+  border: 1rpx solid rgba(250, 246, 238, 0.16);
+  border-radius: 6rpx;
+  opacity: 0.66;
+}
+
+.scene-card text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scene-card.active {
+  color: var(--arc-cream);
+}
+
+.scene-card.active image {
+  border-color: var(--arc-cream);
+  outline: 2rpx solid var(--arc-cream);
+  outline-offset: 2rpx;
+  opacity: 1;
+}
+
+.scene-card--press {
+  color: rgba(250, 246, 238, 0.92);
+}
+
+/* ---------- 标记说明弹层 ---------- */
+.sheet-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  background-color: rgba(8, 11, 9, 0.62);
+}
+
+.sheet-mask--press {
+  background-color: rgba(8, 11, 9, 0.68);
+}
+
+.viewer-sheet {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 12rpx 32rpx calc(34rpx + env(safe-area-inset-bottom));
+  background-color: var(--arc-cream);
+  border-top: 1rpx solid var(--arc-line-strong);
+  border-radius: 20rpx 20rpx 0 0;
+}
+
+.viewer-sheet__handle {
+  margin-bottom: 18rpx;
+  background-color: rgba(166, 64, 45, 0.5);
+}
+
+.viewer-sheet__eyebrow {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.6;
+  letter-spacing: 4rpx;
+  color: var(--arc-muted);
+}
+
+.viewer-sheet__title {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 40rpx;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.viewer-sheet__body {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--arc-blue);
+}
+
+.viewer-sheet__btn {
+  width: 100%;
+  min-height: 92rpx;
+  margin-top: 26rpx;
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .viewer-head__eyebrow {
+  font-size: 24rpx;
+}
+
+.font-large .viewer-head__name {
+  font-size: 52rpx;
+}
+
+.font-large .viewer-head__badge {
+  font-size: 22rpx;
+}
+
+.font-large .viewer-state__title {
+  font-size: 44rpx;
+}
+
+.font-large .viewer-state__body {
+  font-size: 32rpx;
+}
+
+.font-large .viewer-help {
+  font-size: 30rpx;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.font-large .viewer-notice__text {
+  font-size: 30rpx;
+}
+
+.font-large .viewer-index__label,
+.font-large .viewer-index__meta {
+  font-size: 22rpx;
+}
+
+.font-large .hotspot {
+  min-width: 132rpx;
+  min-height: 100rpx;
+  font-size: 28rpx;
+}
+
+.font-large .scene-card {
+  font-size: 28rpx;
+}
+
+.font-large .viewer-sheet__eyebrow {
+  font-size: 24rpx;
+}
+
+.font-large .viewer-sheet__title {
+  font-size: 48rpx;
+}
+
+.font-large .viewer-sheet__body {
+  font-size: 34rpx;
+}
+
+.font-large .viewer-state__btn,
+.font-large .viewer-sheet__btn {
+  min-height: 100rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.viewer-page.high-contrast {
+  background-color: #0a0d0b;
+  background-image: none;
+  color: #fff;
+}
+
+.high-contrast .viewer-head {
+  background-color: #0a0d0b;
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.high-contrast .viewer-state__card {
+  background-color: #0d120f;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.high-contrast .viewer-head__name,
+.high-contrast .viewer-head__eyebrow,
+.high-contrast .viewer-head__badge,
+.high-contrast .viewer-state__title,
+.high-contrast .viewer-state__body,
+.high-contrast .viewer-state__eyebrow,
+.high-contrast .viewer-notice__text,
+.high-contrast .viewer-help,
+.high-contrast .viewer-index__label,
+.high-contrast .viewer-index__meta,
+.high-contrast .scene-card,
+.high-contrast .scene-card.active {
+  color: #fff;
+}
+
+.high-contrast .hotspot {
+  background-color: rgba(20, 27, 23, 0.92);
+  border-color: #fff;
+  color: #fff;
+}
+
+.high-contrast .hotspot-scene {
+  background-color: var(--arc-blue);
+  border-color: #fff;
+}
+
+.high-contrast .viewer-help {
+  background-color: #0d120f;
+  border-color: #fff;
+}
+
+.high-contrast .viewer-head__badge {
+  border-color: #fff;
+}
+
+.high-contrast .viewer-index__rule {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.high-contrast .scene-card image {
+  border-color: rgba(255, 255, 255, 0.5);
+  opacity: 0.8;
+}
+
+.high-contrast .scene-card.active image {
+  border-color: #fff;
+  outline-color: #fff;
+  opacity: 1;
+}
+
+.high-contrast .viewer-sheet {
+  background-color: #fff;
+  border-top-color: #111;
+}
+
+.high-contrast .viewer-sheet__eyebrow {
+  color: #333;
+}
+
+.high-contrast .viewer-sheet__title,
+.high-contrast .viewer-sheet__body {
+  color: #111;
+}
+
+.high-contrast .viewer-state__btn {
+  background-color: #fff;
+  border-color: #fff;
+  color: #111;
+}

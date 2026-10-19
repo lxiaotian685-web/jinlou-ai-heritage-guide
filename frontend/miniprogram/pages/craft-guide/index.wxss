@@ -1,19 +1,485 @@
-.state { padding: 32rpx; margin: 32rpx; display: flex; flex-direction: column; gap: 24rpx; }
-.heading { display: flex; flex-direction: column; gap: 18rpx; padding-bottom: 30rpx; }
-.eyebrow { color: #8a6a2b; font-size: 24rpx; letter-spacing: 2rpx; }
-.title { font-size: 50rpx; font-weight: 600; }
-.summary { color: #5d534c; font-size: 27rpx; line-height: 1.7; }
-.diagram { position: relative; height: 480rpx; overflow: hidden; }
-.diagram image { width: 100%; height: 100%; }
-.diagram-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24, 18, 13, 0.08), rgba(24, 18, 13, 0.52)); }
-.focus-ring { position: absolute; left: 46%; top: 36%; width: 92rpx; height: 92rpx; border: 4rpx solid #ead596; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fffaf0; background: rgba(56, 44, 36, 0.72); font-size: 34rpx; }
-.diagram-label { position: absolute; left: 32rpx; bottom: 26rpx; color: #fffaf0; font-size: 24rpx; }
-.step-tabs { display: flex; gap: 18rpx; margin-bottom: 22rpx; }
-.step-tab { width: 72rpx; height: 72rpx; line-height: 72rpx; margin: 0; padding: 0; border-radius: 50%; background: #e9e1d2; color: #6e625a; font-size: 26rpx; }
-.step-tab.active { background: #382c24; color: #fffaf0; }
-.step-card { padding: 30rpx; display: flex; flex-direction: column; gap: 16rpx; }
-.step-index { color: #8a6a2b; font-size: 23rpx; }
-.step-title { font-size: 34rpx; font-weight: 600; }
-.step-description { color: #554b45; font-size: 27rpx; line-height: 1.75; }
-.model-button { margin: 26rpx 0 0; background: #ede8de; color: #7b581b; border-radius: 16rpx; font-size: 27rpx; }
-.notice { margin-top: 20rpx; color: #7a716b; font-size: 24rpx; line-height: 1.6; text-align: center; }
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   工艺图解 · B 蚝壳青灰
+   编辑式图版：浅色页头、通栏大图、编号步骤与档案卡。
+   ========================================================================== */
+
+.craft-page {
+  box-sizing: border-box;
+  padding: 0 0 calc(52rpx + env(safe-area-inset-bottom));
+}
+
+/* ---------- 加载 / 错误 ---------- */
+.craft-state {
+  padding: 36rpx 32rpx 0;
+}
+
+.craft-state__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding: 32rpx;
+}
+
+.craft-state__title {
+  font-size: 34rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.craft-state__line {
+  width: 88rpx;
+  height: 2rpx;
+  background: var(--arc-red);
+}
+
+.craft-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14rpx;
+  margin: 36rpx 32rpx 0;
+}
+
+.craft-error__title {
+  font-size: 36rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.craft-error__body {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--arc-muted);
+}
+
+.craft-error__btn {
+  width: auto;
+  min-width: 260rpx;
+  min-height: 88rpx;
+  margin-top: 4rpx;
+}
+
+/* ---------- 页头 ---------- */
+.craft-head {
+  padding: 36rpx 32rpx 0;
+}
+
+.craft-head__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.craft-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.craft-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 16rpx;
+}
+
+.craft-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.craft-head__kicker {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-blue);
+}
+
+.craft-head__title {
+  font-size: 52rpx;
+  line-height: 1.28;
+  letter-spacing: 2rpx;
+}
+
+.craft-head__seal {
+  flex: none;
+  margin-top: 4rpx;
+}
+
+.craft-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 24rpx;
+}
+
+.craft-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.craft-head__rule-meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 通栏图版 ---------- */
+.craft-figure {
+  margin-top: 26rpx;
+}
+
+.craft-figure__plate {
+  height: 480rpx;
+  border-left: 0;
+  border-right: 0;
+}
+
+.craft-figure__plate::after {
+  z-index: 4;
+}
+
+.craft-figure__scrim {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(20, 28, 24, 0.1) 0%, rgba(20, 28, 24, 0.04) 46%, rgba(20, 28, 24, 0.62) 100%);
+  pointer-events: none;
+}
+
+.craft-figure__focus {
+  position: absolute;
+  left: 46%;
+  top: 34%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+  width: 128rpx;
+  height: 128rpx;
+  border: 3rpx solid var(--arc-cream);
+  border-radius: 50%;
+  background: rgba(20, 28, 24, 0.46);
+}
+
+.craft-figure__focus-num {
+  font-size: 30rpx;
+  line-height: 1;
+  letter-spacing: 1rpx;
+  color: var(--arc-cream);
+}
+
+.craft-figure__focus-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: var(--arc-red);
+  box-shadow: 0 0 0 4rpx rgba(166, 64, 45, 0.32);
+}
+
+.craft-figure__label {
+  position: absolute;
+  left: 32rpx;
+  bottom: 26rpx;
+  z-index: 3;
+  padding: 4rpx 10rpx;
+  background: rgba(20, 28, 24, 0.62);
+  border: 1rpx solid rgba(250, 246, 238, 0.42);
+  border-radius: 2rpx;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: var(--arc-cream);
+}
+
+.craft-figure__caption {
+  padding: 0 32rpx;
+}
+
+/* ---------- 步骤 ---------- */
+.craft-body {
+  padding: 28rpx 32rpx 0;
+}
+
+.craft-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-bottom: 20rpx;
+}
+
+.craft-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 80rpx;
+  height: 80rpx;
+  min-height: 80rpx;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 6rpx;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 26rpx;
+  line-height: 1;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.craft-tab::after {
+  border: 0;
+}
+
+.craft-tab--active {
+  background: var(--arc-ink);
+  border-color: var(--arc-ink);
+  color: var(--arc-cream);
+}
+
+.craft-tab--press {
+  opacity: 0.82;
+}
+
+.craft-step {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding: 28rpx 28rpx 30rpx;
+}
+
+.craft-step__ghost {
+  right: 14rpx;
+  bottom: -28rpx;
+  font-size: 160rpx;
+}
+
+.craft-step__eyebrow {
+  position: relative;
+  z-index: 2;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--arc-red);
+}
+
+.craft-step__title {
+  position: relative;
+  z-index: 2;
+  font-size: 40rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.craft-step__hair {
+  position: relative;
+  z-index: 2;
+  margin: 8rpx 0 4rpx;
+}
+
+.craft-step__desc {
+  position: relative;
+  z-index: 2;
+  font-size: 27rpx;
+  line-height: 1.75;
+  letter-spacing: 0.5rpx;
+  color: var(--arc-blue);
+}
+
+/* ---------- 3D 模型动作 ---------- */
+.craft-model {
+  width: 100%;
+  min-height: 92rpx;
+  margin-top: 24rpx;
+  font-size: 27rpx;
+  letter-spacing: 2rpx;
+}
+
+.craft-model--pending {
+  background: transparent;
+  border-width: 2rpx;
+  border-style: dashed;
+  border-color: var(--arc-line-strong);
+  color: var(--arc-muted);
+}
+
+.craft-model--press {
+  opacity: 0.84;
+}
+
+.craft-notice {
+  display: block;
+  margin-top: 18rpx;
+  text-align: center;
+  font-size: 22rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 页脚 ---------- */
+.craft-foot {
+  margin: 40rpx 32rpx 0;
+}
+
+.craft-foot__note {
+  display: block;
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: 22rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .craft-head__title {
+  font-size: 64rpx;
+}
+
+.font-large .craft-head__kicker {
+  font-size: 26rpx;
+}
+
+.font-large .craft-figure__label {
+  font-size: 24rpx;
+}
+
+.font-large .craft-figure__focus {
+  width: 144rpx;
+  height: 144rpx;
+}
+
+.font-large .craft-figure__focus-num {
+  font-size: 36rpx;
+}
+
+.font-large .craft-tab {
+  width: 80rpx;
+  height: 80rpx;
+  min-height: 80rpx;
+  font-size: 30rpx;
+}
+
+.font-large .craft-step__eyebrow {
+  font-size: 26rpx;
+}
+
+.font-large .craft-step__title {
+  font-size: 46rpx;
+}
+
+.font-large .craft-step__desc {
+  font-size: 32rpx;
+  line-height: 1.8;
+}
+
+.font-large .craft-model {
+  min-height: 100rpx;
+  font-size: 32rpx;
+}
+
+.font-large .craft-error__btn {
+  min-height: 100rpx;
+}
+
+.font-large .craft-notice,
+.font-large .craft-foot__note {
+  font-size: 28rpx;
+}
+
+.font-large .craft-state__title,
+.font-large .craft-error__title {
+  font-size: 40rpx;
+}
+
+.font-large .craft-error__body {
+  font-size: 30rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.craft-page.high-contrast {
+  background-color: #fff;
+  background-image: none;
+}
+
+.high-contrast .arc-card,
+.high-contrast .arc-empty {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .craft-head__kicker {
+  color: #111;
+}
+
+.high-contrast .craft-head__folio,
+.high-contrast .craft-head__rule-meta,
+.high-contrast .craft-figure__caption {
+  color: #222;
+}
+
+.high-contrast .craft-step__desc,
+.high-contrast .craft-notice,
+.high-contrast .craft-foot__note,
+.high-contrast .craft-error__body {
+  color: #222;
+}
+
+.high-contrast .craft-step__eyebrow {
+  color: var(--arc-red);
+}
+
+.high-contrast .craft-tab {
+  border-color: #393939;
+  color: #111;
+}
+
+.high-contrast .craft-tab--active {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.high-contrast .craft-model--pending {
+  border-color: #393939;
+  color: #222;
+}
+
+.high-contrast .arc-hair--dot {
+  background: transparent;
+}
+
+.high-contrast .arc-hair--dot::before,
+.high-contrast .arc-hair--dot::after {
+  background: #393939;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .craft-tab,
+  .craft-model {
+    transition: none;
+  }
+}

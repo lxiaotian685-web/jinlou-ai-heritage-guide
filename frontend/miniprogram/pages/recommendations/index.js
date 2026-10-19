@@ -112,6 +112,7 @@ Page({
     activeItem: null,
     displayClass: '',
     isLarge: false,
+    showSpecimen: false,
   },
 
   onLoad(options) {
@@ -137,6 +138,7 @@ Page({
       emptyState: { headline: CATEGORY_META[requested].headline, body: EMPTY_BODY },
       displayClass: getDisplayClass(),
       isLarge: getDisplaySettings().fontSize === 'large',
+      showSpecimen: params.specimen === '1',
     });
     this.loadRecommendations();
   },

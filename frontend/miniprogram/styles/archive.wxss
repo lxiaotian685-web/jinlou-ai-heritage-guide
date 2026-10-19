@@ -10,7 +10,8 @@ page {
   --arc-paper: #e7e1d5;
   --arc-ink: #243029;
   --arc-blue: #5c6b66;
-  --arc-muted: #6e7a72;
+  /* 4.97:1 on oyster — meets WCAG AA for small text (old #6e7a72 was 3.84:1). */
+  --arc-muted: #5d6862;
   --arc-line: #d8d2c6;
   --arc-line-strong: #b9b3a5;
   --arc-red: #a6402d;
@@ -242,7 +243,7 @@ page {
   padding: 3rpx 10rpx;
   border: 1rpx dashed rgba(166, 64, 45, 0.4);
   border-radius: 4rpx;
-  font-size: 17rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 1rpx;
   color: var(--arc-red);
@@ -326,6 +327,9 @@ page {
   bottom: 0;
   z-index: 31;
   box-sizing: border-box;
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 12rpx 32rpx calc(28rpx + env(safe-area-inset-bottom));
   background: var(--arc-cream);
   border-radius: 20rpx 20rpx 0 0;
@@ -347,7 +351,8 @@ page {
   justify-content: center;
   gap: 10rpx;
   box-sizing: border-box;
-  min-height: 84rpx;
+  /* 88rpx = 44px at the 390px design width: minimum comfortable tap target. */
+  min-height: 88rpx;
   margin: 0;
   padding: 0 24rpx;
   border: 1rpx solid var(--arc-ink);
@@ -376,6 +381,69 @@ page {
   border-color: var(--arc-line);
   color: var(--arc-muted);
   opacity: 0.75;
+}
+
+/* ---------- 文字动作：仍是按钮，但保持 88rpx 触控高度 ---------- */
+.arc-text-btn {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto;
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0 2rpx 8rpx;
+  background: transparent;
+  border: 0;
+  border-bottom: 1rpx solid var(--arc-line-strong);
+  border-radius: 0;
+  font-size: 22rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-blue);
+}
+
+.arc-text-btn--red {
+  border-bottom-color: rgba(166, 64, 45, 0.5);
+  color: var(--arc-red);
+}
+
+/* ---------- 高对比基线（页面可再补充局部规则） ---------- */
+.arc-page.high-contrast {
+  background: #fff;
+  background-image: none;
+  color: #111;
+}
+
+.high-contrast .arc-card,
+.high-contrast .arc-empty {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .arc-eyebrow,
+.high-contrast .arc-lede,
+.high-contrast .arc-caption,
+.high-contrast .arc-head__index,
+.high-contrast .arc-head__meta,
+.high-contrast .arc-pending {
+  color: #222;
+}
+
+.high-contrast .arc-hair,
+.high-contrast .arc-empty__rule,
+.high-contrast .arc-head__rule {
+  background: #393939;
+}
+
+.high-contrast .arc-text-btn {
+  color: #111;
+  border-bottom-color: #111;
+}
+
+.high-contrast .arc-btn--ghost {
+  color: #111;
+  border-color: #393939;
 }
 
 /* ---------- 大字模式适配 ---------- */

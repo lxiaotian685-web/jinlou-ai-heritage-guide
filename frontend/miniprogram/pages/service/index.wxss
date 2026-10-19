@@ -5,7 +5,7 @@
    ========================================================================== */
 
 .svc-page {
-  --svc-gold: #c6a15b;
+  --svc-accent: #e7e1d5;
   box-sizing: border-box;
   padding: 0 0 calc(48rpx + env(safe-area-inset-bottom));
 }
@@ -70,7 +70,7 @@
 
 .svc-head__rule-meta {
   flex: none;
-  font-size: 17rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
   color: var(--arc-muted);
 }
@@ -126,7 +126,7 @@
 
 .ticket-panel.arc-card--ticks::before,
 .ticket-panel.arc-card--ticks::after {
-  border-color: var(--svc-gold);
+  border-color: var(--svc-accent);
   opacity: 0.8;
 }
 
@@ -147,17 +147,17 @@
   width: 84rpx;
   height: 84rpx;
   box-sizing: border-box;
-  border: 1rpx solid rgba(198, 161, 91, 0.6);
-  box-shadow: inset 0 0 0 6rpx var(--arc-ink), inset 0 0 0 7rpx rgba(198, 161, 91, 0.4);
+  border: 1rpx solid rgba(231, 225, 213, 0.5);
+  box-shadow: inset 0 0 0 6rpx var(--arc-ink), inset 0 0 0 7rpx rgba(231, 225, 213, 0.32);
   border-radius: 8rpx;
   transform: rotate(4deg);
   font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
   font-size: 30rpx;
-  color: var(--svc-gold);
+  color: var(--svc-accent);
 }
 
 .ticket-panel__eyebrow {
-  color: var(--svc-gold);
+  color: var(--svc-accent);
   letter-spacing: 4rpx;
 }
 
@@ -184,7 +184,7 @@
   width: 10rpx;
   height: 10rpx;
   border-radius: 50%;
-  background: var(--svc-gold);
+  background: var(--svc-accent);
 }
 
 .ticket-panel__actions {
@@ -203,14 +203,15 @@
   letter-spacing: 3rpx;
 }
 
-.ticket-panel__primary.is-disabled {
-  background: transparent;
-  border-color: rgba(250, 246, 238, 0.26);
-  color: rgba(250, 246, 238, 0.56);
+/* 未配置时仍保留“可点击了解原因”的按钮感，而不是伪装成禁用。 */
+.ticket-panel__primary--pending {
+  background: rgba(250, 246, 238, 0.09);
+  border-color: rgba(250, 246, 238, 0.32);
+  color: rgba(250, 246, 238, 0.84);
 }
 
 .ticket-panel__secondary {
-  min-height: 84rpx;
+  min-height: 88rpx;
   background: transparent;
   border-color: rgba(250, 246, 238, 0.34);
   color: rgba(250, 246, 238, 0.86);
@@ -237,7 +238,7 @@
   margin-top: 6rpx;
   font-size: 19rpx;
   letter-spacing: 2rpx;
-  color: rgba(198, 161, 91, 0.85);
+  color: rgba(231, 225, 213, 0.86);
 }
 
 /* ---------- 购票三态对照 ---------- */
@@ -254,7 +255,7 @@
 
 .ticket-matrix__label {
   flex: none;
-  font-size: 17rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
   color: var(--arc-muted);
 }
@@ -267,7 +268,7 @@
 
 .ticket-matrix__meta {
   flex: none;
-  font-size: 17rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
 }
@@ -284,9 +285,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 3rpx;
-  padding: 16rpx 14rpx 15rpx;
+  padding: 16rpx 10rpx 15rpx;
   border-left: 1rpx solid var(--arc-line);
+  text-align: center;
 }
 
 .ticket-state:first-child {
@@ -294,7 +297,7 @@
 }
 
 .ticket-state__index {
-  font-size: 16rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
 }
@@ -307,7 +310,7 @@
 }
 
 .ticket-state__meta {
-  font-size: 16rpx;
+  font-size: 18rpx;
   letter-spacing: 1rpx;
   color: var(--arc-muted);
 }
@@ -386,17 +389,18 @@
 }
 
 .visit-action {
-  min-height: 84rpx;
+  min-height: 88rpx;
   padding: 0 8rpx;
   font-size: 23rpx;
   letter-spacing: 2rpx;
 }
 
-.is-disabled {
-  border-color: var(--arc-line) !important;
+/* 能力位未开启时仍是可点按钮：虚线边 + 次要色，点按后给出原因。 */
+.is-pending {
+  border-color: var(--arc-line-strong) !important;
+  border-style: dashed !important;
   color: var(--arc-muted) !important;
   background: transparent !important;
-  opacity: 0.72;
 }
 
 /* ---------- 交通与停车 ---------- */
@@ -451,7 +455,10 @@
 
 .plate__grid {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background-image:
     linear-gradient(rgba(36, 48, 41, 0.05) 1rpx, transparent 1rpx),
     linear-gradient(90deg, rgba(36, 48, 41, 0.05) 1rpx, transparent 1rpx);
@@ -551,7 +558,7 @@
   position: absolute;
   left: 22rpx;
   bottom: 16rpx;
-  font-size: 15rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
   color: var(--arc-muted);
 }
@@ -574,36 +581,135 @@
 
 .nearby-card {
   flex: none;
-  width: 280rpx;
-  padding: 12rpx 12rpx 16rpx;
+  width: 286rpx;
+  padding: 10rpx 10rpx 14rpx;
   display: flex;
   flex-direction: column;
-  gap: 6rpx;
 }
 
-.nearby-card__photo {
+.nearby-card__media {
+  position: relative;
   width: 100%;
   height: 220rpx;
+  overflow: hidden;
   border: 1rpx solid var(--arc-line);
 }
 
-.nearby-card__index {
-  margin-top: 10rpx;
-  font-size: 16rpx;
-  letter-spacing: 3rpx;
-  color: var(--arc-red);
+.nearby-card__image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-filter: saturate(0.55) sepia(0.16) contrast(0.95) brightness(0.9);
+  filter: saturate(0.55) sepia(0.16) contrast(0.95) brightness(0.9);
 }
 
-.nearby-card__name {
-  font-size: 30rpx;
+.nearby-card__wash {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(250, 246, 238, 0.62);
+  pointer-events: none;
+}
+
+.nearby-card__mark {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  font-size: 88rpx;
+  line-height: 1;
   letter-spacing: 2rpx;
+  color: rgba(36, 48, 41, 0.14);
+  pointer-events: none;
+}
+
+.nearby-card__code {
+  position: absolute;
+  left: 14rpx;
+  top: 12rpx;
+  box-sizing: border-box;
+  padding: 4rpx 8rpx;
+  background: rgba(250, 246, 238, 0.92);
+  border: 1rpx solid var(--arc-line);
+  border-radius: 2rpx;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: var(--arc-blue);
+}
+
+.nearby-card__note {
+  position: absolute;
+  right: 14rpx;
+  top: 12rpx;
+  box-sizing: border-box;
+  padding: 4rpx 8rpx;
+  background: rgba(250, 246, 238, 0.92);
+  border: 1rpx solid var(--arc-line);
+  border-radius: 2rpx;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.nearby-card__hint {
+  position: absolute;
+  left: 14rpx;
+  bottom: 12rpx;
+  padding: 4rpx 8rpx;
+  background: rgba(250, 246, 238, 0.92);
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 2rpx;
+  font-size: 18rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.nearby-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 5rpx;
+  padding: 12rpx 6rpx 2rpx;
+}
+
+.nearby-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8rpx;
+}
+
+.nearby-card__label {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
   color: var(--arc-ink);
 }
 
+.nearby-card__tag {
+  flex: none;
+  font-size: 18rpx;
+}
+
 .nearby-card__meta {
-  font-size: 17rpx;
+  font-size: 19rpx;
+  line-height: 1.5;
   letter-spacing: 1rpx;
   color: var(--arc-muted);
+}
+
+.nearby-card--press {
+  background: var(--arc-paper);
 }
 
 .nearby-link {
@@ -626,6 +732,10 @@
 .nearby-link__arrow {
   font-size: 28rpx;
   color: var(--arc-red);
+}
+
+.nearby-link--press {
+  opacity: 0.7;
 }
 
 /* ---------- 开放与咨询 ---------- */
@@ -658,6 +768,14 @@
   color: var(--arc-ink);
 }
 
+.info-row__value-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6rpx;
+  min-width: 0;
+}
+
 .info-row__copy {
   flex: 1;
   min-width: 0;
@@ -666,7 +784,7 @@
 .info-row__action {
   flex: none;
   min-width: 168rpx;
-  min-height: 84rpx;
+  min-height: 88rpx;
   font-size: 23rpx;
   letter-spacing: 2rpx;
 }
@@ -690,7 +808,7 @@
 }
 
 .svc-foot .arc-hair--dot text {
-  font-size: 15rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
 }
 
@@ -776,7 +894,7 @@
 .ticket-linkfield__action {
   flex: none;
   min-width: 128rpx;
-  min-height: 84rpx;
+  min-height: 88rpx;
   margin: 0;
   padding: 0 20rpx;
   background: var(--arc-ink);
@@ -846,17 +964,10 @@
   color: var(--arc-muted);
 }
 
-.ticket-sheet__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14rpx;
-  margin-top: 20rpx;
-}
-
-.ticket-sheet__actions .arc-btn {
+.ticket-sheet__back {
+  width: 100%;
   min-height: 88rpx;
-  font-size: 25rpx;
-  letter-spacing: 2rpx;
+  margin-top: 20rpx;
 }
 
 /* ---------- 大字模式 ---------- */
@@ -886,9 +997,19 @@
 
 .font-large .visit-card__text,
 .font-large .visit-card__label,
-.font-large .info-row__label {
+.font-large .info-row__label,
+.font-large .info-row__value {
   font-size: 30rpx;
   line-height: 1.8;
+}
+
+.font-large .svc-foot__note,
+.font-large .nearby-card__meta {
+  font-size: 24rpx;
+}
+
+.font-large .plate__micro {
+  font-size: 22rpx;
 }
 
 .font-large .visit-actions {
@@ -906,6 +1027,20 @@
 
 .font-large .nearby-card {
   width: 320rpx;
+}
+
+.font-large .nearby-card__media {
+  height: 240rpx;
+}
+
+.font-large .nearby-card__label {
+  font-size: 32rpx;
+}
+
+.font-large .nearby-card__code,
+.font-large .nearby-card__hint,
+.font-large .nearby-card__tag {
+  font-size: 22rpx;
 }
 
 .font-large .nearby-link__text,
@@ -933,4 +1068,34 @@
 .high-contrast .info-row__value,
 .high-contrast .nearby-link__text {
   color: #111;
+}
+
+.high-contrast .nearby-card__image,
+.high-contrast .nearby-card__wash {
+  display: none;
+}
+
+.high-contrast .nearby-card__media {
+  border-color: #393939;
+  background: #fff;
+}
+
+.high-contrast .nearby-card__mark {
+  color: rgba(17, 17, 17, 0.18);
+}
+
+.high-contrast .nearby-card__code,
+.high-contrast .nearby-card__note,
+.high-contrast .nearby-card__hint {
+  background: #fff;
+  border-color: #393939;
+  color: #111;
+}
+
+.high-contrast .nearby-card__label {
+  color: #111;
+}
+
+.high-contrast .nearby-card__meta {
+  color: #222;
 }

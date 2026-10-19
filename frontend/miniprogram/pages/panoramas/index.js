@@ -1,8 +1,10 @@
 const { getPanoramas } = require('../../services/api');
+const { getDisplayClass } = require('../../utils/display-settings');
 
 Page({
-  data: { panoramas: [], loading: true, error: '' },
+  data: { panoramas: [], loading: true, error: '', displayClass: '' },
   onShow() {
+    this.setData({ displayClass: getDisplayClass() });
     if (!this.loaded) this.loadPanoramas();
   },
   async loadPanoramas() {

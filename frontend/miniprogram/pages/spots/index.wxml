@@ -55,7 +55,7 @@
           <text class="tools__meta">ON THIS DEVICE</text>
         </view>
         <view class="search-row">
-          <input class="search-input" value="{{keyword}}" placeholder="搜索景点名称、类别或简介" confirm-type="search" bindinput="handleSearch" />
+          <input class="search-input" value="{{keyword}}" placeholder="搜索景点名称、类别或简介" placeholder-class="search-placeholder" confirm-type="search" bindinput="handleSearch" aria-label="搜索景点名称、类别或简介" />
           <button wx:if="{{keyword || activeCategory !== '全部' || favoritesOnly || unvisitedOnly || sortMode !== 'default'}}" class="reset-button" bindtap="resetFilters">清空</button>
         </view>
         <view class="personal-filter-row">
@@ -86,9 +86,9 @@
       </view>
 
       <view wx:else class="list">
-        <view wx:for="{{filteredSpots}}" wx:key="id" class="spot arc-card arc-card--ticks" hover-class="spot--press" data-id="{{item.id}}" bindtap="openSpot">
+        <view wx:for="{{filteredSpots}}" wx:key="id" class="spot arc-card arc-card--ticks" hover-class="spot--press" data-id="{{item.id}}" bindtap="openSpot" aria-role="button" aria-label="{{item.name}}，查看景点档案">
           <view class="spot__media arc-photo">
-            <image class="spot__cover" src="{{item.coverImage}}" mode="aspectFill" />
+            <image class="spot__cover" src="{{item.coverImage}}" mode="aspectFill" lazy-load="{{true}}" />
             <view class="spot__shade"></view>
             <view class="spot__folio">
               <text class="spot__folio-label">NO.</text>

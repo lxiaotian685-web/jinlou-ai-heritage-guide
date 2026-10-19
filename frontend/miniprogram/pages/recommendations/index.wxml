@@ -63,6 +63,10 @@
       class="tab {{activeCategory === item.key ? 'tab--active' : ''}}"
       data-key="{{item.key}}"
       bindtap="switchCategory"
+      hover-class="tab--press"
+      hover-stay-time="80"
+      aria-role="button"
+      aria-label="{{item.label}}分类"
     >
       <text class="tab__label">{{item.label}}</text>
       <text class="tab__index">{{item.en}}</text>
@@ -107,6 +111,7 @@
             class="card-image"
             src="{{item.image}}"
             mode="aspectFill"
+            lazy-load="{{true}}"
             data-index="{{index}}"
             binderror="onImageError"
           />
@@ -193,7 +198,7 @@
       </view>
     </view>
 
-    <view class="demo-block">
+    <view wx:if="{{showSpecimen}}" class="demo-block">
       <view class="arc-head demo-head">
         <text class="arc-head__index">03</text>
         <text class="arc-head__label">空白状态</text>
@@ -237,7 +242,7 @@
   </view>
 
   <block wx:if="{{activeItem}}">
-    <view class="arc-mask" bindtap="closeDetail"></view>
+    <view class="arc-mask" bindtap="closeDetail" aria-role="button" aria-label="关闭详情"></view>
     <view class="arc-sheet rec-sheet" catchtap="stopPropagation">
       <view class="arc-sheet__handle"></view>
 

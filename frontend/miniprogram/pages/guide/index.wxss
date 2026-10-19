@@ -34,10 +34,10 @@
 
 .guide-head__folio {
   flex: none;
-  font-size: 17rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 3rpx;
-  color: rgba(250, 246, 238, 0.46);
+  color: rgba(250, 246, 238, 0.56);
 }
 
 .guide-head__main {
@@ -76,7 +76,7 @@
   width: 80rpx;
   height: 80rpx;
   margin-top: 6rpx;
-  border-color: rgba(250, 246, 238, 0.5);
+  border-color: rgba(250, 246, 238, 0.56);
   box-shadow: inset 0 0 0 4rpx var(--arc-ink), inset 0 0 0 5rpx rgba(250, 246, 238, 0.5);
   color: rgba(250, 246, 238, 0.86);
   font-size: 21rpx;
@@ -97,10 +97,10 @@
 
 .guide-head__rule-meta {
   flex: none;
-  font-size: 17rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 3rpx;
-  color: rgba(250, 246, 238, 0.46);
+  color: rgba(250, 246, 238, 0.56);
 }
 
 .guide-body {
@@ -154,6 +154,7 @@
 
 .map-plate__inner {
   position: relative;
+  box-sizing: border-box;
   height: 686rpx;
   overflow: hidden;
   background: var(--arc-paper);
@@ -213,7 +214,7 @@
   background: var(--arc-ink);
   border: 1rpx solid rgba(250, 246, 238, 0.28);
   border-radius: 2rpx;
-  font-size: 17rpx;
+  font-size: 18rpx;
   line-height: 1.4;
   letter-spacing: 2rpx;
   color: var(--arc-cream);
@@ -252,6 +253,24 @@
   color: var(--arc-cream);
 }
 
+/* 可见圆点 42rpx，实际触控区扩到 82rpx，避免地图点位难以点中。 */
+.site-dot::after {
+  content: "";
+  position: absolute;
+  top: -20rpx;
+  right: -20rpx;
+  bottom: -20rpx;
+  left: -20rpx;
+}
+
+.site-dot--press {
+  background: var(--arc-red);
+}
+
+.route-poi--press {
+  opacity: 0.88;
+}
+
 .poi {
   position: absolute;
 }
@@ -283,16 +302,26 @@
   white-space: nowrap;
 }
 
+/* 游线点位加一层透明触控边距，视觉不变，点按更容易。 */
+.route-poi::after {
+  content: "";
+  position: absolute;
+  top: -14rpx;
+  right: -10rpx;
+  bottom: -14rpx;
+  left: -10rpx;
+}
+
 .poi-number {
   flex: none;
-  width: 28rpx;
-  height: 28rpx;
+  width: 30rpx;
+  height: 30rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: rgba(250, 246, 238, 0.92);
-  font-size: 15rpx;
+  font-size: 18rpx;
   line-height: 1;
   color: var(--arc-ink);
 }
@@ -390,7 +419,7 @@
 .point-sheet__open {
   flex: none;
   width: auto;
-  min-height: 70rpx;
+  min-height: 88rpx;
   padding: 0 22rpx;
   font-size: 23rpx;
 }
@@ -398,11 +427,11 @@
 .text-btn {
   flex: none;
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end;
   width: auto;
-  min-height: 52rpx;
+  min-height: 64rpx;
   margin: 0;
-  padding: 0 4rpx;
+  padding: 0 4rpx 8rpx;
   border: 0;
   border-bottom: 1rpx solid var(--arc-line-strong);
   border-radius: 0;
@@ -410,7 +439,7 @@
   font-size: 21rpx;
   line-height: 1.4;
   letter-spacing: 1rpx;
-  color: var(--arc-muted);
+  color: var(--arc-blue);
 }
 
 /* ---------- 点位索引 ---------- */
@@ -444,22 +473,27 @@
 
 .point-item {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12rpx;
   min-width: 0;
-  padding: 9rpx 0;
+  min-height: 64rpx;
+  padding: 6rpx 0;
+}
+
+.point-item--press {
+  background: var(--arc-paper);
 }
 
 .point-number {
   flex: none;
-  width: 34rpx;
-  height: 34rpx;
+  width: 36rpx;
+  height: 36rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1rpx solid var(--arc-line-strong);
   border-radius: 50%;
-  font-size: 16rpx;
+  font-size: 18rpx;
   line-height: 1;
   color: var(--arc-blue);
 }
@@ -683,7 +717,7 @@
 .route-now__btn {
   flex: none;
   width: auto;
-  min-height: 72rpx;
+  min-height: 88rpx;
   padding: 0 20rpx;
   font-size: 22rpx;
 }
@@ -810,6 +844,26 @@
 /* ---------- 大字模式 ---------- */
 .font-large .guide-head__title {
   font-size: 74rpx;
+}
+
+.font-large .guide-head__folio,
+.font-large .guide-head__rule-meta {
+  font-size: 22rpx;
+}
+
+.font-large .text-btn {
+  min-height: 72rpx;
+  font-size: 26rpx;
+}
+
+.font-large .point-sheet__open {
+  min-height: 88rpx;
+  font-size: 28rpx;
+}
+
+.font-large .route-now__btn {
+  min-height: 88rpx;
+  font-size: 26rpx;
 }
 
 .font-large .guide-head__lede {
@@ -949,6 +1003,12 @@
 
 .high-contrast .map-status__key {
   color: #333;
+}
+
+.high-contrast .text-btn {
+  border: 0;
+  border-bottom: 2rpx solid #111;
+  color: #111;
 }
 
 .high-contrast .selected-route__ghost {

@@ -105,9 +105,9 @@
     </view>
 
     <view class="entry-grid">
-      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToPanoramas" hover-class="entry--press" hover-stay-time="80" aria-role="button">
+      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToPanoramas" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="全景漫游，体验交互框架">
         <view class="arc-photo entry__media">
-          <image src="/images/arc/arc-pond.jpg" mode="aspectFill" />
+          <image src="/images/arc/arc-pond.jpg" mode="aspectFill" lazy-load="{{true}}" />
           <view class="entry__grade"></view>
           <view class="entry__scrim"></view>
         </view>
@@ -119,9 +119,9 @@
         </view>
       </view>
 
-      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToAssistant" hover-class="entry--press" hover-stay-time="80" aria-role="button">
+      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToAssistant" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="常见问题，查看景区资料答疑">
         <view class="arc-photo entry__media">
-          <image src="/images/arc/arc-hall.jpg" mode="aspectFill" />
+          <image src="/images/arc/arc-hall.jpg" mode="aspectFill" lazy-load="{{true}}" />
           <view class="entry__grade"></view>
           <view class="entry__scrim"></view>
         </view>
@@ -133,9 +133,9 @@
         </view>
       </view>
 
-      <view class="entry entry--wide arc-card arc-card--ticks" bindtap="goToVisitCenter" hover-class="entry--press" hover-stay-time="80" aria-role="button">
+      <view class="entry entry--wide arc-card arc-card--ticks" bindtap="goToVisitCenter" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="我的游览，收藏、进度与当前路线">
         <view class="arc-photo entry__media">
-          <image src="/images/arc/arc-courtyard.jpg" mode="aspectFill" />
+          <image src="/images/arc/arc-courtyard.jpg" mode="aspectFill" lazy-load="{{true}}" />
           <view class="entry__grade"></view>
           <view class="entry__scrim"></view>
         </view>

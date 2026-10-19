@@ -29,6 +29,10 @@
 .high-contrast .card-source,
 .high-contrast .card-missing,
 .high-contrast .empty-body,
+.high-contrast .error-body,
+.high-contrast .loading-note,
+.high-contrast .empty-caption,
+.high-contrast .tab__index,
 .high-contrast .sheet-fact__key,
 .high-contrast .sheet-source,
 .high-contrast .a11y-copy__note,
@@ -39,10 +43,45 @@
   color: #222;
 }
 
+.high-contrast .a11y-pill {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .a11y-switch {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .a11y-switch__knob {
+  background: #111;
+  border-color: #111;
+}
+
+.high-contrast .a11y-pill.is-on .a11y-switch {
+  background: #111;
+  border-color: #111;
+}
+
+.high-contrast .a11y-pill.is-on .a11y-switch__knob {
+  background: #fff;
+  border-color: #fff;
+}
+
 .high-contrast .material-label,
 .high-contrast .arc-tag {
   color: #111;
   border-color: #393939;
+}
+
+.high-contrast .link-btn {
+  border: 0;
+  border-bottom: 2rpx solid #111;
+  color: #111;
+}
+
+.high-contrast .link-btn--quiet {
+  border-bottom-color: transparent;
 }
 
 .high-contrast .demo-caption text:last-child {
@@ -204,10 +243,14 @@
 }
 
 .tab__index {
-  font-size: 15rpx;
+  font-size: 18rpx;
   line-height: 1.4;
   letter-spacing: 2rpx;
-  color: var(--arc-line-strong);
+  color: var(--arc-muted);
+}
+
+.tab--press {
+  background: rgba(250, 246, 238, 0.66);
 }
 
 .tab--active .tab__label {
@@ -281,7 +324,7 @@
 
 .error-code {
   display: block;
-  font-size: 17rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 3rpx;
   color: var(--arc-red);
@@ -708,10 +751,10 @@
   right: 18rpx;
   top: 16rpx;
   z-index: 3;
-  font-size: 16rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 2rpx;
-  color: rgba(36, 48, 41, 0.48);
+  color: rgba(36, 48, 41, 0.68);
 }
 
 .material-label {
@@ -765,7 +808,7 @@
 
 .card-index {
   margin-left: auto;
-  font-size: 17rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
@@ -859,18 +902,18 @@
 
 .link-btn {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   flex: none;
   width: auto;
-  min-height: 0;
+  min-height: 64rpx;
   margin: 0;
-  padding: 12rpx 0 10rpx;
+  padding: 0 0 8rpx;
   border-radius: 0;
   border-bottom: 1rpx solid var(--arc-line-strong);
   background: transparent;
   color: var(--arc-ink);
-  font-size: 21rpx;
+  font-size: 22rpx;
   line-height: 1.4;
   letter-spacing: 1rpx;
 }
@@ -894,7 +937,7 @@
 }
 
 .demo-caption text:last-child {
-  color: var(--arc-line-strong);
+  color: var(--arc-muted);
 }
 
 /* ---------- 阅读辅助 ---------- */
@@ -1008,11 +1051,10 @@
   gap: 14rpx;
   margin-top: 26rpx;
   padding-bottom: 6rpx;
-  font-size: 16rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
-  opacity: 0.8;
 }
 
 .rec-colophon__line {
@@ -1025,7 +1067,8 @@
 .rec-sheet {
   display: flex;
   flex-direction: column;
-  max-height: 1180rpx;
+  max-height: 88vh;
+  overflow: hidden;
 }
 
 .sheet-head {
@@ -1059,14 +1102,16 @@
 
 .sheet-tags__file {
   margin-left: auto;
-  font-size: 16rpx;
+  font-size: 18rpx;
   line-height: 1.5;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
 }
 
 .sheet-scroll {
-  max-height: 620rpx;
+  flex: 1;
+  min-height: 0;
+  max-height: 54vh;
   margin-top: 18rpx;
 }
 
@@ -1242,6 +1287,7 @@
 }
 
 .font-large .link-btn {
+  min-height: 80rpx;
   font-size: 28rpx;
 }
 

@@ -1,22 +1,32 @@
+/* 全局基线：B · 蚝壳青灰（#f2ede4 / #243029）。
+   页面级视觉层见 styles/archive.wxss；这里只保留旧页面仍可能用到的基础类。 */
 page {
-  background: #f6f1e7;
-  color: #382c24;
+  background: #f2ede4;
+  color: #243029;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
 
 button::after { border: 0; }
 
-.serif { font-family: "Songti SC", SimSun, serif; }
+/* 原生 button 默认只保证水平居中；统一补齐垂直居中，页面可按需覆盖。 */
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.serif { font-family: "Songti SC", "Noto Serif SC", SimSun, serif; }
 .page { min-height: 100vh; padding-bottom: calc(40rpx + env(safe-area-inset-bottom)); }
 .section { padding: 36rpx 32rpx 0; }
 .section-title { font-size: 38rpx; font-weight: 600; }
-.muted { color: #727671; }
-.primary-button { background: #382c24; color: #fffaf0; border-radius: 16rpx; font-size: 28rpx; }
-.card { background: #fffcf6; border: 1rpx solid #e6dec8; border-radius: 24rpx; overflow: hidden; }
+.muted { color: #5d6862; }
+.primary-button { background: #243029; color: #faf6ee; border-radius: 8rpx; font-size: 28rpx; }
+.card { background: #faf6ee; border: 1rpx solid #d8d2c6; border-radius: 16rpx; overflow: hidden; }
 .font-large .title { font-size:64rpx !important; line-height:1.25; }
 .font-large .section-title { font-size:48rpx !important; line-height:1.35; }
 .font-large .card-title,.font-large .progress-count,.font-large .name,.font-large .narration-title,.font-large .feature-title,.font-large .policy-title,.font-large .empty-title,.font-large .continue-title { font-size:40rpx !important; line-height:1.4; }
 .font-large .summary,.font-large .description,.font-large .transcript,.font-large .notice,.font-large .muted,.font-large .bubble,.font-large .spot-copy,.font-large .data-card,.font-large .empty-card,.font-large .policy,.font-large .route-summary,.font-large .continue-description { font-size:34rpx !important; line-height:1.8; }
 .font-large .card-label,.font-large .progress-label,.font-large .category,.font-large .storage-note,.font-large .result-count,.font-large .audio-notice,.font-large .note-preview,.font-large .spot-copy text:last-child { font-size:28rpx !important; line-height:1.65; }
-.font-large button { min-height:82rpx; font-size:32rpx !important; }
+.font-large button { min-height:96rpx; font-size:32rpx !important; }
 .high-contrast { color:#111; background:#fff; }.high-contrast .card { background:#fff; border-color:#393939; }.high-contrast .muted,.high-contrast .summary,.high-contrast .notice { color:#222; }.high-contrast button { border:2rpx solid #111; }

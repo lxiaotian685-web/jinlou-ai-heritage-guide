@@ -1,17 +1,70 @@
-<view class="assistant-page {{displayClass}}">
-  <scroll-view class="content" scroll-y>
-    <view class="intro"><text class="serif title">景区常见问题</text><text>点击下方预设问题，查看已经整理的景区资料</text></view>
-    <view class="question-list">
-      <button wx:for="{{quickQuestions}}" wx:key="*this" class="question {{selectedQuestion === item ? 'active' : ''}}" data-question="{{item}}" bindtap="chooseQuickQuestion">{{item}}</button>
+<view class="page arc-page arc-grid-bg assistant-page {{displayClass}}">
+  <view class="faq-head">
+    <view class="faq-head__top">
+      <text class="arc-eyebrow">FAQ / 答疑</text>
+      <text class="faq-head__folio">NO. 10</text>
     </view>
-    <view wx:if="{{sending}}" class="answer card muted">正在加载资料…</view>
-    <view wx:elif="{{answer}}" class="answer card {{answer.isError ? 'error' : ''}}">
-      <text class="answer-question serif">{{selectedQuestion}}</text>
-      <text wx:if="{{answer.notice}}" class="data-label">{{answer.notice}}</text>
-      <text>{{answer.text}}</text>
-      <text wx:if="{{answer.sourceText}}" class="sources">来源：{{answer.sourceText}}</text>
-      <text wx:if="{{answer.publicStatus}}" class="sources">公开状态：{{answer.publicStatus}}</text>
+    <view class="faq-head__main">
+      <view class="faq-head__copy">
+        <text class="arc-title serif faq-head__title">景区常见问题</text>
+        <text class="arc-lede">点击下方预设问题，查看已经整理的景区资料</text>
+      </view>
+      <view class="arc-seal faq-head__seal">答</view>
     </view>
-    <view wx:else class="tip card"><text>请选择一个问题</text><text class="muted">本页面仅提供预设的景区资料，不支持自由提问。</text></view>
-  </scroll-view>
+    <view class="faq-head__rule">
+      <view class="faq-head__rule-line"></view>
+      <text class="faq-head__rule-meta">REFERENCE · FAQ</text>
+    </view>
+  </view>
+
+  <view class="faq-body">
+    <view class="arc-head faq-section-head">
+      <text class="arc-head__index">01</text>
+      <text class="arc-head__label">预设问题</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">PRESET</text>
+    </view>
+
+    <view class="faq-grid">
+      <button
+        wx:for="{{quickQuestions}}"
+        wx:key="*this"
+        class="faq-question {{selectedQuestion === item ? 'is-active' : ''}}"
+        data-question="{{item}}"
+        bindtap="chooseQuickQuestion"
+        hover-class="faq-question--press"
+        aria-label="{{item}}"
+      >{{item}}</button>
+    </view>
+
+    <view wx:if="{{sending}}" class="arc-card faq-loading">
+      <text class="arc-eyebrow">RETRIEVING</text>
+      <text class="faq-loading__text serif">正在加载资料…</text>
+      <view class="faq-loading__line"></view>
+    </view>
+
+    <view wx:elif="{{answer}}" class="arc-card arc-card--ticks faq-answer {{answer.isError ? 'is-error' : ''}}">
+      <text class="faq-answer__question serif">{{selectedQuestion}}</text>
+      <view wx:if="{{answer.notice}}" class="arc-tag faq-answer__tag"><text>{{answer.notice}}</text></view>
+      <text class="faq-answer__text">{{answer.text}}</text>
+      <block wx:if="{{answer.sourceText || answer.publicStatus}}">
+        <view class="arc-hair faq-answer__hair"></view>
+        <view wx:if="{{answer.sourceText}}" class="faq-source">
+          <text class="faq-source__label">来源 · SOURCE</text>
+          <text class="faq-source__value">{{answer.sourceText}}</text>
+        </view>
+        <view wx:if="{{answer.publicStatus}}" class="faq-source">
+          <text class="faq-source__label">公开状态 · STATUS</text>
+          <text class="faq-source__value">{{answer.publicStatus}}</text>
+        </view>
+      </block>
+    </view>
+
+    <view wx:else class="arc-empty faq-empty">
+      <text class="arc-eyebrow">PRESET ONLY</text>
+      <text class="faq-empty__title serif">请选择一个问题</text>
+      <view class="arc-empty__rule"></view>
+      <text class="faq-empty__text">本页面仅提供预设的景区资料，不支持自由提问。</text>
+    </view>
+  </view>
 </view>

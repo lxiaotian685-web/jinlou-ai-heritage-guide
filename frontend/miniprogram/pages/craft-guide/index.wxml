@@ -1,32 +1,76 @@
-<view class="page">
-  <view wx:if="{{loading}}" class="section state">正在读取…</view>
-  <view wx:elif="{{error}}" class="section state card">
-    <text>{{error}}</text>
-    <button class="primary-button" bindtap="loadGuide">重新加载</button>
+<view class="page arc-page arc-grid-bg craft-page {{displayClass}}">
+  <view wx:if="{{loading}}" class="craft-state">
+    <view class="arc-card arc-card--ticks craft-state__card">
+      <text class="arc-eyebrow">READING THE CRAFT PLATE</text>
+      <text class="craft-state__title serif">正在读取工艺图解…</text>
+      <view class="craft-state__line"></view>
+    </view>
   </view>
+
+  <view wx:elif="{{error}}" class="arc-empty craft-error">
+    <text class="arc-eyebrow">CRAFT PLATE UNAVAILABLE</text>
+    <text class="craft-error__title serif">工艺图解未能送达</text>
+    <text class="craft-error__body">{{error}}</text>
+    <view class="arc-empty__rule"></view>
+    <button class="arc-btn craft-error__btn" bindtap="loadGuide">重新加载</button>
+  </view>
+
   <block wx:else>
-    <view class="section heading">
-      <text class="eyebrow">岭南建筑细节 · 教学演示</text>
-      <text class="title serif">{{guide.title}}</text>
-      <text class="summary">{{guide.summary}}</text>
-    </view>
-    <view class="diagram">
-      <image src="{{guide.image}}" mode="aspectFill" />
-      <view class="diagram-shade"></view>
-      <view class="focus-ring"><text>{{guide.steps[activeStep].number}}</text></view>
-      <view class="diagram-label">二维示意图 · 点位待标定</view>
-    </view>
-    <view class="section">
-      <view class="step-tabs">
-        <button wx:for="{{guide.steps}}" wx:key="number" class="step-tab {{activeStep === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectStep">{{item.number}}</button>
+    <view class="craft-head">
+      <view class="craft-head__top">
+        <text class="arc-eyebrow">CRAFT / 工艺</text>
+        <text class="craft-head__folio">NO. 07</text>
       </view>
-      <view class="step-card card">
-        <text class="step-index">步骤 {{guide.steps[activeStep].number}}</text>
-        <text class="step-title serif">{{guide.steps[activeStep].title}}</text>
-        <text class="step-description">{{guide.steps[activeStep].description}}</text>
+      <view class="craft-head__main">
+        <view class="craft-head__copy">
+          <text class="arc-eyebrow craft-head__kicker">岭南建筑细节 · 教学演示</text>
+          <text class="arc-title serif craft-head__title">{{guide.title}}</text>
+          <text class="arc-lede">{{guide.summary}}</text>
+        </view>
+        <view class="arc-seal craft-head__seal">艺</view>
       </view>
-      <button class="model-button" bindtap="handleModel">{{guide.modelReady ? '打开3D图解' : '3D模型待制作'}}</button>
-      <view class="notice">{{guide.notice}}</view>
+      <view class="craft-head__rule">
+        <view class="craft-head__rule-line"></view>
+        <text class="craft-head__rule-meta">CRAFT · DETAIL</text>
+      </view>
+    </view>
+
+    <view class="craft-figure">
+      <view class="arc-photo craft-figure__plate">
+        <image src="{{guide.image}}" mode="aspectFill" />
+        <view class="craft-figure__scrim"></view>
+        <view class="craft-figure__focus">
+          <text class="craft-figure__focus-num serif">{{guide.steps[activeStep].number}}</text>
+          <view class="craft-figure__focus-dot"></view>
+        </view>
+        <text class="craft-figure__label">PLATE / 07</text>
+      </view>
+      <view class="arc-caption craft-figure__caption">
+        <text>二维示意图 · 点位待标定</text>
+        <text>PLATE / 07</text>
+      </view>
+    </view>
+
+    <view class="craft-body">
+      <view class="craft-tabs">
+        <button wx:for="{{guide.steps}}" wx:key="number" class="craft-tab {{activeStep === index ? 'craft-tab--active' : ''}}" hover-class="craft-tab--press" data-index="{{index}}" bindtap="selectStep" aria-label="步骤 {{item.number}}">{{item.number}}</button>
+      </view>
+
+      <view class="craft-step arc-card">
+        <text class="arc-ghost-num craft-step__ghost">{{guide.steps[activeStep].number}}</text>
+        <text class="arc-eyebrow craft-step__eyebrow">步骤 {{guide.steps[activeStep].number}}</text>
+        <text class="craft-step__title serif">{{guide.steps[activeStep].title}}</text>
+        <view class="arc-hair craft-step__hair"></view>
+        <text class="craft-step__desc">{{guide.steps[activeStep].description}}</text>
+      </view>
+
+      <button class="arc-btn craft-model {{guide.modelReady ? '' : 'craft-model--pending'}}" hover-class="craft-model--press" bindtap="handleModel">{{guide.modelReady ? '打开3D图解' : '3D模型待制作'}}</button>
+      <text class="craft-notice">{{guide.notice}}</text>
+    </view>
+
+    <view class="craft-foot">
+      <view class="arc-hair arc-hair--dot"><text>END OF PLATE</text></view>
+      <text class="craft-foot__note">示意图与步骤为教学演示，待景区审核</text>
     </view>
   </block>
 </view>

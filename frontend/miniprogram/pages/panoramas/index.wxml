@@ -1,15 +1,73 @@
-<view class="page section">
-  <view class="heading"><text class="section-title serif">全景漫游</text><text class="muted">转动视角，慢看金楼</text></view>
-  <view wx:if="{{loading}}" class="state card">正在读取全景场景…</view>
-  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadPanoramas">重新加载</button></view>
-  <view wx:else class="list">
-    <view wx:for="{{panoramas}}" wx:key="id" class="panorama card">
-      <image class="preview" src="{{item.previewImage}}" mode="aspectFill" />
-      <view class="content">
-        <view class="row"><text class="name serif">{{item.name}}</text><text class="badge">360°</text></view>
-        <text class="summary">{{item.summary}}</text>
-        <button class="primary-button" data-id="{{item.id}}" bindtap="openPanorama">查看交互演示</button>
+<view class="page arc-page arc-grid-bg panoramas-page {{displayClass}}">
+  <view class="pano-head">
+    <view class="pano-head__top">
+      <text class="arc-eyebrow">PANORAMA / 全景</text>
+      <text class="pano-head__folio">NO. 05</text>
+    </view>
+    <view class="pano-head__main">
+      <view class="pano-head__copy">
+        <text class="arc-title serif pano-head__title">全景漫游</text>
+        <text class="arc-lede">转动视角，慢看金楼</text>
       </view>
+      <view class="arc-seal pano-head__seal">景</view>
+    </view>
+    <view class="pano-head__rule">
+      <view class="pano-head__rule-line"></view>
+      <text class="pano-head__rule-meta">BIJIANG · PANORAMA</text>
     </view>
   </view>
+
+  <view wx:if="{{loading}}" class="pano-state">
+    <view class="arc-card arc-card--ticks pano-state__card">
+      <text class="arc-eyebrow">READING THE ARCHIVE</text>
+      <text class="pano-state__title serif">正在读取全景场景…</text>
+      <view class="pano-state__line"></view>
+    </view>
+  </view>
+
+  <view wx:elif="{{error}}" class="arc-empty pano-error">
+    <text class="arc-eyebrow">PANORAMA UNAVAILABLE</text>
+    <text class="pano-error__title serif">全景场景未能送达</text>
+    <text class="pano-error__body">{{error}}</text>
+    <view class="arc-empty__rule"></view>
+    <button class="arc-btn pano-error__btn" bindtap="loadPanoramas">重新加载</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{!panoramas.length}}" class="arc-empty pano-empty">
+      <text class="arc-eyebrow">NO SCENES</text>
+      <text class="pano-empty__title serif">暂无全景场景</text>
+      <view class="arc-empty__rule"></view>
+      <text class="pano-empty__body">全景素材待景区采集接入</text>
+    </view>
+
+    <view wx:else class="pano-list">
+      <view wx:for="{{panoramas}}" wx:key="id" class="pano-card arc-card arc-card--ticks">
+        <view class="pano-card__media arc-photo">
+          <image class="pano-card__cover" src="{{item.previewImage}}" mode="aspectFill" lazy-load="{{true}}" />
+          <view class="pano-card__shade"></view>
+        </view>
+        <view class="pano-card__body">
+          <view class="pano-card__top">
+            <view class="pano-card__folio">
+              <text class="pano-card__folio-label">NO.</text>
+              <text class="pano-card__folio-num serif">{{index + 1}}</text>
+            </view>
+            <view class="arc-tag pano-card__tag">
+              <view class="arc-tag__dot"></view>
+              <text>360°</text>
+            </view>
+          </view>
+          <text class="pano-card__name serif">{{item.name}}</text>
+          <text class="pano-card__summary">{{item.summary}}</text>
+          <view class="arc-hair pano-card__hair"></view>
+          <button class="arc-btn pano-card__cta" data-id="{{item.id}}" bindtap="openPanorama">查看全景</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="pano-foot">
+      <view class="arc-hair arc-hair--dot"><text>END OF PANORAMA</text></view>
+    </view>
+  </block>
 </view>

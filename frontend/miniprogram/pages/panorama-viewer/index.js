@@ -1,4 +1,5 @@
 const { getPanorama, getPanoramas } = require('../../services/api');
+const { getDisplayClass } = require('../../utils/display-settings');
 
 Page({
   data: {
@@ -8,10 +9,14 @@ Page({
     error: '',
     activeHotspot: null,
     showHelp: true,
+    displayClass: '',
   },
   onLoad(options) {
     this.sceneId = options.id;
     this.loadViewer();
+  },
+  onShow() {
+    this.setData({ displayClass: getDisplayClass() });
   },
   async loadViewer() {
     if (!this.sceneId) return this.setData({ loading: false, error: '缺少全景场景编号。' });

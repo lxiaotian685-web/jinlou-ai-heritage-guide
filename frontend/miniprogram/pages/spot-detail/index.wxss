@@ -56,7 +56,10 @@
 
 .cover-grade {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background: linear-gradient(180deg, rgba(242, 237, 228, 0.12) 0%, rgba(92, 107, 102, 0.08) 52%, rgba(36, 48, 41, 0.18) 100%);
 }
 
@@ -252,13 +255,13 @@
   align-items: center;
   justify-content: center;
   min-width: 150rpx;
-  min-height: 64rpx;
+  min-height: 88rpx;
   margin: 0;
   padding: 0 18rpx;
   background: transparent;
   border: 1rpx solid rgba(250, 246, 238, 0.3);
   border-radius: 4rpx;
-  color: rgba(250, 246, 238, 0.72);
+  color: rgba(250, 246, 238, 0.78);
   font-size: 21rpx;
   line-height: 1.4;
   letter-spacing: 2rpx;
@@ -316,13 +319,13 @@
 }
 
 .audio-rate {
-  color: rgba(250, 246, 238, 0.42);
+  color: rgba(250, 246, 238, 0.56);
   font-size: 18rpx;
   letter-spacing: 2rpx;
 }
 
 .audio-button {
-  min-height: 86rpx;
+  min-height: 88rpx;
   margin: 0;
   background: var(--arc-cream);
   border: 1rpx solid var(--arc-cream);
@@ -347,13 +350,13 @@
 
 .audio-tools button {
   min-width: 0;
-  min-height: 60rpx;
+  min-height: 88rpx;
   margin: 0;
   padding: 0 4rpx;
   background: transparent;
-  border: 1rpx solid rgba(250, 246, 238, 0.18);
+  border: 1rpx solid rgba(250, 246, 238, 0.22);
   border-radius: 4rpx;
-  color: rgba(250, 246, 238, 0.68);
+  color: rgba(250, 246, 238, 0.74);
   font-size: 18rpx;
   line-height: 1.35;
 }
@@ -428,7 +431,7 @@
 
 .action-sub {
   color: var(--arc-muted);
-  font-size: 17rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
 }
 
@@ -584,12 +587,16 @@
 
 .note-clear {
   flex: none;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
   width: auto;
-  min-height: 0;
+  min-height: 64rpx;
   margin: 0;
-  padding: 4rpx 0;
+  padding: 0 4rpx 8rpx;
   background: transparent;
   border: 0;
+  border-bottom: 1rpx solid rgba(166, 64, 45, 0.45);
   border-radius: 0;
   color: var(--arc-red);
   font-size: 20rpx;
@@ -618,16 +625,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56rpx;
-  min-width: 56rpx;
-  min-height: 56rpx;
+  width: 80rpx;
+  min-width: 80rpx;
+  min-height: 80rpx;
   margin: 0;
   padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
   color: var(--arc-line-strong);
-  font-size: 30rpx;
+  font-size: 34rpx;
   line-height: 1;
 }
 
@@ -657,10 +664,14 @@
   line-height: 1.7;
 }
 
+.note-placeholder {
+  color: var(--arc-muted);
+}
+
 .save-note-button {
   position: relative;
   z-index: 1;
-  min-height: 82rpx;
+  min-height: 88rpx;
   margin: 0;
   background: var(--arc-ink);
   border: 1rpx solid var(--arc-ink);
@@ -773,6 +784,7 @@
   display: flex;
   flex: 1;
   align-items: center;
+  justify-content: flex-start;
   gap: 14rpx;
   min-width: 0;
   margin: 0;
@@ -878,15 +890,15 @@
 }
 
 .font-large .note-clear {
-  min-height: 0;
-  padding: 6rpx 0;
+  min-height: 64rpx;
+  padding: 0 4rpx 8rpx;
 }
 
 .font-large .rating-star {
-  width: 60rpx;
-  min-width: 60rpx;
-  min-height: 64rpx;
-  font-size: 38rpx;
+  width: 88rpx;
+  min-width: 88rpx;
+  min-height: 88rpx;
+  font-size: 40rpx;
 }
 
 .font-large .note-textarea {
@@ -904,7 +916,7 @@
 }
 
 .font-large .action-sub {
-  font-size: 17rpx;
+  font-size: 20rpx;
   letter-spacing: 1rpx;
 }
 
@@ -923,6 +935,29 @@
 .font-large .audio-time,
 .font-large .audio-rate {
   font-size: 24rpx;
+}
+
+.font-large .transcript {
+  font-size: 32rpx;
+}
+
+.font-large .audio-button {
+  min-height: 96rpx;
+  font-size: 30rpx;
+}
+
+.font-large .audio-tools button {
+  min-height: 88rpx;
+  font-size: 24rpx;
+}
+
+.font-large .audio-notice {
+  font-size: 26rpx;
+}
+
+.font-large .cover-meta__text,
+.font-large .page-footer .arc-hair--dot text {
+  font-size: 22rpx;
 }
 
 .font-large .visit-label {
@@ -997,6 +1032,12 @@
   background: #ffffff;
   border-color: #111111;
   color: #111111;
+}
+
+.high-contrast .note-clear {
+  border: 0;
+  border-bottom: 2rpx solid #111;
+  color: #111;
 }
 
 .high-contrast .action-label,

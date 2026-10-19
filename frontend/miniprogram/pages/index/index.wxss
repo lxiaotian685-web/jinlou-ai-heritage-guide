@@ -255,9 +255,9 @@
 
 .hero-foot__label text {
   flex: none;
-  font-size: 15rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
-  color: rgba(250, 246, 238, 0.6);
+  color: rgba(250, 246, 238, 0.64);
 }
 
 .hero-foot__line {
@@ -321,7 +321,7 @@
 
 .intro-folio {
   flex: none;
-  font-size: 16rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
   color: var(--arc-muted);
 }
@@ -410,7 +410,7 @@
   margin-top: 20rpx;
   padding-top: 14rpx;
   border-top: 1rpx solid var(--arc-line);
-  font-size: 16rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
 }
@@ -492,7 +492,7 @@
 
 .continue-track__meta {
   flex: none;
-  font-size: 15rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
 }
@@ -501,7 +501,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  min-height: 84rpx;
+  min-height: 88rpx;
   letter-spacing: 3rpx;
 }
 
@@ -633,9 +633,9 @@
   align-items: center;
   gap: 10rpx;
   margin-top: 16rpx;
-  font-size: 14rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
-  color: rgba(250, 246, 238, 0.52);
+  color: rgba(250, 246, 238, 0.58);
 }
 
 .entry__code::before {
@@ -650,7 +650,7 @@
 }
 
 .entry-caption text {
-  font-size: 16rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
 }
 
@@ -660,7 +660,7 @@
 }
 
 .home-foot .arc-hair--dot text {
-  font-size: 15rpx;
+  font-size: 18rpx;
   letter-spacing: 3rpx;
 }
 
@@ -680,7 +680,7 @@
 
 .home-foot__code {
   flex: none;
-  font-size: 14rpx;
+  font-size: 18rpx;
   letter-spacing: 2rpx;
   color: var(--arc-muted);
 }
@@ -720,7 +720,7 @@
 
 .font-large .intro-toggle {
   width: 100%;
-  min-height: 84rpx;
+  min-height: 96rpx;
   font-size: 30rpx;
 }
 
@@ -747,7 +747,7 @@
 }
 
 .font-large .entry__code {
-  font-size: 18rpx;
+  font-size: 22rpx;
 }
 
 .font-large .home-foot__mark {

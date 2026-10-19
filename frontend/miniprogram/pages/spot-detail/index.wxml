@@ -120,11 +120,11 @@
         </view>
         <view class="rating-row">
           <view class="rating-stars">
-            <button wx:for="{{ratingOptions}}" wx:key="*this" class="rating-star {{spotNote.rating >= item ? 'active' : ''}}" data-rating="{{item}}" bindtap="selectRating">★</button>
+            <button wx:for="{{ratingOptions}}" wx:key="*this" class="rating-star {{spotNote.rating >= item ? 'active' : ''}}" data-rating="{{item}}" bindtap="selectRating" aria-label="评 {{item}} 星">★</button>
           </view>
           <text class="rating-value">{{spotNote.rating ? spotNote.rating + ' 星' : '未评分'}}</text>
         </view>
-        <textarea class="note-textarea" maxlength="500" value="{{spotNote.text}}" placeholder="记录你的参观感受、想再看的细节……" bindinput="handleNoteInput"></textarea>
+        <textarea class="note-textarea" maxlength="500" value="{{spotNote.text}}" placeholder="记录你的参观感受、想再看的细节……" placeholder-class="note-placeholder" bindinput="handleNoteInput"></textarea>
         <button class="save-note-button" bindtap="savePersonalNote">保存私人记录</button>
       </view>
     </view>

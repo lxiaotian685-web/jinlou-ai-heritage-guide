@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "全景查看器",
-  "navigationBarBackgroundColor": "#221810",
-  "navigationBarTextStyle": "white"
+  "navigationBarBackgroundColor": "#243029",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#141b17",
+  "backgroundColorTop": "#243029",
+  "backgroundColorBottom": "#141b17"
 }
