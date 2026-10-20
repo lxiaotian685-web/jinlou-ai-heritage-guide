@@ -201,7 +201,7 @@ const seedNarrations = [
 ];
 
 for (const narration of reviewedNarrations) {
-  const existingIndex = seedNarrations.findIndex((item) => item[1] === narration.spotId && item[2] === 'zh-CN');
+  const existingIndex = seedNarrations.findIndex((item) => item[1] === narration.spotId && item[2] === narration.languageCode);
   const row = [narration.id, narration.spotId, narration.languageCode, narration.languageLabel, narration.transcript, narration.audioUrl, 'pending', narration.audioType];
   if (existingIndex >= 0) seedNarrations[existingIndex] = row;
   else seedNarrations.push(row);
@@ -604,7 +604,7 @@ export function listNarrations(db, spotId) {
     reviewStatus: row.review_status,
     audioType: row.audio_type,
     notice: row.audio_type === 'system-tts-preview'
-      ? '普通话试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿'
+      ? `${row.language_label}试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿`
       : (row.audio_url ? '讲解内容与发音待景区审核' : '讲解文字已整理，正式音频待录制'),
   }));
 }

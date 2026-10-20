@@ -37,6 +37,14 @@ for (const spot of spots.data) {
     ...narrationResource,
     data: (narrationResource.data || []).map((narration) => {
       if (narration.audioType !== 'system-tts-preview') return narration;
+      if (narration.languageCode !== 'zh-CN') {
+        return {
+          ...narration,
+          audioUrl: '',
+          audioReady: false,
+          notice: `${narration.languageLabel}试听尚未完成云端发布校验，请先阅读文字稿`,
+        };
+      }
       const cloudFileId = verifiedCloudAudio.get(spot.id) || '';
       return {
         ...narration,

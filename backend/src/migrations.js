@@ -1,6 +1,7 @@
 import { reviewedNarrations } from './reviewed-narrations.js';
 
 export const MANDARIN_PREVIEW_AUDIO_MIGRATION = '20261018-enable-mandarin-preview-audio';
+export const MULTILINGUAL_PREVIEW_AUDIO_MIGRATION = '20261020-enable-multilingual-preview-audio';
 
 function ensureMigrationTable(db) {
   db.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -43,6 +44,39 @@ function applyMandarinPreviewAudioMigration(db) {
   ) THEN 1 ELSE 0 END`);
 }
 
+function applyMultilingualPreviewAudioMigration(db) {
+  const upsert = db.prepare(`
+    INSERT INTO narrations
+      (id, spot_id, language_code, language_label, transcript, audio_url, review_status, audio_type)
+    VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
+    ON CONFLICT(spot_id, language_code) DO UPDATE SET
+      id = excluded.id,
+      language_label = excluded.language_label,
+      transcript = excluded.transcript,
+      audio_url = excluded.audio_url,
+      review_status = excluded.review_status,
+      audio_type = excluded.audio_type
+  `);
+
+  for (const item of reviewedNarrations) {
+    if (item.languageCode === 'zh-CN') continue;
+    upsert.run(
+      item.id,
+      item.spotId,
+      item.languageCode,
+      item.languageLabel,
+      item.transcript,
+      item.audioUrl,
+      item.audioType,
+    );
+  }
+
+  db.exec(`UPDATE spots SET has_audio = CASE WHEN EXISTS (
+    SELECT 1 FROM narrations
+    WHERE narrations.spot_id = spots.id AND narrations.audio_url <> ''
+  ) THEN 1 ELSE 0 END`);
+}
+
 export function runDatabaseMigrations(db) {
   ensureMigrationTable(db);
   const applied = new Set(db.prepare('SELECT id FROM schema_migrations').all().map((row) => row.id));
@@ -55,6 +89,19 @@ export function runDatabaseMigrations(db) {
       db.prepare('INSERT INTO schema_migrations (id) VALUES (?)').run(MANDARIN_PREVIEW_AUDIO_MIGRATION);
       db.exec('COMMIT');
       newlyApplied.push(MANDARIN_PREVIEW_AUDIO_MIGRATION);
+    } catch (error) {
+      db.exec('ROLLBACK');
+      throw error;
+    }
+  }
+
+  if (!applied.has(MULTILINGUAL_PREVIEW_AUDIO_MIGRATION)) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      applyMultilingualPreviewAudioMigration(db);
+      db.prepare('INSERT INTO schema_migrations (id) VALUES (?)').run(MULTILINGUAL_PREVIEW_AUDIO_MIGRATION);
+      db.exec('COMMIT');
+      newlyApplied.push(MULTILINGUAL_PREVIEW_AUDIO_MIGRATION);
     } catch (error) {
       db.exec('ROLLBACK');
       throw error;

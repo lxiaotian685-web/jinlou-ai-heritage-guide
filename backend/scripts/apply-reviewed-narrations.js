@@ -49,7 +49,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       databasePath: process.env.DATABASE_PATH || 'data/bijiang.db',
       backupDirectory: process.env.BACKUP_DIRECTORY || 'data/backups',
     });
-    console.log(`普通话讲解更新完成：${result.updated}条`);
+    console.log(`讲解更新完成：${result.updated}条（普通话、粤语、English、日本語）`);
     console.log(`修改前备份：${result.backupPath}`);
   } catch (error) {
     console.error(`讲解更新失败：${error.message}`);

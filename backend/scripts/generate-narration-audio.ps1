@@ -1,23 +1,19 @@
+﻿# Generate the Mandarin / Cantonese / English / Japanese narration WAV files.
+# Implementation lives in generate-narration-audio.py because edge-tts is a Python
+# package: Python handles the UTF-8 manifest, per-request timeouts and retries.
+# Requires Python 3 with edge-tts (pip install edge-tts) and ffmpeg on PATH.
+param(
+  [string]$Voice = '',
+  [string]$Rate = '-5%',
+  [string]$Languages = ''
+)
+
 $ErrorActionPreference = 'Stop'
-$OutputEncoding = [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding
-Add-Type -AssemblyName System.Speech
+$python = if (Get-Command py -ErrorAction SilentlyContinue) { 'py' } elseif (Get-Command python -ErrorAction SilentlyContinue) { 'python' } else { throw 'Python is not available; edge-tts cannot run.' }
 
-$targetDirectory = Join-Path $PSScriptRoot '..\public\media\narrations'
-New-Item -ItemType Directory -Force -Path $targetDirectory | Out-Null
-$manifest = node (Join-Path $PSScriptRoot 'tts-manifest.js') | ConvertFrom-Json
-$speaker = New-Object System.Speech.Synthesis.SpeechSynthesizer
+$arguments = @((Join-Path $PSScriptRoot 'generate-narration-audio.py'), "--rate=$Rate")
+if ($Voice) { $arguments += @('--voice', $Voice) }
+if ($Languages) { $arguments += @('--languages', $Languages) }
 
-try {
-  $speaker.SelectVoice('Microsoft Huihui Desktop')
-  $speaker.Rate = -1
-  foreach ($item in $manifest) {
-    $target = Join-Path $targetDirectory $item.filename
-    $speaker.SetOutputToWaveFile($target)
-    $speaker.Speak($item.text)
-    $speaker.SetOutputToNull()
-  }
-} finally {
-  $speaker.Dispose()
-}
-
-Write-Output "Narration audio generated: $($manifest.Count) files"
+& $python @arguments
+exit $LASTEXITCODE
