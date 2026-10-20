@@ -25,9 +25,9 @@ try {
   check('普通话讲解文字', narrations.length === 15 && narrations.every((item) => item.transcript && !item.transcript.includes('AI合成')), `${narrations.length}/15`);
   const narrationAudioReady = narrations.filter((item) => item.audio_type === 'system-tts-preview' && /^\/media\/narrations\/[a-z0-9-]+-zh\.wav$/.test(item.audio_url) && existsSync(resolve(`public${item.audio_url}`)));
   check('普通话试听音频清单', narrationAudioReady.length === 15, `${narrationAudioReady.length}/15`);
-  const extraNarrations = db.prepare("SELECT spot_id, language_code, transcript, audio_url, audio_type FROM narrations WHERE language_code IN ('yue', 'en', 'ja')").all();
-  const extraAudioReady = extraNarrations.filter((item) => item.audio_type === 'system-tts-preview' && /^\/media\/narrations\/[a-z0-9-]+-(yue|en|ja)\.wav$/.test(item.audio_url) && existsSync(resolve(`public${item.audio_url}`)));
-  check('粤语/英语/日语试听音频清单', extraAudioReady.length === 45, `${extraAudioReady.length}/45`);
+  const extraNarrations = db.prepare("SELECT spot_id, language_code, transcript, audio_url, audio_type FROM narrations WHERE language_code IN ('yue', 'en')").all();
+  const extraAudioReady = extraNarrations.filter((item) => item.audio_type === 'system-tts-preview' && /^\/media\/narrations\/[a-z0-9-]+-(yue|en)\.wav$/.test(item.audio_url) && existsSync(resolve(`public${item.audio_url}`)));
+  check('粤语/英语试听音频清单', extraAudioReady.length === 30, `${extraAudioReady.length}/30`);
 
   const appConfig = JSON.parse(readFileSync(resolve(frontendRoot, 'app.json'), 'utf8'));
   const missingPageFiles = appConfig.pages.flatMap((page) => ['js', 'json', 'wxml', 'wxss']
@@ -109,3 +109,4 @@ try {
 } finally {
   db.close();
 }
+

@@ -6,7 +6,7 @@
 
 - 本记录覆盖仓库中的 15 段普通话系统语音合成试听音频。
 - 音频位于 `backend/public/media/narrations/`，本记录只覆盖其中 15 段普通话，合计 13,590,162 bytes。
-- 同目录另有 45 段粤语、英语、日语试听音频；四个语种共 60 段，合计 63,574,344 bytes，详见 `docs/MULTILINGUAL_AUDIO_TEST_RESULTS.md`。
+- 同目录另有 30 段粤语、英语试听音频；三个语种共 45 段，详见 `docs/MULTILINGUAL_AUDIO_TEST_RESULTS.md`。
 - 下表哈希是仓库本地文件的 SHA-256，仅用于负责人上传后的逐文件比对。
 - 本次未访问、上传或修改任何 CloudBase 环境。
 - CloudBase 上传、下载回验和 15/15 云端哈希一致性校验由项目负责人账号执行。
@@ -67,3 +67,4 @@ npm.cmd run audio:cloud:publish
 ```
 
 该命令会上传 15 个文件，再逐个下载并比较 SHA-256；只有全部一致才生成 `docs/cloud-audio-verification.json`。随后仍需完成真机逐条播放验收。本记录不替代上述云端与真机步骤。
+

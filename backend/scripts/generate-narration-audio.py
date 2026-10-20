@@ -113,7 +113,7 @@ async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--voice", default="", help="Override the per-language voice from the manifest.")
     parser.add_argument("--rate", default="-5%")
-    parser.add_argument("--languages", default="", help="Comma separated language codes, e.g. en,ja. Default: all.")
+    parser.add_argument("--languages", default="", help="Comma separated language codes, e.g. yue,en. Default: all.")
     args = parser.parse_args()
 
     manifest = load_manifest()
@@ -143,3 +143,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

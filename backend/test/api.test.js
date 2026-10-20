@@ -266,7 +266,7 @@ test('reviewed narration batch enables 15 labeled Mandarin preview audios and cr
       databasePath,
       backupDirectory,
     });
-    assert.equal(result.updated, 60);
+    assert.equal(result.updated, 45);
     const updatedDb = new DatabaseSync(databasePath, { readOnly: true });
     assert.equal(updatedDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_type = 'system-tts-preview' AND audio_url LIKE '/media/narrations/%-zh.wav'").get().total, 15);
     assert.equal(updatedDb.prepare('SELECT COUNT(*) AS total FROM spots WHERE has_audio = 1').get().total, 15);
@@ -620,11 +620,11 @@ test('site map endpoint returns all numbered points from the on-site board', asy
   assert.equal(body.meta.entranceExitVerified, false);
 });
 
-test('narrations endpoint returns four languages for the main building', async () => {
+test('narrations endpoint returns three languages for the main building', async () => {
   const response = await fetch(`${baseUrl}/api/v1/spots/jinlou/narrations`);
   const body = await response.json();
   assert.equal(response.status, 200);
-  assert.deepEqual(body.data.map((item) => item.languageCode), ['zh-CN', 'yue', 'en', 'ja']);
+  assert.deepEqual(body.data.map((item) => item.languageCode), ['zh-CN', 'yue', 'en']);
   assert.equal(body.data[0].audioReady, true);
   assert.equal(body.data[0].audioType, 'system-tts-preview');
   assert.equal(body.data[0].audioUrl, '/media/narrations/jinlou-zh.wav');
@@ -634,7 +634,6 @@ test('narrations endpoint returns four languages for the main building', async (
     [
       ['yue', true, '/media/narrations/jinlou-yue.wav'],
       ['en', true, '/media/narrations/jinlou-en.wav'],
-      ['ja', true, '/media/narrations/jinlou-ja.wav'],
     ],
   );
 });
@@ -661,3 +660,4 @@ test('craft guide endpoint reports an existing spot without a guide', async () =
   assert.equal(response.status, 404);
   assert.equal(body.error.code, 'CRAFT_GUIDE_NOT_FOUND');
 });
+

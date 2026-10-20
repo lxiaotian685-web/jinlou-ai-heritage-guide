@@ -45,6 +45,8 @@ function applyMandarinPreviewAudioMigration(db) {
 }
 
 function applyMultilingualPreviewAudioMigration(db) {
+  db.prepare("DELETE FROM narrations WHERE language_code = 'ja'").run();
+
   const upsert = db.prepare(`
     INSERT INTO narrations
       (id, spot_id, language_code, language_label, transcript, audio_url, review_status, audio_type)
@@ -110,3 +112,4 @@ export function runDatabaseMigrations(db) {
 
   return newlyApplied;
 }
+

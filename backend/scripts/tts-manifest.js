@@ -5,7 +5,6 @@ const voices = {
   'zh-CN': 'zh-CN-XiaoxiaoNeural',
   yue: 'zh-HK-HiuMaanNeural',
   en: 'en-US-AriaNeural',
-  ja: 'ja-JP-NanamiNeural',
 };
 
 console.log(JSON.stringify(reviewedNarrations.map((item) => ({
@@ -15,3 +14,4 @@ console.log(JSON.stringify(reviewedNarrations.map((item) => ({
   languageCode: item.languageCode,
   voice: voices[item.languageCode],
 }))));
+

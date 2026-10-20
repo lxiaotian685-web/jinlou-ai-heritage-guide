@@ -1,4 +1,4 @@
-﻿# Generate the Mandarin / Cantonese / English / Japanese narration WAV files.
+# Generate the Mandarin, Cantonese and English narration WAV files.
 # Implementation lives in generate-narration-audio.py because edge-tts is a Python
 # package: Python handles the UTF-8 manifest, per-request timeouts and retries.
 # Requires Python 3 with edge-tts (pip install edge-tts) and ffmpeg on PATH.
@@ -17,3 +17,4 @@ if ($Languages) { $arguments += @('--languages', $Languages) }
 
 & $python @arguments
 exit $LASTEXITCODE
+

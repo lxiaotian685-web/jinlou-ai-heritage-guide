@@ -40,7 +40,7 @@
 
 以下 15 个文件均为 `system-tts-preview`（系统语音合成试听），文字来自项目审核稿。它们不是正式人工配音；对外发布前须由景区审核文字、发音、多音字和停连，并替换或确认音频。
 
-同目录另有 45 段粤语、English、日本語试听音频（后缀 `-yue.wav`、`-en.wav`、`-ja.wav`），讲解词由上述普通话稿机器翻译，属于待人工审核的试听草稿，详见 `docs/MULTILINGUAL_AUDIO_TEST_RESULTS.md`。
+同目录另有 30 段粤语、English 试听音频（后缀 `-yue.wav`、`-en.wav`），讲解词由上述普通话稿机器翻译，属于待人工审核的试听草稿，详见 `docs/MULTILINGUAL_AUDIO_TEST_RESULTS.md`。
 
 | 景点 | 文件 |
 |---|---|
@@ -106,3 +106,4 @@ npm.cmd test
 npm.cmd run cloud:check
 npm.cmd run acceptance:check
 ```
+
