@@ -266,7 +266,7 @@ test('reviewed narration batch enables 15 labeled Mandarin preview audios and cr
       databasePath,
       backupDirectory,
     });
-    assert.equal(result.updated, 15);
+    assert.equal(result.updated, 45);
     const updatedDb = new DatabaseSync(databasePath, { readOnly: true });
     assert.equal(updatedDb.prepare("SELECT COUNT(*) AS total FROM narrations WHERE language_code = 'zh-CN' AND audio_type = 'system-tts-preview' AND audio_url LIKE '/media/narrations/%-zh.wav'").get().total, 15);
     assert.equal(updatedDb.prepare('SELECT COUNT(*) AS total FROM spots WHERE has_audio = 1').get().total, 15);
@@ -629,6 +629,13 @@ test('narrations endpoint returns three languages for the main building', async 
   assert.equal(body.data[0].audioType, 'system-tts-preview');
   assert.equal(body.data[0].audioUrl, '/media/narrations/jinlou-zh.wav');
   assert.match(body.data[0].notice, /系统语音合成/);
+  assert.deepEqual(
+    body.data.slice(1).map((item) => [item.languageCode, item.audioReady, item.audioUrl]),
+    [
+      ['yue', true, '/media/narrations/jinlou-yue.wav'],
+      ['en', true, '/media/narrations/jinlou-en.wav'],
+    ],
+  );
 });
 
 test('narrations endpoint returns 404 for an unknown spot', async () => {
@@ -653,3 +660,4 @@ test('craft guide endpoint reports an existing spot without a guide', async () =
   assert.equal(response.status, 404);
   assert.equal(body.error.code, 'CRAFT_GUIDE_NOT_FOUND');
 });
+
