@@ -1,5 +1,11 @@
 import express from 'express';
+import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+
+// 微信播放器的 playbackRate 会改变音高，改用 ffmpeg atempo 预生成保持音色的变速文件。
+const AUDIO_SPEEDS = new Set(['0.75', '1.25', '1.5']);
+const AUDIO_CACHE_DIR = resolve('data/audio-cache');
 import {
   getPanorama,
   getCraftGuide,
@@ -117,6 +123,26 @@ export function createApp(db, options = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.use(express.json({ limit: '100kb' }));
+  app.get('/media/narrations/:filename', (request, response, next) => {
+    const rate = String(request.query.rate || '');
+    if (!AUDIO_SPEEDS.has(rate)) return next();
+    const filename = String(request.params.filename || '');
+    if (!/^[a-z0-9-]+-(zh|yue|en)\.wav$/.test(filename)) return response.status(404).end();
+    const source = resolve('public/media/narrations', filename);
+    if (!existsSync(source)) return response.status(404).end();
+    const cachePath = resolve(AUDIO_CACHE_DIR, filename.replace(/\.wav$/, `-${rate}.wav`));
+    if (!existsSync(cachePath)) {
+      mkdirSync(AUDIO_CACHE_DIR, { recursive: true });
+      const conversion = spawnSync('ffmpeg', [
+        '-hide_banner', '-loglevel', 'error', '-y',
+        '-i', source,
+        '-filter:a', `atempo=${rate}`,
+        '-ar', '24000', '-ac', '1', '-c:a', 'pcm_s16le', cachePath,
+      ], { stdio: 'ignore' });
+      if (conversion.status !== 0) return response.status(500).json({ error: { message: '生成变速音频失败' } });
+    }
+    return response.sendFile(cachePath);
+  });
   app.use('/media', express.static(resolve('public/media')));
 
   const adminToken = options.adminToken || '';

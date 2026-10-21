@@ -27,7 +27,6 @@ Page({
       spotNote: getSpotNote(this.spotId),
       playbackRate: Number(wx.getStorageSync('narrationPlaybackRate')) || 1,
     });
-    if (this.audio) this.audio.playbackRate = this.data.playbackRate;
   },
   onUnload() {
     this.destroyAudio();
@@ -78,8 +77,12 @@ Page({
     this.audioLoading = true;
     this.setData({ audioStatus: `正在准备${this.audioLanguageLabel()}试听…`, audioError: '' });
     try {
-      const source = await this.resolveAudioSource();
-      this.createAudio(source.url);
+      const plan = this.audioPlan(this.data.playbackRate);
+      const sourceUrl = plan.mode === 'variant' ? plan.url : (await this.resolveAudioSource()).url;
+      this.createAudio(sourceUrl, {
+        playerRate: plan.mode === 'variant' ? 1 : plan.rate,
+        sourceRate: plan.mode === 'variant' ? plan.rate : 1,
+      });
       this.audio.play();
     } catch (error) {
       console.error('Audio source resolution failed', error);
@@ -119,15 +122,27 @@ Page({
       wx.getFileSystemManager().access({ path: filePath, success: () => resolve(true), fail: () => resolve(false) });
     });
   },
-  getLocalAudioUrl() {
+  getLocalAudioUrl(rate = 1) {
     const { apiBaseUrl } = getApp().globalData;
     const audioUrl = this.data.activeNarration.audioUrl;
-    return /^https?:\/\//.test(audioUrl) ? audioUrl : `${apiBaseUrl.replace(/\/api\/v1$/, '')}${audioUrl}`;
+    const base = /^https?:\/\//.test(audioUrl)
+      ? audioUrl
+      : `${apiBaseUrl.replace(/\/api\/v1$/, '')}${audioUrl}`;
+    if (rate === 1) return base;
+    return `${base}${base.includes('?') ? '&' : '?'}rate=${rate}`;
   },
-  createAudio(sourceUrl) {
+  audioPlan(rate) {
+    const audioUrl = this.data.activeNarration?.audioUrl || '';
+    if (audioUrl.startsWith('cloud://')) return { mode: 'native', rate };
+    return { mode: 'variant', rate, url: this.getLocalAudioUrl(rate) };
+  },
+  createAudio(sourceUrl, options = {}) {
+    const { startAt = 0, playerRate = 1, sourceRate = 1 } = options;
     this.audio = wx.createInnerAudioContext();
     this.audio.src = sourceUrl;
-    this.audio.playbackRate = this.data.playbackRate;
+    this.audio.startTime = startAt;
+    this.audio.playbackRate = playerRate;
+    this.sourceRate = sourceRate;
     this.audio.onPlay(() => {
       this.switchingRate = false;
       this.setData({ isPlaying: true, audioStatus: `正在播放${this.audioLanguageLabel()}试听。`, audioError: '' });
@@ -139,8 +154,8 @@ Page({
     this.audio.onStop(() => this.setData({ isPlaying: false, audioStatus: '' }));
     this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: `${this.audioLanguageLabel()}试听已播放完毕。` }));
     this.audio.onTimeUpdate(() => {
-      const duration = this.audio.duration || 0;
-      const current = this.audio.currentTime || 0;
+      const duration = (this.audio.duration || 0) * this.sourceRate;
+      const current = (this.audio.currentTime || 0) * this.sourceRate;
       this.setData({
         audioProgress: duration ? Math.round((current / duration) * 100) : 0,
         audioTime: `${this.formatTime(current)} / ${this.formatTime(duration)}`,
@@ -154,7 +169,8 @@ Page({
   },
   seekAudio(event) {
     if (!this.audio || !this.audio.duration) return wx.showToast({ title: '请先播放讲解', icon: 'none' });
-    const target = Math.min(this.audio.duration, Math.max(0, this.audio.currentTime + Number(event.currentTarget.dataset.seconds)));
+    const offset = Number(event.currentTarget.dataset.seconds) / (this.sourceRate || 1);
+    const target = Math.min(this.audio.duration, Math.max(0, this.audio.currentTime + offset));
     this.audio.seek(target);
   },
   setPlaybackRate(event) {
@@ -162,7 +178,18 @@ Page({
     if (!PLAYBACK_RATES.includes(playbackRate)) return;
     wx.setStorageSync('narrationPlaybackRate', playbackRate);
     this.setData({ playbackRate });
-    this.applyPlaybackRate(playbackRate);
+    const audio = this.audio;
+    if (!audio) return;
+    const plan = this.audioPlan(playbackRate);
+    if (plan.mode === 'native') {
+      this.applyPlaybackRate(playbackRate);
+      return;
+    }
+    const contentPosition = (audio.currentTime || 0) * (this.sourceRate || 1);
+    const wasPlaying = this.data.isPlaying;
+    this.destroyAudio();
+    this.createAudio(plan.url, { startAt: contentPosition / playbackRate, playerRate: 1, sourceRate: playbackRate });
+    if (wasPlaying) this.audio.play();
   },
   // 微信 InnerAudioContext 在播放中直接改 playbackRate 可能不生效，
   // 官方社区通用做法是暂停后改速率再重新播放。
@@ -190,6 +217,7 @@ Page({
     if (!this.audio) return;
     this.audio.destroy();
     this.audio = null;
+    this.sourceRate = 1;
   },
   formatTime(seconds) {
     const safeSeconds = Math.max(0, Math.floor(Number(seconds) || 0));
