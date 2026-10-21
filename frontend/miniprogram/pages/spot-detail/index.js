@@ -27,6 +27,7 @@ Page({
       spotNote: getSpotNote(this.spotId),
       playbackRate: Number(wx.getStorageSync('narrationPlaybackRate')) || 1,
     });
+    if (this.audio) this.audio.playbackRate = this.data.playbackRate;
   },
   onUnload() {
     this.destroyAudio();
@@ -75,7 +76,7 @@ Page({
     }
     if (this.audioLoading) return;
     this.audioLoading = true;
-    this.setData({ audioStatus: '正在准备普通话试听…', audioError: '' });
+    this.setData({ audioStatus: `正在准备${this.audioLanguageLabel()}试听…`, audioError: '' });
     try {
       const source = await this.resolveAudioSource();
       this.createAudio(source.url);
@@ -127,10 +128,16 @@ Page({
     this.audio = wx.createInnerAudioContext();
     this.audio.src = sourceUrl;
     this.audio.playbackRate = this.data.playbackRate;
-    this.audio.onPlay(() => this.setData({ isPlaying: true, audioStatus: '正在播放普通话试听。', audioError: '' }));
-    this.audio.onPause(() => this.setData({ isPlaying: false, audioStatus: '讲解已暂停。' }));
+    this.audio.onPlay(() => {
+      this.switchingRate = false;
+      this.setData({ isPlaying: true, audioStatus: `正在播放${this.audioLanguageLabel()}试听。`, audioError: '' });
+    });
+    this.audio.onPause(() => {
+      if (this.switchingRate) return;
+      this.setData({ isPlaying: false, audioStatus: '讲解已暂停。' });
+    });
     this.audio.onStop(() => this.setData({ isPlaying: false, audioStatus: '' }));
-    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: '普通话试听已播放完毕。' }));
+    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: `${this.audioLanguageLabel()}试听已播放完毕。` }));
     this.audio.onTimeUpdate(() => {
       const duration = this.audio.duration || 0;
       const current = this.audio.currentTime || 0;
@@ -154,8 +161,30 @@ Page({
     const playbackRate = Number(event.currentTarget.dataset.rate);
     if (!PLAYBACK_RATES.includes(playbackRate)) return;
     wx.setStorageSync('narrationPlaybackRate', playbackRate);
-    if (this.audio) this.audio.playbackRate = playbackRate;
     this.setData({ playbackRate });
+    this.applyPlaybackRate(playbackRate);
+  },
+  // 微信 InnerAudioContext 在播放中直接改 playbackRate 可能不生效，
+  // 官方社区通用做法是暂停后改速率再重新播放。
+  applyPlaybackRate(playbackRate) {
+    const audio = this.audio;
+    if (!audio) return;
+    if (!this.data.isPlaying) {
+      audio.playbackRate = playbackRate;
+      return;
+    }
+    const resumeAt = audio.currentTime || 0;
+    this.switchingRate = true;
+    audio.pause();
+    audio.playbackRate = playbackRate;
+    setTimeout(() => {
+      if (this.audio !== audio) return;
+      if (resumeAt > 0) audio.seek(resumeAt);
+      audio.play();
+    }, 150);
+  },
+  audioLanguageLabel() {
+    return this.data.activeNarration?.languageLabel || '普通话';
   },
   destroyAudio() {
     if (!this.audio) return;
