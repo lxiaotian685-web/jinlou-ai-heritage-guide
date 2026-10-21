@@ -130,16 +130,22 @@ export function createApp(db, options = {}) {
     if (!/^[a-z0-9-]+-(zh|yue|en)\.wav$/.test(filename)) return response.status(404).end();
     const source = resolve('public/media/narrations', filename);
     if (!existsSync(source)) return response.status(404).end();
-    const cachePath = resolve(AUDIO_CACHE_DIR, filename.replace(/\.wav$/, `-${rate}.wav`));
+    const cacheDirectory = options.audioCacheDir || AUDIO_CACHE_DIR;
+    const cachePath = resolve(cacheDirectory, filename.replace(/\.wav$/, `-${rate}.wav`));
     if (!existsSync(cachePath)) {
-      mkdirSync(AUDIO_CACHE_DIR, { recursive: true });
-      const conversion = spawnSync('ffmpeg', [
+      mkdirSync(cacheDirectory, { recursive: true });
+      const conversion = spawnSync(options.ffmpegPath || process.env.FFMPEG_PATH || 'ffmpeg', [
         '-hide_banner', '-loglevel', 'error', '-y',
         '-i', source,
         '-filter:a', `atempo=${rate}`,
         '-ar', '24000', '-ac', '1', '-c:a', 'pcm_s16le', cachePath,
       ], { stdio: 'ignore' });
-      if (conversion.status !== 0) return response.status(500).json({ error: { message: '生成变速音频失败' } });
+      if (conversion.error?.code === 'ENOENT') {
+        return response.status(503).json({ error: { code: 'AUDIO_SPEED_UNAVAILABLE', message: '当前环境缺少 ffmpeg，无法生成保持音高的变速音频' } });
+      }
+      if (conversion.status !== 0) {
+        return response.status(500).json({ error: { code: 'AUDIO_SPEED_FAILED', message: '生成变速音频失败' } });
+      }
     }
     return response.sendFile(cachePath);
   });
