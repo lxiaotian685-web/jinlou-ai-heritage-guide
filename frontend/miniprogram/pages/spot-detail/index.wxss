@@ -1067,3 +1067,26 @@
     animation: none;
   }
 }
+.audio-status,
+.audio-error {
+  padding: 14rpx 18rpx;
+  border-radius: 6rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  letter-spacing: 0.5rpx;
+}
+
+.audio-status {
+  background: rgba(92, 107, 102, 0.1);
+  color: var(--arc-blue);
+}
+
+.audio-error {
+  background: rgba(166, 64, 45, 0.1);
+  color: var(--arc-red);
+}
+
+.font-large .audio-status,
+.font-large .audio-error {
+  font-size: 28rpx;
+}

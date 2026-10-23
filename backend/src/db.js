@@ -3,6 +3,7 @@ import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { reviewedSpotContent } from './reviewed-spots.js';
 import { reviewedNarrations } from './reviewed-narrations.js';
+import { runDatabaseMigrations } from './migrations.js';
 import { reviewedFaqs } from './reviewed-faqs.js';
 
 const seedSpots = [
@@ -200,8 +201,8 @@ const seedNarrations = [
 ];
 
 for (const narration of reviewedNarrations) {
-  const existingIndex = seedNarrations.findIndex((item) => item[1] === narration.spotId && item[2] === 'zh-CN');
-  const row = [narration.id, narration.spotId, narration.languageCode, narration.languageLabel, narration.transcript, narration.audioUrl, 'pending', 'none'];
+  const existingIndex = seedNarrations.findIndex((item) => item[1] === narration.spotId && item[2] === narration.languageCode);
+  const row = [narration.id, narration.spotId, narration.languageCode, narration.languageLabel, narration.transcript, narration.audioUrl, 'pending', narration.audioType];
   if (existingIndex >= 0) seedNarrations[existingIndex] = row;
   else seedNarrations.push(row);
 }
@@ -464,6 +465,7 @@ export function createDatabase(filename = ':memory:') {
     `);
     for (const narration of seedNarrations) insertNarration.run(...narration.slice(0, 6), narration[6] || 'draft', narration[7] || 'none');
   }
+  runDatabaseMigrations(db);
 
   const craftGuideCount = db.prepare('SELECT COUNT(*) AS total FROM craft_guides').get().total;
   if (craftGuideCount === 0) {
@@ -636,7 +638,9 @@ export function listNarrations(db, spotId) {
     audioReady: Boolean(row.audio_url),
     reviewStatus: row.review_status,
     audioType: row.audio_type,
-    notice: row.audio_url ? '讲解内容与发音待景区审核' : '讲解文字已整理，正式音频待录制',
+    notice: row.audio_type === 'system-tts-preview'
+      ? `${row.language_label}试听由系统语音合成，内容与发音待景区审核；播放失败时可直接阅读文字稿`
+      : (row.audio_url ? '讲解内容与发音待景区审核' : '讲解文字已整理，正式音频待录制'),
   }));
 }
 

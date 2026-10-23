@@ -23,7 +23,11 @@ const service = await api.main({ path: '/service', method: 'GET' });
 check('快照回退可读取服务信息', service.ok === true && Boolean(service.response?.data?.phone), service.response?.data?.phone || '无');
 
 const answer = await api.main({ path: '/assistant/chat', method: 'POST', body: { question: '金楼是什么建筑？' } });
-check('知识问答仍可用', answer.ok === true && Boolean(answer.response?.data?.answer));
+check('研学资料问答仍可用', answer.ok === true && Boolean(answer.response?.data?.answer));
+
+const cloudNarrations = await api.main({ path: '/spots/jinlou/narrations', method: 'GET' });
+const invalidCloudAudio = (cloudNarrations.response?.data || []).filter((item) => item.audioReady && !item.audioUrl.startsWith('cloud://') && !/^https:\/\//i.test(item.audioUrl));
+check('云端不会把本地音频地址标为可播放', cloudNarrations.ok === true && invalidCloudAudio.length === 0);
 
 const removed = await api.main({ path: '/spots/jinlou/interactions', method: 'GET' });
 check('已移除的互动接口不再暴露', removed.ok === false && removed.error?.code === 'NOT_FOUND');

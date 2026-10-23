@@ -2,6 +2,7 @@
 // 数据来源优先顺序：云数据库集合 bijiang_content → 随函数打包的 data.json 快照。
 // 这样即使云数据库、SDK 或依赖安装出问题，小程序仍能正常读取原有资料。
 const bundledSnapshot = require('./data.json');
+const { SOURCE_IDS, assistantSuggestions, resolveKnowledgeSources } = require('./knowledge-sources');
 
 const COLLECTION = 'bijiang_content';
 const ADMIN_LOG_COLLECTION = 'bijiang_admin_logs';
@@ -60,6 +61,23 @@ async function uploadAdminImage(body) {
 
 let cache = { snapshot: null, loadedAt: 0, source: 'bundled-snapshot' };
 
+function normalizeCloudAudio(snapshot) {
+  const narrations = Object.fromEntries(Object.entries(snapshot.narrations || {}).map(([spotId, resource]) => [spotId, {
+    ...resource,
+    data: (resource.data || []).map((item) => {
+      const remotelyPlayable = typeof item.audioUrl === 'string' && (item.audioUrl.startsWith('cloud://') || /^https:\/\//i.test(item.audioUrl));
+      if (item.audioType !== 'system-tts-preview' || remotelyPlayable) return item;
+      return {
+        ...item,
+        audioUrl: '',
+        audioReady: false,
+        notice: '普通话试听尚未完成云端发布校验，请先阅读文字稿',
+      };
+    }),
+  }]));
+  return { ...snapshot, narrations };
+}
+
 function rebuildSnapshot(documents) {
   const snapshot = { faqs: [] };
   for (const document of documents) {
@@ -85,10 +103,10 @@ async function getSnapshot() {
     const result = await database.collection(COLLECTION).limit(100).get();
     const documents = result.data || [];
     if (!documents.length) throw new Error('云数据库集合为空');
-    cache = { snapshot: rebuildSnapshot(documents), loadedAt: Date.now(), source: 'cloud-database' };
+    cache = { snapshot: normalizeCloudAudio(rebuildSnapshot(documents)), loadedAt: Date.now(), source: 'cloud-database' };
   } catch (readError) {
     console.warn('读取云数据库失败，回退到打包快照：', readError.message);
-    cache = { snapshot: bundledSnapshot, loadedAt: Date.now(), source: 'bundled-snapshot' };
+    cache = { snapshot: normalizeCloudAudio(bundledSnapshot), loadedAt: Date.now(), source: 'bundled-snapshot' };
   }
   return cache;
 }
@@ -362,23 +380,36 @@ function buildAdminDashboard(snapshot) {
 function createKnowledgeAnswer(question, snapshot) {
   const spots = snapshot.spots.data;
   const matchedSpot = spots.find((spot) => question.includes(spot.name.replace(/（.*?）/g, '')));
-  const reviewed = (answer, sources) => ({ answer, mode: 'knowledge-base', sources, reviewStatus: 'pending-scenic-review', publicStatus: 'review-draft', notice: '公开资料核对稿 · 待景区审核' });
-  const pending = (answer) => ({ answer, mode: 'knowledge-base', sources: [], reviewStatus: 'information-pending', publicStatus: 'not-ready', notice: '景区资料待提供' });
+  const reviewed = (answer, sources) => ({ answer, mode: 'knowledge-base', sources: resolveKnowledgeSources(sources), reviewStatus: 'pending-scenic-review', publicStatus: 'review-draft', notice: '公开资料核对稿 · 待景区审核' });
+  const pending = (answer) => ({ answer, mode: 'knowledge-base', sources: [], reviewStatus: 'information-pending', publicStatus: 'not-ready', notice: '资料不足 · 待人工核对' });
   const faq = (snapshot.faqs || []).find((item) => item.keywords.some((keyword) => question.includes(keyword)));
   if (faq) return reviewed(faq.answer, faq.sources);
   const service = snapshot.service.data;
   const routes = snapshot.routes.data;
-  if (/拍照|摄影|录像|闪光灯|三脚架/.test(question)) return pending('当前资料尚未确认景区的拍照、录像、闪光灯和三脚架规定。请以现场标识和工作人员要求为准。');
-  if (/停车|停车场|车停/.test(question)) return pending(`当前资料尚未确认景区停车场位置、开放时间和收费规则。建议出发前拨打景区电话${service.phone}确认。`);
-  if (/老人|老年|儿童|小孩|轮椅|无障碍|婴儿车/.test(question)) return pending('老人、儿童、轮椅和婴儿车的场内通行路线及无障碍设施尚待景区确认。到场后请优先咨询工作人员，并以现场开放区域为准。');
-  if (/门票|票价|购票|订票|优惠|免费/.test(question)) return pending(`官方订票入口、当前票价和优惠政策尚未配置。可拨打景区电话${service.phone}确认，避免按过期资料安排行程。`);
-  if (/开放|几点|营业|闭馆|停止入园/.test(question)) return reviewed(`当前记录的开放时段为${service.openingHours}。临时闭馆、停止入园时间和节假日调整请以景区当日公告为准，也可拨打${service.phone}确认。`, ['当前服务信息资料库']);
-  if (/交通|怎么去|地址|公交|地铁|自驾|坐车|乘车/.test(question)) return reviewed(`地址：${service.address}。交通参考：${service.transport}。出发时请结合实时地图规划路线。`, ['当前服务信息资料库']);
-  if (/建议.*时间|游览.*多久|逛.*多久|需要多久|多长时间/.test(question)) return reviewed(`当前${routes.length}条路线的用时均为参考值：${routes.map((route) => `${route.name}${route.duration}`).join('；')}。实际用时会受停留、讲解和现场开放情况影响。`, ['当前推荐路线资料库']);
-  if (/路线|怎么游|游览/.test(question)) return reviewed(`目前有${routes.length}条参考路线：${routes.map((route) => route.name).join('、')}。这些路线仍需景区确认和现场实走，请在“推荐路线”页面查看各站点。`, ['当前推荐路线资料库']);
-  if (/电话|联系|咨询/.test(question)) return reviewed(`景区联系电话为${service.phone}。票务、停车、临时开放和特殊通行安排建议直接致电确认。`, ['当前服务信息资料库']);
-  if (matchedSpot) return reviewed(`${matchedSpot.name}属于“${matchedSpot.category}”。${matchedSpot.summary}`, ['当前景点资料库']);
-  return pending('当前资料库还没有这个问题的可靠答案。你可以询问某个景点、名称由来、建筑年代、重点看点、游览路线、开放时间、地址交通或木雕工艺。');
+  if (/拍照|摄影|录像|闪光灯|三脚架/.test(question)) return pending('未找到可靠资料：当前资料尚未确认景区的拍照、录像、闪光灯和三脚架规定。请以现场标识和工作人员要求为准。');
+  if (/停车|停车场|车停/.test(question)) return pending('未找到可靠资料：当前资料尚未确认景区停车场位置、开放时间和收费规则。请在出发前通过景区最新公开渠道确认。');
+  if (/老人|老年|儿童|小孩|轮椅|无障碍|婴儿车/.test(question)) return pending('未找到可靠资料：老人、儿童、轮椅和婴儿车的场内通行路线及无障碍设施尚待景区确认。到场后请优先咨询工作人员，并以现场开放区域为准。');
+  if (/门票|票价|购票|订票|优惠|免费/.test(question)) return pending('未找到可靠资料：官方订票入口、当前票价和优惠政策尚未配置。请通过景区最新公开渠道确认，避免按过期资料安排行程。');
+  if (/开放|几点|营业|闭馆|停止入园/.test(question)) {
+    if (/待|为准|未配置|未接入/.test(service.openingHours)) return pending('未找到可靠资料：景区开放时间、停止入园时间和节假日调整尚待景区确认，请以景区当日公告为准。');
+    return reviewed(`当前项目记录的开放时段为${service.openingHours}。临时闭馆、停止入园时间和节假日调整请以景区当日公告为准。`, [SOURCE_IDS.PROJECT_SERVICE_CONFIG]);
+  }
+  if (/交通|怎么去|地址|公交|地铁|自驾|坐车|乘车/.test(question)) {
+    if (/待|未配置|未接入/.test(`${service.address}${service.transport}`)) return pending('未找到可靠资料：景区准确地址和公共交通、停车信息尚待景区确认，请通过实时地图和景区最新公开渠道规划出行。');
+    return reviewed(`地址：${service.address}。交通参考：${service.transport}。出发时请结合实时地图规划路线。`, [SOURCE_IDS.PROJECT_SERVICE_CONFIG]);
+  }
+  if (/建议.*时间|游览.*多久|逛.*多久|需要多久|多长时间/.test(question)) return reviewed(`当前${routes.length}条路线的用时均为参考值：${routes.map((route) => `${route.name}${route.duration}`).join('；')}。实际用时会受停留、讲解和现场开放情况影响。`, [SOURCE_IDS.PROJECT_ROUTE_PLAN]);
+  if (/路线|怎么游|游览/.test(question)) return reviewed(`目前有${routes.length}条参考路线：${routes.map((route) => route.name).join('、')}。这些路线仍需景区确认和现场实走，请在“推荐路线”页面查看各站点。`, [SOURCE_IDS.PROJECT_ROUTE_PLAN]);
+  if (/电话|联系|咨询/.test(question)) {
+    if (/待|未配置|未接入/.test(service.phone)) return pending('未找到可靠资料：景区联系电话尚待确认，请以景区最新公开渠道为准。');
+    return reviewed(`当前项目记录的景区联系电话为${service.phone}。票务、停车、临时开放和特殊通行安排建议直接致电确认。`, [SOURCE_IDS.PROJECT_SERVICE_CONFIG]);
+  }
+  if (matchedSpot) {
+    const sources = [SOURCE_IDS.PROJECT_SPOT_RECORDS];
+    if (matchedSpot.id === 'jinlou') sources.unshift(SOURCE_IDS.SHUNDE_MUSEUM_JINLOU);
+    return reviewed(`${matchedSpot.name}属于“${matchedSpot.category}”。${matchedSpot.summary}`, sources);
+  }
+  return pending('未找到可靠资料。你可以改问某个景点、金楼名称与年代、重点看点、游览路线或木雕工艺；票务、开放和通行政策须以景区最新公告为准。');
 }
 
 function read(path, method, body, snapshot) {
@@ -388,6 +419,14 @@ function read(path, method, body, snapshot) {
   if (method === 'GET' && path === '/service') return snapshot.service;
   if (method === 'GET' && path === '/routes') return snapshot.routes;
   if (method === 'GET' && path === '/site-map') return snapshot.siteMap;
+  if (method === 'GET' && path === '/assistant/suggestions') return {
+    data: assistantSuggestions,
+    meta: {
+      maxQuestionLength: 200,
+      answerMode: 'controlled-knowledge-base',
+      notice: '答案仅来自已登记资料；资料不足时会明确提示待人工核对。',
+    },
+  };
   if (method === 'POST' && path === '/assistant/chat') {
     const question = typeof body?.question === 'string' ? body.question.trim() : '';
     if (!question) return { error: { code: 'QUESTION_REQUIRED', message: '请输入问题' } };

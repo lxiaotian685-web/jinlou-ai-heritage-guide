@@ -64,6 +64,7 @@
           <button wx:for="{{narrations}}" wx:key="languageCode" class="language {{activeNarration.languageCode === item.languageCode ? 'active' : ''}}" data-code="{{item.languageCode}}" bindtap="switchLanguage">{{item.languageLabel}}</button>
         </view>
         <text wx:if="{{activeNarration.notice}}" class="audio-notice">{{activeNarration.notice}}</text>
+        <text class="transcript-label">讲解文字稿</text>
         <text class="transcript">{{activeNarration.transcript}}</text>
         <view wx:if="{{activeNarration.audioReady}}" class="audio-progress"><view class="audio-progress-fill" style="width: {{audioProgress}}%"></view></view>
         <view wx:if="{{activeNarration.audioReady}}" class="audio-meta">
@@ -71,6 +72,8 @@
           <text class="audio-rate">RATE {{playbackRate}}×</text>
         </view>
         <button class="audio-button {{activeNarration.audioReady ? '' : 'is-pending'}}" bindtap="handleAudio">{{activeNarration.audioReady ? (isPlaying ? '暂停讲解' : '播放讲解') : '音频待录制'}}</button>
+        <text wx:if="{{audioStatus}}" class="audio-status">{{audioStatus}}</text>
+        <text wx:if="{{audioError}}" class="audio-error">{{audioError}}</text>
         <view wx:if="{{activeNarration.audioReady}}" class="audio-tools">
           <button data-seconds="-15" bindtap="seekAudio">后退15秒</button>
           <button wx:for="{{playbackRates}}" wx:key="*this" class="{{playbackRate === item ? 'active' : ''}}" data-rate="{{item}}" bindtap="setPlaybackRate">{{item}}×</button>

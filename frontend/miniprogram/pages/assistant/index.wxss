@@ -380,3 +380,153 @@
     transition: none;
   }
 }
+/* ---------- 提问表单 ---------- */
+.question-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 18rpx;
+  padding: 26rpx 24rpx;
+}
+
+.question-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 84rpx;
+  padding: 0 20rpx;
+  background: var(--arc-paper);
+  border: 1rpx solid var(--arc-line);
+  border-radius: 8rpx;
+  color: var(--arc-ink);
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  color: var(--arc-muted);
+  font-size: 20rpx;
+}
+
+.ask-button,
+.retry-button {
+  width: auto;
+  min-width: 150rpx;
+  min-height: 76rpx;
+  margin: 0;
+  padding: 0 26rpx;
+  background: var(--arc-ink);
+  border-radius: 6rpx;
+  color: var(--arc-cream);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.ask-button[disabled] {
+  opacity: 0.55;
+}
+
+.retry-button {
+  align-self: flex-start;
+  min-width: 0;
+  padding: 0 22rpx;
+  background: transparent;
+  border: 1rpx solid var(--arc-line-strong);
+  color: var(--arc-blue);
+}
+
+/* ---------- 来源列表 ---------- */
+.source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-top: 6rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--arc-line);
+}
+
+.source-heading {
+  color: var(--arc-blue);
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.source-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  padding: 16rpx 18rpx;
+  background: var(--arc-paper);
+  border-radius: 6rpx;
+}
+
+.source-title {
+  color: var(--arc-ink);
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.source-meta,
+.source-scope {
+  color: var(--arc-muted);
+  font-size: 20rpx;
+  line-height: 1.6;
+}
+
+.source-link {
+  align-self: flex-start;
+  width: auto;
+  margin: 4rpx 0 0;
+  padding: 0 16rpx;
+  background: transparent;
+  border: 1rpx solid var(--arc-line);
+  border-radius: 4rpx;
+  color: var(--arc-blue);
+  font-size: 20rpx;
+  line-height: 52rpx;
+}
+
+.sources {
+  padding-top: 14rpx;
+  border-top: 1rpx solid var(--arc-line);
+  color: var(--arc-muted);
+  font-size: 20rpx;
+  line-height: 1.6;
+}
+
+/* ---------- 大字模式补充 ---------- */
+.font-large .question-input {
+  font-size: 32rpx;
+}
+
+.font-large .ask-button,
+.font-large .retry-button {
+  font-size: 28rpx;
+}
+
+.font-large .source-title {
+  font-size: 28rpx;
+}
+
+.font-large .source-meta,
+.font-large .source-scope,
+.font-large .sources {
+  font-size: 26rpx;
+}
+
+/* ---------- 高对比补充 ---------- */
+.high-contrast .question-input,
+.high-contrast .source-item {
+  background: #fff;
+  border-color: #393939;
+  color: #111;
+}
+
+.high-contrast .source-title {
+  color: #111;
+}

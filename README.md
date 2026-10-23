@@ -41,10 +41,13 @@ npm.cmd start
 - `GET /api/v1/panoramas/:id`
 - `GET /api/v1/service`
 - `GET /api/v1/recommendations?category=food|hotel|transport|attraction`
+- `GET /api/v1/assistant/suggestions`
 - `POST /api/v1/assistant/chat`
 - `GET /api/v1/routes`
 
 当前景点文字是明确标注的演示内容，正式发布前须由景区审核。
+
+研学资料问答只检索已登记的审核资料，不调用模型、向量检索或生成式 RAG。回答会返回结构化来源和审核状态；无法从现有资料确认时固定提示“未找到可靠资料”。15 个景点各配普通话、粤语、English 3 段系统语音合成试听音频，共 45 段；粤语、英语讲解词为机器翻译试听稿，正式发布前仍需景区审稿、云端文件校验和真机逐条试听。来源、音频清单和测试边界见 `docs/STUDY_KNOWLEDGE_QA.md` 与 `docs/MULTILINGUAL_AUDIO_TEST_RESULTS.md`。
 
 数据库中的初始示例只会在对应数据表为空时写入。修改景点、路线或地图点位后，正常重启后端不会再被示例数据覆盖。
 
@@ -76,3 +79,4 @@ npm.cmd run content:update -- --id jinlou --name "正式名称" --category "古�
 ```
 
 命令只允许修改名称、简介和类别，每次实际写入前会自动生成备份。景点不存在、内容为空、文字过长或没有任何修改时不会写入数据库。
+

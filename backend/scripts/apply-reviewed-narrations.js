@@ -15,7 +15,7 @@ export function applyReviewedNarrations({ databasePath, backupDirectory }) {
     const upsert = db.prepare(`
       INSERT INTO narrations
         (id, spot_id, language_code, language_label, transcript, audio_url, review_status, audio_type)
-      VALUES (?, ?, ?, ?, ?, ?, 'pending', 'none')
+      VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
       ON CONFLICT(spot_id, language_code) DO UPDATE SET
         id = excluded.id,
         language_label = excluded.language_label,
@@ -27,9 +27,11 @@ export function applyReviewedNarrations({ databasePath, backupDirectory }) {
     db.exec('BEGIN IMMEDIATE');
     try {
       for (const item of reviewedNarrations) {
-        upsert.run(item.id, item.spotId, item.languageCode, item.languageLabel, item.transcript, item.audioUrl);
+        upsert.run(item.id, item.spotId, item.languageCode, item.languageLabel, item.transcript, item.audioUrl, item.audioType);
       }
-      db.exec('UPDATE spots SET has_audio = 0');
+      db.exec(`UPDATE spots SET has_audio = CASE WHEN EXISTS (
+        SELECT 1 FROM narrations WHERE narrations.spot_id = spots.id AND narrations.audio_url <> ''
+      ) THEN 1 ELSE 0 END`);
       db.exec('COMMIT');
     } catch (error) {
       db.exec('ROLLBACK');
@@ -47,10 +49,11 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       databasePath: process.env.DATABASE_PATH || 'data/bijiang.db',
       backupDirectory: process.env.BACKUP_DIRECTORY || 'data/backups',
     });
-    console.log(`普通话讲解更新完成：${result.updated}条`);
+    console.log(`讲解更新完成：${result.updated}条（普通话、粤语、English）`);
     console.log(`修改前备份：${result.backupPath}`);
   } catch (error) {
     console.error(`讲解更新失败：${error.message}`);
     process.exitCode = 1;
   }
 }
+

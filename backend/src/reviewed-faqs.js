@@ -1,7 +1,39 @@
+import { SOURCE_IDS } from './knowledge-sources.js';
+
 export const reviewedFaqs = [
-  { id: 'name-origin', question: '金楼为什么叫金楼？', keywords: ['为什么叫', '名字由来', '名称由来'], answer: '金楼原名赋鹤楼，名称“金楼”与楼内木雕构件采用泥金、贴金装饰有关。更完整的名称沿革仍待景区审核。', sources: ['当前景点资料库'] },
-  { id: 'building-age', question: '这些建筑是什么年代？', keywords: ['年代', '建于', '始建', '什么时候建', '历史多久'], answer: '现有资料可确认：泥楼始建于明代；职方第建于清嘉庆、道光年间；其他建筑的具体年代应分别以景区审核资料为准。', sources: ['当前景点资料库'] },
-  { id: 'important-person', question: '有哪些重要人物？', keywords: ['人物', '谁建', '主人', '苏丕文', '名人'], answer: '当前资料可确认的重要人物是苏丕文：职方第为其宅第，金楼原名赋鹤楼，是其所建的藏书楼。其他人物故事仍需景区逐项审核。', sources: ['当前景点资料库'] },
-  { id: 'woodcraft', question: '这里的木雕看什么？', keywords: ['木雕', '工艺'], answer: '金楼内的花罩、帘架、藻井和天花等木雕构件，运用了浮雕、线刻、镂雕及玻璃镶嵌等技法，并有泥金和贴金装饰。', sources: ['当前景点资料库', '当前工艺导览资料'] },
-  { id: 'highlights', question: '有哪些重点看点？', keywords: ['看点', '值得看', '重点', '特色', '推荐看'], answer: '建议重点观察金楼饰金木雕、泥楼夯筑墙体、职方第宅第格局、亦渔遗塾耕读空间和后花园亭廊水景。', sources: ['当前景点资料库'] },
+  {
+    id: 'name-origin',
+    question: '金楼为什么叫金楼？',
+    keywords: ['为什么叫', '名字由来', '名称由来'],
+    answer: '公开资料可确认金楼原名赋鹤楼，楼内木雕构件大量采用泥金、贴金装饰。“金楼”名称的完整沿革和具体称呼过程仍待景区审核资料补充。',
+    sources: [SOURCE_IDS.SHUNDE_MUSEUM_JINLOU],
+  },
+  {
+    id: 'building-age',
+    question: '金楼是什么年代建造的？',
+    keywords: ['年代', '建于', '始建', '什么时候建', '历史多久'],
+    answer: '顺德区博物馆公开资料记载，金楼原名赋鹤楼，是清嘉庆、道光年间苏丕文所建的藏书楼。古建筑群内其他建筑的具体始建和重修年代不能据此一概而论。',
+    sources: [SOURCE_IDS.SHUNDE_MUSEUM_JINLOU],
+  },
+  {
+    id: 'important-person',
+    question: '苏丕文与金楼有什么关系？',
+    keywords: ['人物', '谁建', '主人', '苏丕文', '名人'],
+    answer: '顺德区博物馆资料记载，金楼原名赋鹤楼，是苏丕文所建的藏书楼。其他人物故事与传说须有景区或文献资料后再补充。',
+    sources: [SOURCE_IDS.SHUNDE_MUSEUM_JINLOU],
+  },
+  {
+    id: 'woodcraft',
+    question: '这里的木雕看什么？',
+    keywords: ['木雕', '工艺'],
+    answer: '可重点观察花罩、帘架、藻井和天花等木雕构件。顺德区博物馆资料列出的技法包括深浅浮雕、线刻、镂雕和玻璃镶嵌，表面使用泥金、贴金装饰；具体纹样寓意仍以景区展签为准。',
+    sources: [SOURCE_IDS.SHUNDE_MUSEUM_JINLOU, SOURCE_IDS.PROJECT_CRAFT_GUIDE],
+  },
+  {
+    id: 'highlights',
+    question: '有哪些重点看点？',
+    keywords: ['看点', '值得看', '重点', '特色', '推荐看'],
+    answer: '已核验的重点看点是金楼内的饰金木雕、花罩、帘架、藻井和天花等构件。公开田野资料还提到古建筑群包含职方第、亦渔遗塾等建筑；各点的详细讲解仍以景区审核资料为准。',
+    sources: [SOURCE_IDS.SHUNDE_MUSEUM_JINLOU, SOURCE_IDS.SYSU_FIELD_STUDY],
+  },
 ];
