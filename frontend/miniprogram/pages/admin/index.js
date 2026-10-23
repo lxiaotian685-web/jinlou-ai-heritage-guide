@@ -1,7 +1,10 @@
 const { adminLogin, adminGetSpots, adminUpdateSpot, clearApiCache, getErrorMessage } = require('../../services/api');
+const { getDisplayClass } = require('../../utils/display-settings');
 
 Page({
+  onShow() { this.setData({ displayClass: getDisplayClass() }); },
   data: {
+    displayClass: '',
     token: '',
     authorized: false,
     spots: [],

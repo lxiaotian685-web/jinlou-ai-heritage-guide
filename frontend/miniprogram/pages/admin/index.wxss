@@ -1,15 +1,410 @@
-.admin-page { box-sizing:border-box; }
-.heading { display:flex; flex-direction:column; gap:10rpx; margin-bottom:24rpx; }
-.heading .muted { font-size:23rpx; line-height:1.6; }
-.login-card, .edit-card { padding:28rpx; display:flex; flex-direction:column; gap:18rpx; }
-.card-title { font-size:32rpx; font-weight:600; }
-.login-card input, .edit-card input, .edit-card textarea, .picker { box-sizing:border-box; width:100%; padding:20rpx 22rpx; background:#f2ede3; border-radius:14rpx; font-size:27rpx; }
-.edit-card textarea { min-height:220rpx; line-height:1.65; }
-.label { margin-top:4rpx; color:#5f5550; font-size:23rpx; }
-.counter { text-align:right; color:#81766f; font-size:21rpx; }
-.toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18rpx; }
-.toolbar .status { color:#536657; font-size:23rpx; }
-.toolbar button { width:auto; margin:0; padding:0 18rpx; line-height:58rpx; color:#7b581b; background:#f2ede3; font-size:22rpx; }
-.message { margin-top:20rpx; padding:20rpx 24rpx; border-radius:14rpx; font-size:24rpx; line-height:1.5; }
-.success { color:#31583c; background:#e5f2e7; }
-.error { color:#93000a; background:#ffdad6; }
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   管理 · B 蚝壳青灰
+   紧凑、可读的云端内容编辑台：登录卡、工具条、编辑卡与状态条。
+   ========================================================================== */
+
+.admin-page {
+  box-sizing: border-box;
+  padding: 0 0 calc(56rpx + env(safe-area-inset-bottom));
+}
+
+.admin-page .arc-btn {
+  min-height: 88rpx;
+}
+
+/* ---------- 页头 ---------- */
+.admin-head {
+  padding: 36rpx 32rpx 0;
+}
+
+.admin-head__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.admin-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.admin-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 16rpx;
+}
+
+.admin-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.admin-head__title {
+  font-size: 56rpx;
+  line-height: 1.28;
+  letter-spacing: 4rpx;
+}
+
+.admin-head__seal {
+  flex: none;
+  margin-top: 4rpx;
+}
+
+.admin-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 26rpx;
+}
+
+.admin-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.admin-head__rule-meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 正文 ---------- */
+.admin-body {
+  padding: 30rpx 32rpx 0;
+}
+
+/* ---------- 通用字段 ---------- */
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.admin-field__label {
+  font-size: 20rpx;
+  line-height: 1.6;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.admin-input,
+.admin-textarea,
+.admin-picker {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--arc-oyster);
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: var(--arc-ink);
+}
+
+.admin-input {
+  height: 88rpx;
+  padding: 0 22rpx;
+  line-height: 88rpx;
+}
+
+.admin-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  height: 88rpx;
+  padding: 0 22rpx;
+}
+
+.admin-picker--press {
+  background: var(--arc-paper);
+}
+
+.admin-picker__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 26rpx;
+  line-height: 1.4;
+  color: var(--arc-ink);
+}
+
+.admin-picker__chevron {
+  flex: none;
+  font-size: 28rpx;
+  line-height: 1;
+  color: var(--arc-red);
+}
+
+.admin-textarea {
+  min-height: 240rpx;
+  padding: 18rpx 22rpx;
+  line-height: 1.75;
+}
+
+.admin-placeholder {
+  color: var(--arc-muted);
+}
+
+.admin-counter {
+  display: block;
+  text-align: right;
+  font-size: 20rpx;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 登录卡 ---------- */
+.admin-login {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  padding: 30rpx 28rpx;
+}
+
+.admin-login__title {
+  font-size: 38rpx;
+  line-height: 1.35;
+  letter-spacing: 3rpx;
+  color: var(--arc-ink);
+}
+
+.admin-login__btn {
+  margin-top: 4rpx;
+}
+
+/* ---------- 工具条 ---------- */
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin: 30rpx 0 16rpx;
+}
+
+.admin-toolbar__state {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.admin-toolbar__dot {
+  flex: none;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: var(--arc-blue);
+}
+
+.admin-toolbar__status {
+  flex: 1;
+  min-width: 0;
+  font-size: 22rpx;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.admin-toolbar__logout {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 96rpx;
+  min-height: 88rpx;
+  margin: 0;
+  padding: 0 12rpx;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 22rpx;
+  line-height: 1.3;
+  letter-spacing: 2rpx;
+  color: var(--arc-red);
+}
+
+.admin-toolbar__logout--press {
+  opacity: 0.55;
+}
+
+/* ---------- 编辑卡 ---------- */
+.admin-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  padding: 30rpx 28rpx;
+}
+
+.admin-edit__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.admin-edit__meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.admin-save {
+  margin-top: 6rpx;
+}
+
+/* ---------- 状态消息 ---------- */
+.admin-message {
+  margin-top: 18rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  letter-spacing: 0.5rpx;
+}
+
+.admin-message--ok {
+  background: var(--arc-cream);
+  border: 1rpx solid var(--arc-line);
+  border-left: 3rpx solid var(--arc-blue);
+  color: var(--arc-ink);
+}
+
+.admin-message--error {
+  background-color: var(--arc-cream);
+  background-image: linear-gradient(rgba(166, 64, 45, 0.07), rgba(166, 64, 45, 0.07));
+  border: 1rpx solid rgba(166, 64, 45, 0.4);
+  color: var(--arc-red);
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .admin-head__title {
+  font-size: 72rpx;
+}
+
+.font-large .admin-head__folio,
+.font-large .admin-head__rule-meta {
+  font-size: 24rpx;
+}
+
+.font-large .admin-login__title {
+  font-size: 44rpx;
+}
+
+.font-large .admin-field__label,
+.font-large .admin-counter,
+.font-large .admin-edit__meta,
+.font-large .admin-toolbar__status,
+.font-large .admin-toolbar__logout,
+.font-large .admin-message {
+  font-size: 28rpx;
+}
+
+.font-large .admin-input,
+.font-large .admin-picker {
+  height: 100rpx;
+  font-size: 30rpx;
+}
+
+.font-large .admin-input {
+  line-height: 100rpx;
+}
+
+.font-large .admin-picker__value {
+  font-size: 30rpx;
+}
+
+.font-large .admin-picker__chevron {
+  font-size: 34rpx;
+}
+
+.font-large .admin-textarea {
+  padding: 20rpx 22rpx;
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+/* ---------- 高对比 ---------- */
+.admin-page.high-contrast {
+  background-color: #fff;
+  background-image: none;
+}
+
+.high-contrast .arc-card {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .arc-eyebrow,
+.high-contrast .arc-lede,
+.high-contrast .admin-head__folio,
+.high-contrast .admin-head__rule-meta,
+.high-contrast .admin-field__label,
+.high-contrast .admin-counter,
+.high-contrast .admin-edit__meta,
+.high-contrast .admin-toolbar__status {
+  color: #222;
+}
+
+.high-contrast .admin-input,
+.high-contrast .admin-textarea,
+.high-contrast .admin-picker {
+  background: #fff;
+  border-color: #393939;
+  color: #111;
+}
+
+.high-contrast .admin-placeholder {
+  color: #444;
+}
+
+.high-contrast .admin-picker__value {
+  color: #111;
+}
+
+.high-contrast .admin-message--ok {
+  background: #fff;
+  border: 2rpx solid var(--arc-ink);
+  color: #111;
+}
+
+.high-contrast .admin-message--error {
+  background: #fff;
+  border: 2rpx solid var(--arc-red);
+  color: var(--arc-red);
+}
+
+.high-contrast .arc-btn {
+  border-width: 2rpx;
+}
+
+/* app.wxss 给高对比按钮加了边框，工具条的「退出」应保持纯文字 */
+.high-contrast .admin-toolbar__logout {
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-picker,
+  .admin-toolbar__logout {
+    transition: none;
+  }
+}

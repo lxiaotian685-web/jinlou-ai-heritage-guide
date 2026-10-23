@@ -1,2 +1,322 @@
-.heading { display:flex; flex-direction:column; gap:10rpx; margin-bottom:24rpx; }.heading .muted { font-size:23rpx; line-height:1.5; }.data-list { padding:0 24rpx; }.row { display:flex; align-items:center; justify-content:space-between; gap:20rpx; padding:24rpx 0; border-bottom:1rpx solid #e6dec8; }.row:last-child { border-bottom:0; }.row>view { display:flex; flex-direction:column; gap:6rpx; font-size:27rpx; }.row>view text:last-child { color:#81766f; font-size:21rpx; }.row button { flex:none; width:auto; margin:0; padding:0 18rpx; line-height:58rpx; background:#f2ede3; color:#7b581b; border-radius:10rpx; font-size:21rpx; }.policy { margin-top:22rpx; padding:28rpx; display:flex; flex-direction:column; gap:16rpx; color:#5f5550; font-size:24rpx; line-height:1.7; }.policy-title { color:#382c24; font-size:32rpx; font-weight:600; }
-.admin-entry { margin-top:28rpx; background:transparent; color:#81766f; font-size:22rpx; }
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   隐私与本地数据 · B 蚝壳青灰
+   一份可核对的本机数据边界说明：数据类别、清除动作与政策文本。
+   ========================================================================== */
+
+.privacy-page {
+  box-sizing: border-box;
+  padding: 0 0 calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* ---------- 页头 ---------- */
+.privacy-head {
+  padding: 36rpx 32rpx 0;
+}
+
+.privacy-head__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.privacy-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.privacy-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 14rpx;
+}
+
+.privacy-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.privacy-head__title {
+  font-size: 60rpx;
+  letter-spacing: 3rpx;
+}
+
+.privacy-head__seal {
+  flex: none;
+  margin-top: 6rpx;
+}
+
+.privacy-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 26rpx;
+}
+
+.privacy-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.privacy-head__rule-meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.privacy-body {
+  padding: 26rpx 32rpx 0;
+}
+
+/* ---------- 章节头 ---------- */
+.privacy-section-head {
+  margin: 8rpx 0 18rpx;
+}
+
+.privacy-section-head--policy {
+  margin-top: 40rpx;
+}
+
+/* ---------- 本机数据 ---------- */
+.privacy-data {
+  padding: 0 24rpx;
+}
+
+.privacy-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--arc-line);
+}
+
+.privacy-row:last-child {
+  border-bottom: 0;
+}
+
+.privacy-row__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.privacy-row__label {
+  display: block;
+  font-size: 28rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.privacy-row__meta {
+  display: block;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--arc-muted);
+}
+
+.privacy-row__action {
+  flex: none;
+  width: auto;
+  min-width: 132rpx;
+  min-height: 88rpx;
+  margin: 0;
+  padding: 0 16rpx;
+  background: transparent;
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 6rpx;
+  font-size: 23rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-blue);
+}
+
+/* ---------- 政策卡 ---------- */
+.privacy-policy {
+  padding: 28rpx 24rpx 26rpx;
+}
+
+.privacy-policy__title {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 38rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.privacy-policy__hair {
+  margin: 18rpx 0;
+}
+
+.privacy-policy__body {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.9;
+  color: var(--arc-blue);
+}
+
+.privacy-policy__version {
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--arc-line);
+  font-size: 22rpx;
+  line-height: 1.9;
+  color: var(--arc-muted);
+}
+
+.privacy-policy__version .arc-pending {
+  font-size: 18rpx;
+  vertical-align: middle;
+}
+
+.privacy-policy__phone {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  letter-spacing: 0.5rpx;
+  color: var(--arc-ink);
+}
+
+/* ---------- 页脚 ---------- */
+.privacy-foot {
+  margin-top: 40rpx;
+}
+
+.privacy-admin {
+  width: 100%;
+  min-height: 88rpx;
+  margin-top: 16rpx;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 22rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .privacy-head__title {
+  font-size: 68rpx;
+}
+
+.font-large .privacy-head__folio,
+.font-large .privacy-head__rule-meta {
+  font-size: 22rpx;
+}
+
+.font-large .privacy-row__label {
+  font-size: 32rpx;
+}
+
+.font-large .privacy-row__meta {
+  font-size: 26rpx;
+}
+
+.font-large .privacy-row__action {
+  min-height: 96rpx;
+  font-size: 27rpx;
+}
+
+.font-large .privacy-policy__title {
+  font-size: 44rpx;
+}
+
+.font-large .privacy-policy__body {
+  font-size: 30rpx;
+}
+
+.font-large .privacy-policy__version {
+  font-size: 26rpx;
+}
+
+.font-large .privacy-policy__version .arc-pending {
+  font-size: 22rpx;
+}
+
+.font-large .privacy-policy__phone {
+  font-size: 26rpx;
+}
+
+.font-large .privacy-admin {
+  min-height: 96rpx;
+  font-size: 26rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.privacy-page.high-contrast {
+  background-color: #fff;
+  background-image: none;
+}
+
+.high-contrast .privacy-head__folio,
+.high-contrast .privacy-head__rule-meta {
+  color: #333;
+}
+
+.high-contrast .arc-eyebrow,
+.high-contrast .arc-lede,
+.high-contrast .privacy-row__meta,
+.high-contrast .privacy-policy__body,
+.high-contrast .privacy-policy__version {
+  color: #222;
+}
+
+.high-contrast .privacy-row,
+.high-contrast .privacy-policy__version {
+  border-color: #393939;
+}
+
+.high-contrast .privacy-row__action {
+  border-color: #111;
+  color: #111;
+  background: #fff;
+}
+
+.high-contrast .privacy-policy__version .arc-pending {
+  border-color: #111;
+  color: #111;
+}
+
+.high-contrast .privacy-policy__phone {
+  color: #111;
+}
+
+.high-contrast .privacy-admin {
+  border: 0;
+  color: #111;
+}
+
+.high-contrast .arc-card,
+.high-contrast .arc-empty {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .arc-hair {
+  background: #393939;
+}
+
+.high-contrast .arc-seal {
+  border-color: #111;
+  box-shadow: inset 0 0 0 4rpx #fff, inset 0 0 0 5rpx #111;
+  color: #111;
+}

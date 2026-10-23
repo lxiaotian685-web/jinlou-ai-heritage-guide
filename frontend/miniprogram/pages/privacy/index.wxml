@@ -1,10 +1,73 @@
-<view class="page section {{displayClass}}">
-  <view class="heading"><text class="section-title serif">隐私与本地数据</text><text class="muted">当前版本不登录、不读取实时位置，不收集游客公开内容</text></view>
-  <view class="card data-list">
-    <view class="row"><view><text>游览记录</text><text>收藏 {{summary.favorites}} · 已游览 {{summary.visited}} · 最近 {{summary.recent}} · 路线 {{summary.route ? '有' : '无'}}</text></view><button data-type="visit" bindtap="clearCategory">清除</button></view>
-    <view class="row"><view><text>私人记录</text><text>{{summary.notes}} 个景点保存了评分或笔记</text></view><button data-type="notes" bindtap="clearCategory">清除</button></view>
-    <view class="row"><view><text>使用偏好</text><text>{{summary.display ? '显示设置已保存' : '标准显示'}} · 讲解 {{summary.playbackRate}}×</text></view><button data-type="display" bindtap="clearCategory">恢复</button></view>
+<view class="page arc-page arc-grid-bg privacy-page {{displayClass}}">
+  <view class="privacy-head">
+    <view class="privacy-head__top">
+      <text class="arc-eyebrow">PRIVACY / 数据</text>
+      <text class="privacy-head__folio">NO. 09</text>
+    </view>
+    <view class="privacy-head__main">
+      <view class="privacy-head__copy">
+        <text class="arc-title serif privacy-head__title">隐私与本地数据</text>
+        <text class="arc-lede">当前版本不登录、不读取实时位置，不收集游客公开内容</text>
+      </view>
+      <view class="arc-seal privacy-head__seal">私</view>
+    </view>
+    <view class="privacy-head__rule">
+      <view class="privacy-head__rule-line"></view>
+      <text class="privacy-head__rule-meta">DATA · PRIVACY</text>
+    </view>
   </view>
-  <view class="card policy"><text class="policy-title serif">当前数据边界</text><text>游览记录、私人笔记和使用偏好只保存在当前手机，内容缓存由系统自动管理。常见问题页面仅提供预设的景区资料。当前不使用微信登录，不采集昵称、头像、手机号或实时定位，也不收集点赞、评论等游客公开内容。</text><text>隐私草案版本：0.2（2026-09-23），正式发布前须由运营主体审核。</text><text>客服电话：0757-26632123（待景区最终确认）</text></view>
-  <button class="admin-entry" bindtap="openAdmin">管理人员入口</button>
+
+  <view class="privacy-body">
+    <view class="arc-head privacy-section-head">
+      <text class="arc-head__index">01</text>
+      <text class="arc-head__label">本机数据</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">ON THIS DEVICE</text>
+    </view>
+
+    <view class="privacy-data arc-card">
+      <view class="privacy-row">
+        <view class="privacy-row__copy">
+          <text class="privacy-row__label">游览记录</text>
+          <text class="privacy-row__meta">收藏 {{summary.favorites}} · 已游览 {{summary.visited}} · 最近 {{summary.recent}} · 路线 {{summary.route ? '有' : '无'}}</text>
+        </view>
+        <button class="arc-btn arc-btn--ghost privacy-row__action" data-type="visit" bindtap="clearCategory">清除</button>
+      </view>
+      <view class="privacy-row">
+        <view class="privacy-row__copy">
+          <text class="privacy-row__label">私人记录</text>
+          <text class="privacy-row__meta">{{summary.notes}} 个景点保存了评分或笔记</text>
+        </view>
+        <button class="arc-btn arc-btn--ghost privacy-row__action" data-type="notes" bindtap="clearCategory">清除</button>
+      </view>
+      <view class="privacy-row">
+        <view class="privacy-row__copy">
+          <text class="privacy-row__label">使用偏好</text>
+          <text class="privacy-row__meta">{{summary.display ? '显示设置已保存' : '标准显示'}} · 讲解 {{summary.playbackRate}}×</text>
+        </view>
+        <button class="arc-btn arc-btn--ghost privacy-row__action" data-type="display" bindtap="clearCategory">恢复</button>
+      </view>
+    </view>
+
+    <view class="arc-head privacy-section-head privacy-section-head--policy">
+      <text class="arc-head__index">02</text>
+      <text class="arc-head__label">数据边界</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">POLICY</text>
+    </view>
+
+    <view class="privacy-policy arc-card arc-card--ticks">
+      <text class="arc-eyebrow">CURRENT DATA BOUNDARY</text>
+      <text class="privacy-policy__title serif">当前数据边界</text>
+      <view class="arc-hair privacy-policy__hair"></view>
+      <text class="privacy-policy__body">游览记录、私人笔记和使用偏好只保存在当前手机，内容缓存由系统自动管理。常见问题页面仅提供预设的景区资料。当前不使用微信登录，不采集昵称、头像、手机号或实时定位，也不收集点赞、评论等游客公开内容。</text>
+      <view class="privacy-policy__version"><text>隐私草案版本：</text><text class="arc-pending">0.2（2026-09-23）</text><text>，正式发布前须由运营主体审核。</text></view>
+      <text class="privacy-policy__phone">客服电话：0757-26632123（待景区最终确认）</text>
+    </view>
+
+    <view class="privacy-foot">
+      <view class="arc-hair arc-hair--dot"><text>END OF POLICY</text></view>
+      <button class="privacy-admin" bindtap="openAdmin">管理人员入口</button>
+    </view>
+  </view>
 </view>

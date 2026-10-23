@@ -1,34 +1,107 @@
-<view class="page section {{displayClass}}">
-  <view class="heading-row">
-    <view class="heading"><text class="section-title serif">循迹慢游</text><text class="muted">根据兴趣选择游览主题</text></view>
-    <button class="home-button" bindtap="backHome">返回首页</button>
-  </view>
-  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
-  <view wx:if="{{meta}}" class="route-status card">
-    <view class="status-head"><text class="status-title">{{meta.statusLabel}}</text><text class="status-date">核对至 {{meta.lastReviewed}}</text></view>
-    <text class="status-copy">{{meta.notice}}</text>
-    <view class="status-grid">
-      <text>入口出口：待确认</text><text>无障碍路线：待确认</text>
+<view class="page arc-page arc-grid-bg routes-page {{displayClass}}">
+  <view class="routes-head">
+    <view class="routes-head__top">
+      <text class="arc-eyebrow">ROUTES / 游线</text>
+      <view class="routes-head__tools">
+        <text class="routes-head__folio">NO. 06</text>
+        <button class="arc-text-btn routes-head__back" bindtap="backHome">返回首页</button>
+      </view>
     </view>
-    <text class="safety-copy">{{meta.safetyNotice}}</text>
+    <view class="routes-head__main">
+      <view class="routes-head__copy">
+        <text class="arc-title serif routes-head__title">循迹慢游</text>
+        <text class="arc-lede">根据兴趣选择游览主题</text>
+      </view>
+      <view class="arc-seal routes-head__seal">线</view>
+    </view>
+    <view class="routes-head__rule">
+      <view class="routes-head__rule-line"></view>
+      <text class="routes-head__rule-meta">BIJIANG · ROUTES</text>
+    </view>
   </view>
-  <view wx:if="{{loading}}" class="state card">正在读取推荐游线…</view>
-  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadRoutes">重新加载</button></view>
-  <view wx:else class="route-list">
-    <view wx:for="{{routes}}" wx:key="id" class="route-card card">
-      <view class="route-head" data-id="{{item.id}}" bindtap="toggleRoute">
-        <view class="route-copy"><view class="name-row"><text class="route-name serif">{{item.name}}</text><text class="verify-badge">{{item.verificationLabel}}</text></view><text class="theme">{{item.theme}}</text></view>
-        <text class="toggle">{{expandedId === item.id ? '收起' : '展开'}}</text>
+
+  <view class="routes-body">
+    <view wx:if="{{offlineNotice}}" class="routes-offline">{{offlineNotice}}</view>
+
+    <view wx:if="{{meta}}" class="routes-status arc-card arc-card--ticks">
+      <text class="arc-eyebrow">TRAIL STATUS</text>
+      <view class="routes-status__head">
+        <text class="routes-status__title serif">{{meta.statusLabel}}</text>
+        <text class="routes-status__date">核对至 {{meta.lastReviewed}}</text>
       </view>
-      <view class="meta"><text>{{item.duration}}</text><text>{{item.audience}}</text></view>
-      <view wx:if="{{expandedId === item.id}}" class="route-detail">
-        <text class="passage-notice">{{item.passageNotice}}</text>
-        <view wx:for="{{item.stops}}" wx:for-item="stop" wx:for-index="stopIndex" wx:key="*this" class="stop">
-          <text class="number">{{stopIndex + 1}}</text><text>{{stop}}</text>
+      <text class="routes-status__copy">{{meta.notice}}</text>
+      <view class="routes-status__tags">
+        <view class="arc-pending routes-status__tag"><text>入口出口：待确认</text></view>
+        <view class="arc-pending routes-status__tag"><text>无障碍路线：待确认</text></view>
+      </view>
+      <view class="routes-status__safety">
+        <text>{{meta.safetyNotice}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{loading}}" class="routes-state arc-card arc-card--ticks">
+      <text class="arc-eyebrow">READING THE ROUTE ARCHIVE</text>
+      <text class="routes-state__title serif">正在读取推荐游线…</text>
+      <view class="routes-state__line"></view>
+    </view>
+
+    <view wx:elif="{{error}}" class="arc-empty routes-error">
+      <text class="arc-eyebrow">ROUTE ARCHIVE UNAVAILABLE</text>
+      <text class="routes-error__title serif">推荐游线未能送达</text>
+      <text class="routes-error__body">{{error}}</text>
+      <view class="arc-empty__rule"></view>
+      <button class="arc-btn routes-error__btn" bindtap="loadRoutes">重新加载</button>
+    </view>
+
+    <view wx:elif="{{!routes.length}}" class="arc-empty routes-empty">
+      <text class="arc-eyebrow">NO ROUTES</text>
+      <text class="routes-empty__title serif">暂无推荐游线</text>
+      <view class="arc-empty__rule"></view>
+      <text class="routes-empty__body">游线资料待景区确认后接入。</text>
+      <button class="arc-btn routes-empty__btn" bindtap="backHome">返回首页</button>
+    </view>
+
+    <view wx:else class="routes-list">
+      <view wx:for="{{routes}}" wx:key="id" class="routes-card arc-card">
+        <view class="routes-card__head" hover-class="routes-card__head--press" aria-role="button" aria-label="{{expandedId === item.id ? '收起' : '展开'}}：{{item.name}}" data-id="{{item.id}}" bindtap="toggleRoute">
+          <view class="routes-card__copy">
+            <view class="routes-card__name-row">
+              <text class="routes-card__name serif">{{item.name}}</text>
+              <view class="arc-tag routes-card__verify"><text>{{item.verificationLabel}}</text></view>
+            </view>
+            <text class="routes-card__theme">{{item.theme}}</text>
+          </view>
+          <view class="routes-card__toggle">
+            <text class="routes-card__toggle-text">{{expandedId === item.id ? '收起' : '展开'}}</text>
+            <view class="routes-card__chevron {{expandedId === item.id ? 'routes-card__chevron--up' : ''}}"></view>
+          </view>
         </view>
-        <button class="map-button" data-id="{{item.id}}" bindtap="openOnGuide">在导览图中查看</button>
-        <button class="share-route-button" open-type="share" data-id="{{item.id}}">分享这条路线</button>
+
+        <view class="routes-card__meta">
+          <view class="arc-tag routes-card__meta-tag"><text>{{item.duration}}</text></view>
+          <view class="arc-tag routes-card__meta-tag"><text>{{item.audience}}</text></view>
+        </view>
+
+        <view wx:if="{{expandedId === item.id}}" class="routes-card__detail">
+          <view class="arc-hair routes-card__hair"></view>
+          <text class="routes-card__passage">{{item.passageNotice}}</text>
+          <view class="routes-card__stops">
+            <view wx:for="{{item.stops}}" wx:for-item="stop" wx:for-index="stopIndex" wx:key="*this" class="routes-stop">
+              <view class="routes-stop__num"><text>{{stopIndex + 1}}</text></view>
+              <text class="routes-stop__text">{{stop}}</text>
+            </view>
+          </view>
+          <view class="routes-card__actions">
+            <button class="arc-btn routes-card__action" data-id="{{item.id}}" bindtap="openOnGuide">在导览图中查看</button>
+            <button class="arc-btn arc-btn--ghost routes-card__action" open-type="share" data-id="{{item.id}}">分享这条路线</button>
+          </view>
+        </view>
       </view>
+    </view>
+
+    <view class="routes-foot">
+      <view class="arc-hair arc-hair--dot"><text>END OF ROUTES</text></view>
+      <text class="routes-foot__note">游线为资料参考，须景区确认与现场实走</text>
     </view>
   </view>
 </view>

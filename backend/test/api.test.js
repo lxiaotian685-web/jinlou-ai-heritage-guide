@@ -6,7 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { after, before, test } from 'node:test';
 import { createApp } from '../src/app.js';
 import { evaluateLaunchReadiness } from '../src/launch-readiness.js';
-import { createDatabase } from '../src/db.js';
+import { createDatabase, getServiceConfig, listRecommendations } from '../src/db.js';
 import { createBackup } from '../scripts/backup-db.js';
 import { restoreDatabase } from '../scripts/restore-db.js';
 import { updateSpotContent } from '../scripts/update-spot.js';
@@ -66,6 +66,58 @@ test('database restart preserves maintained spots, routes and map points', () =>
     assert.equal(persistentDb.prepare('SELECT position_x FROM site_points WHERE number = ?').get(4).position_x, 39);
   } finally {
     persistentDb?.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('database startup migrates legacy recommendation and ticket columns', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-migrate-'));
+  const databasePath = join(directory, 'legacy.db');
+  const legacyDb = new DatabaseSync(databasePath);
+
+  legacyDb.exec(`
+    CREATE TABLE service_config (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      ticket_url TEXT NOT NULL DEFAULT '',
+      address TEXT NOT NULL,
+      opening_hours TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      transport TEXT NOT NULL
+    ) STRICT;
+    CREATE TABLE recommendations (
+      id TEXT PRIMARY KEY,
+      category TEXT NOT NULL CHECK (category IN ('food', 'hotel', 'transport', 'attraction')),
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      address TEXT NOT NULL,
+      availability TEXT NOT NULL,
+      image TEXT NOT NULL
+    ) STRICT;
+    INSERT INTO service_config (id, ticket_url, address, opening_hours, phone, transport)
+      VALUES (1, '', '旧地址', '旧开放时间', '旧电话', '旧交通');
+    INSERT INTO recommendations (id, category, name, type, address, availability, image)
+      VALUES ('legacy-food', 'food', '旧推荐', '餐饮', '旧地址', '旧营业信息', '/images/jinlou-01.jpg');
+  `);
+  legacyDb.close();
+
+  let migratedDb;
+  try {
+    migratedDb = createDatabase(databasePath);
+    const columns = new Set(migratedDb.prepare('PRAGMA table_info(recommendations)').all().map((column) => column.name));
+    for (const name of ['status', 'sort_order', 'description', 'phone', 'link_url', 'product_name', 'latitude', 'longitude', 'source_note']) {
+      assert.ok(columns.has(name), name);
+    }
+    const legacy = listRecommendations(migratedDb, 'food')[0];
+    assert.equal(legacy.name, '旧推荐');
+    assert.equal(legacy.status, 'pending-review');
+    assert.equal(legacy.sortOrder, 0);
+    assert.equal(legacy.sourceNote, '');
+    const service = getServiceConfig(migratedDb);
+    assert.equal(service.address, '旧地址');
+    assert.equal(service.ticket.appId, '');
+    assert.equal(service.ticket.path, '');
+  } finally {
+    migratedDb?.close();
     rmSync(directory, { recursive: true, force: true });
   }
 });
@@ -427,7 +479,28 @@ test('service endpoint marks ticket link as not configured', async () => {
   assert.equal(response.status, 200);
   assert.equal(body.data.ticket.enabled, false);
   assert.equal(body.data.ticket.url, '');
+  assert.equal(body.data.ticket.label, '订票入口准备中');
+  assert.equal(body.data.ticket.appId, '');
+  assert.equal(body.data.ticket.path, '');
   assert.deepEqual(body.data.actions, { copyAddress: false, callPhone: false, openMap: false });
+});
+
+test('service ticket is available when only mini program appId and path are configured', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-ticket-'));
+  const databasePath = join(directory, 'content.db');
+  let database;
+  try {
+    database = createDatabase(databasePath);
+    database.prepare("UPDATE service_config SET ticket_url = '', ticket_app_id = 'wx-test-app', ticket_path = 'pages/ticket/index' WHERE id = 1").run();
+    const service = getServiceConfig(database);
+    assert.equal(service.ticket.enabled, true);
+    assert.equal(service.ticket.label, '前往订票');
+    assert.equal(service.ticket.appId, 'wx-test-app');
+    assert.equal(service.ticket.path, 'pages/ticket/index');
+  } finally {
+    database?.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('recommendations endpoint filters supported categories', async () => {
@@ -436,6 +509,15 @@ test('recommendations endpoint filters supported categories', async () => {
   assert.equal(response.status, 200);
   assert.equal(body.data.length, 1);
   assert.equal(body.data[0].category, 'hotel');
+  assert.equal(body.data[0].status, 'pending-review');
+  assert.equal(body.data[0].sortOrder, 20);
+  assert.equal(body.data[0].description, '');
+  assert.equal(body.data[0].phone, '');
+  assert.equal(body.data[0].linkUrl, '');
+  assert.equal(body.data[0].productName, '');
+  assert.equal(body.data[0].latitude, null);
+  assert.equal(body.data[0].longitude, null);
+  assert.equal(body.data[0].sourceNote, '景区接口 · 占位数据');
 });
 
 test('recommendations endpoint rejects unknown categories', async () => {

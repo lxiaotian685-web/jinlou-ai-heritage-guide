@@ -1,14 +1,30 @@
-<view class="viewer-page">
-  <view wx:if="{{loading}}" class="center-state">正在加载场景…</view>
-  <view wx:elif="{{error}}" class="center-state">
-    <text>{{error}}</text>
-    <button class="retry" bindtap="loadViewer">重新加载</button>
+<view class="viewer-page {{displayClass}}">
+  <view wx:if="{{loading}}" class="viewer-state">
+    <view class="viewer-state__card">
+      <text class="viewer-state__eyebrow">SCENE / 全景场景</text>
+      <text class="viewer-state__title serif">正在加载场景…</text>
+      <view class="viewer-state__line"></view>
+    </view>
   </view>
+
+  <view wx:elif="{{error}}" class="viewer-state">
+    <view class="viewer-state__card viewer-state__card--error">
+      <text class="viewer-state__eyebrow">ARCHIVE UNAVAILABLE</text>
+      <text class="viewer-state__title serif">场景未能打开</text>
+      <text class="viewer-state__body">{{error}}</text>
+      <button class="arc-btn viewer-state__btn" bindtap="loadViewer">重新加载</button>
+    </view>
+  </view>
+
   <block wx:else>
     <view class="viewer-head">
-      <text class="scene-name serif">{{scene.name}}</text>
-      <text class="demo-badge">交互框架演示</text>
+      <view class="viewer-head__copy">
+        <text class="viewer-head__eyebrow">SCENE / 全景场景</text>
+        <text class="viewer-head__name serif">{{scene.name}}</text>
+      </view>
+      <text class="viewer-head__badge">交互框架演示</text>
     </view>
+
     <movable-area class="panorama-area">
       <movable-view class="panorama-canvas" direction="horizontal" inertia out-of-bounds="false" x="-300">
         <image class="panorama-image" src="{{scene.previewImage}}" mode="aspectFill" />
@@ -19,28 +35,50 @@
           style="left: {{item.positionX}}%; top: {{item.positionY}}%;"
           data-id="{{item.id}}"
           bindtap="handleHotspot"
+          hover-class="hotspot--press"
+          aria-label="{{item.title}}"
         >{{item.type === 'scene' ? '前往' : '介绍'}}</button>
       </movable-view>
     </movable-area>
-    <view wx:if="{{showHelp}}" class="help" bindtap="dismissHelp">左右拖动画面 · 点击标记了解内容</view>
-    <view class="notice">当前使用普通参考图验证交互，真实360°全景素材待现场采集。</view>
-    <scroll-view class="scene-strip" scroll-x enable-flex>
-      <view
-        wx:for="{{scenes}}"
-        wx:key="id"
-        class="scene-card {{item.id === scene.id ? 'active' : ''}}"
-        data-id="{{item.id}}"
-        bindtap="selectScene"
-      >
-        <image src="{{item.previewImage}}" mode="aspectFill" />
-        <text>{{item.name}}</text>
+
+    <view wx:if="{{showHelp}}" class="viewer-help" bindtap="dismissHelp" hover-class="viewer-help--press" aria-role="button" aria-label="关闭操作提示">左右拖动画面 · 点击标记了解内容</view>
+
+    <view class="viewer-notice">
+      <view class="viewer-notice__mark"></view>
+      <text class="viewer-notice__text">当前使用普通参考图验证交互，真实360°全景素材待现场采集。</text>
+    </view>
+
+    <view class="viewer-index">
+      <text class="viewer-index__label">SCENE ARCHIVE</text>
+      <view class="viewer-index__rule"></view>
+      <text class="viewer-index__meta">场景切换</text>
+    </view>
+
+    <scroll-view class="scene-strip" scroll-x enable-flex show-scrollbar="{{false}}">
+      <view class="scene-strip__track">
+        <view
+          wx:for="{{scenes}}"
+          wx:key="id"
+          class="scene-card {{item.id === scene.id ? 'active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="selectScene"
+          hover-class="scene-card--press"
+          aria-role="button"
+          aria-label="{{item.name}}"
+        >
+          <image src="{{item.previewImage}}" mode="aspectFill" />
+          <text>{{item.name}}</text>
+        </view>
       </view>
     </scroll-view>
-    <view wx:if="{{activeHotspot}}" class="sheet-mask" bindtap="closeHotspot">
-      <view class="sheet" catchtap="stopPropagation">
-        <text class="sheet-title serif">{{activeHotspot.title}}</text>
-        <text class="sheet-content">{{activeHotspot.content}}</text>
-        <button class="sheet-button" bindtap="closeHotspot">返回场景</button>
+
+    <view wx:if="{{activeHotspot}}" class="sheet-mask" bindtap="closeHotspot" hover-class="sheet-mask--press" aria-role="button" aria-label="关闭标记说明">
+      <view class="viewer-sheet" catchtap="stopPropagation">
+        <view class="arc-sheet__handle viewer-sheet__handle"></view>
+        <text class="viewer-sheet__eyebrow">HOTSPOT / 标记说明</text>
+        <text class="viewer-sheet__title serif">{{activeHotspot.title}}</text>
+        <text class="viewer-sheet__body">{{activeHotspot.content}}</text>
+        <button class="arc-btn viewer-sheet__btn" bindtap="closeHotspot">返回场景</button>
       </view>
     </view>
   </block>

@@ -1,22 +1,89 @@
-<view class="page section admin-page">
-  <view class="heading"><text class="section-title serif">云端内容管理</text><text class="muted">当前批次支持景点名称、类别和简介；图片、音频及商家广告将在后续批次接入。</text></view>
-  <view wx:if="{{!authorized}}" class="card login-card">
-    <text class="card-title serif">管理员登录</text>
-    <input password value="{{token}}" placeholder="输入云端管理口令" bindinput="handleToken" confirm-type="done" bindconfirm="login" />
-    <button class="primary-button" loading="{{loading}}" disabled="{{loading || !token}}" bindtap="login">连接云端管理</button>
-  </view>
-  <block wx:else>
-    <view class="toolbar"><text class="status">已连接云端 · {{spots.length}}个景点</text><button bindtap="logout">退出</button></view>
-    <view class="card edit-card">
-      <text class="label">选择景点</text>
-      <picker mode="selector" range="{{spots}}" range-key="name" value="{{selectedIndex}}" bindchange="chooseSpot"><view class="picker">{{form.name}}　›</view></picker>
-      <text class="label">景点名称</text><input value="{{form.name}}" maxlength="60" data-field="name" bindinput="handleField" />
-      <text class="label">景点类别</text><input value="{{form.category}}" maxlength="40" data-field="category" bindinput="handleField" />
-      <text class="label">景点简介</text><textarea value="{{form.summary}}" maxlength="1000" auto-height data-field="summary" bindinput="handleField" />
-      <text class="counter">{{form.summary.length}} / 1000</text>
-      <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到云端</button>
+<view class="page arc-page arc-grid-bg admin-page {{displayClass}}">
+  <view class="admin-head">
+    <view class="admin-head__top">
+      <text class="arc-eyebrow">ADMIN / 管理</text>
+      <text class="admin-head__folio">NO. 11</text>
     </view>
-  </block>
-  <view wx:if="{{message}}" class="message success">{{message}}</view>
-  <view wx:if="{{error}}" class="message error">{{error}}</view>
+    <view class="admin-head__main">
+      <view class="admin-head__copy">
+        <text class="arc-title serif admin-head__title">云端内容管理</text>
+        <text class="arc-lede">当前批次支持景点名称、类别和简介；图片、音频及商家广告将在后续批次接入。</text>
+      </view>
+      <view class="arc-seal admin-head__seal">管</view>
+    </view>
+    <view class="admin-head__rule">
+      <view class="admin-head__rule-line"></view>
+      <text class="admin-head__rule-meta">CLOUD · CONTENT</text>
+    </view>
+  </view>
+
+  <view class="admin-body">
+    <view wx:if="{{!authorized}}" class="arc-card arc-card--ticks admin-login">
+      <text class="arc-eyebrow">ACCESS / 口令</text>
+      <text class="admin-login__title serif">管理员登录</text>
+      <view class="admin-field">
+        <text class="admin-field__label">管理口令</text>
+        <input
+          class="admin-input"
+          password
+          value="{{token}}"
+          placeholder="输入云端管理口令"
+          placeholder-class="admin-placeholder"
+          bindinput="handleToken"
+          confirm-type="done"
+          bindconfirm="login"
+          aria-label="云端管理口令"
+        />
+      </view>
+      <button class="arc-btn admin-login__btn" loading="{{loading}}" disabled="{{loading || !token}}" bindtap="login">连接云端管理</button>
+    </view>
+
+    <block wx:else>
+      <view class="admin-toolbar">
+        <view class="admin-toolbar__state">
+          <view class="admin-toolbar__dot"></view>
+          <text class="admin-toolbar__status">已连接云端 · {{spots.length}}个景点</text>
+        </view>
+        <button class="admin-toolbar__logout" hover-class="admin-toolbar__logout--press" bindtap="logout" aria-label="退出云端管理">退出</button>
+      </view>
+
+      <view class="arc-card arc-card--ticks admin-edit">
+        <view class="admin-edit__head">
+          <text class="arc-eyebrow">EDIT / 编辑</text>
+          <text class="admin-edit__meta">CLOUD RECORD</text>
+        </view>
+
+        <view class="admin-field">
+          <text class="admin-field__label">选择景点</text>
+          <picker mode="selector" range="{{spots}}" range-key="name" value="{{selectedIndex}}" bindchange="chooseSpot">
+            <view class="admin-picker" hover-class="admin-picker--press" aria-role="button" aria-label="选择要编辑的景点">
+              <text class="admin-picker__value">{{form.name}}</text>
+              <text class="admin-picker__chevron">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="admin-field">
+          <text class="admin-field__label">景点名称</text>
+          <input class="admin-input" value="{{form.name}}" maxlength="60" data-field="name" bindinput="handleField" aria-label="景点名称" />
+        </view>
+
+        <view class="admin-field">
+          <text class="admin-field__label">景点类别</text>
+          <input class="admin-input" value="{{form.category}}" maxlength="40" data-field="category" bindinput="handleField" aria-label="景点类别" />
+        </view>
+
+        <view class="admin-field">
+          <text class="admin-field__label">景点简介</text>
+          <textarea class="admin-textarea" value="{{form.summary}}" maxlength="1000" auto-height data-field="summary" bindinput="handleField" aria-label="景点简介" />
+          <text class="admin-counter">{{form.summary.length}} / 1000</text>
+        </view>
+
+        <button class="arc-btn admin-save" loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到云端</button>
+      </view>
+    </block>
+
+    <view wx:if="{{message}}" class="admin-message admin-message--ok">{{message}}</view>
+    <view wx:if="{{error}}" class="admin-message admin-message--error">{{error}}</view>
+  </view>
 </view>

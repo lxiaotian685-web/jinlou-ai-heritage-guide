@@ -1,19 +1,76 @@
-<view class="assistant-page {{displayClass}}">
-  <scroll-view class="content" scroll-y>
-    <view class="intro"><text class="serif title">研学资料问答</text><text>输入问题或选择推荐问题。当前为受控资料检索，不调用生成式模型；资料不足时会明确提示待核对。</text></view>
-    <view class="question-form card">
-      <input class="question-input" maxlength="200" value="{{inputQuestion}}" placeholder="例如：金楼的木雕有什么特色？" confirm-type="send" bindinput="handleQuestionInput" bindconfirm="submitQuestion" disabled="{{sending}}" />
-      <view class="form-footer"><text>{{questionLength}}/200</text><button class="ask-button" bindtap="submitQuestion" loading="{{sending}}" disabled="{{sending}}">提问</button></view>
+<view class="page arc-page arc-grid-bg assistant-page {{displayClass}}">
+  <view class="faq-head">
+    <view class="faq-head__top">
+      <text class="arc-eyebrow">STUDY / 研学</text>
+      <text class="faq-head__folio">NO. 10</text>
     </view>
-    <text class="section-label">推荐问题</text>
-    <view class="question-list">
-      <button wx:for="{{quickQuestions}}" wx:key="id" class="question {{selectedQuestion === item.question ? 'active' : ''}}" data-question="{{item.question}}" bindtap="chooseQuickQuestion">{{item.question}}</button>
+    <view class="faq-head__main">
+      <view class="faq-head__copy">
+        <text class="arc-title serif faq-head__title">研学资料问答</text>
+        <text class="arc-lede">输入问题或选择推荐问题。当前为受控资料检索，不调用生成式模型；资料不足时会明确提示待核对。</text>
+      </view>
+      <view class="arc-seal faq-head__seal">问</view>
     </view>
-    <view wx:if="{{sending}}" class="answer card muted">正在检索已登记资料…</view>
-    <view wx:elif="{{answer}}" class="answer card {{answer.isError ? 'error' : ''}}">
-      <text class="answer-question serif">{{selectedQuestion}}</text>
-      <text wx:if="{{answer.notice}}" class="data-label">{{answer.notice}}</text>
-      <text>{{answer.text}}</text>
+    <view class="faq-head__rule">
+      <view class="faq-head__rule-line"></view>
+      <text class="faq-head__rule-meta">REFERENCE · QA</text>
+    </view>
+  </view>
+
+  <view class="faq-body">
+    <view class="arc-head faq-section-head">
+      <text class="arc-head__index">01</text>
+      <text class="arc-head__label">提问</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">ASK</text>
+    </view>
+
+    <view class="arc-card question-form">
+      <input
+        class="question-input"
+        maxlength="200"
+        value="{{inputQuestion}}"
+        placeholder="例如：金楼的木雕有什么特色？"
+        confirm-type="send"
+        bindinput="handleQuestionInput"
+        bindconfirm="submitQuestion"
+        disabled="{{sending}}"
+      />
+      <view class="form-footer">
+        <text>{{questionLength}}/200</text>
+        <button class="ask-button" bindtap="submitQuestion" loading="{{sending}}" disabled="{{sending}}">提问</button>
+      </view>
+    </view>
+
+    <view class="arc-head faq-section-head">
+      <text class="arc-head__index">02</text>
+      <text class="arc-head__label">推荐问题</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">SUGGESTIONS</text>
+    </view>
+
+    <view class="faq-grid">
+      <button
+        wx:for="{{quickQuestions}}"
+        wx:key="id"
+        class="faq-question {{selectedQuestion === item.question ? 'is-active' : ''}}"
+        data-question="{{item.question}}"
+        bindtap="chooseQuickQuestion"
+        hover-class="faq-question--press"
+        aria-label="{{item.question}}"
+      >{{item.question}}</button>
+    </view>
+
+    <view wx:if="{{sending}}" class="arc-card faq-loading">
+      <text class="arc-eyebrow">RETRIEVING</text>
+      <text class="faq-loading__text serif">正在检索已登记资料…</text>
+      <view class="faq-loading__line"></view>
+    </view>
+
+    <view wx:elif="{{answer}}" class="arc-card arc-card--ticks faq-answer {{answer.isError ? 'is-error' : ''}}">
+      <text class="faq-answer__question serif">{{selectedQuestion}}</text>
+      <view wx:if="{{answer.notice}}" class="arc-tag faq-answer__tag"><text>{{answer.notice}}</text></view>
+      <text class="faq-answer__text">{{answer.text}}</text>
       <button wx:if="{{answer.canRetry}}" class="retry-button" bindtap="retryLastQuestion">重新尝试</button>
       <view wx:if="{{answer.sources && answer.sources.length}}" class="source-list">
         <text class="source-heading">回答来源</text>
@@ -26,6 +83,12 @@
       </view>
       <text wx:if="{{answer.publicStatus}}" class="sources">公开状态：{{answer.publicStatus}}</text>
     </view>
-    <view wx:else class="tip card"><text>可以自由提问</text><text class="muted">系统不会编造票价、开放时间、人物故事或工艺结论；没有可靠资料时会建议人工核对。</text></view>
-  </scroll-view>
+
+    <view wx:else class="arc-empty faq-empty">
+      <text class="arc-eyebrow">FREE QUESTION</text>
+      <text class="faq-empty__title serif">可以自由提问</text>
+      <view class="arc-empty__rule"></view>
+      <text class="faq-empty__text">系统不会编造票价、开放时间、人物故事或工艺结论；没有可靠资料时会建议人工核对。</text>
+    </view>
+  </view>
 </view>
