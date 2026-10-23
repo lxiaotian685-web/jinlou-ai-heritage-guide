@@ -548,11 +548,13 @@ export function getServiceConfig(db) {
   const addressReady = Boolean(row.address && !/待|确认/.test(row.address));
   const phoneReady = Boolean(row.phone && !/待|确认/.test(row.phone));
   const mapReady = Number.isFinite(row.latitude) && Number.isFinite(row.longitude);
+  const miniProgramTicketReady = Boolean(row.ticket_app_id && row.ticket_path);
+  const ticketReady = Boolean(row.ticket_url) || miniProgramTicketReady;
   return {
     ticket: {
-      enabled: Boolean(row.ticket_url),
+      enabled: ticketReady,
       url: row.ticket_url,
-      label: row.ticket_url ? '前往订票' : '订票入口准备中',
+      label: ticketReady ? '前往订票' : '订票入口准备中',
       appId: row.ticket_app_id,
       path: row.ticket_path,
     },

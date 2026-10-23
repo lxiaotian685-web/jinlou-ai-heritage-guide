@@ -485,6 +485,24 @@ test('service endpoint marks ticket link as not configured', async () => {
   assert.deepEqual(body.data.actions, { copyAddress: false, callPhone: false, openMap: false });
 });
 
+test('service ticket is available when only mini program appId and path are configured', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-ticket-'));
+  const databasePath = join(directory, 'content.db');
+  let database;
+  try {
+    database = createDatabase(databasePath);
+    database.prepare("UPDATE service_config SET ticket_url = '', ticket_app_id = 'wx-test-app', ticket_path = 'pages/ticket/index' WHERE id = 1").run();
+    const service = getServiceConfig(database);
+    assert.equal(service.ticket.enabled, true);
+    assert.equal(service.ticket.label, '前往订票');
+    assert.equal(service.ticket.appId, 'wx-test-app');
+    assert.equal(service.ticket.path, 'pages/ticket/index');
+  } finally {
+    database?.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('recommendations endpoint filters supported categories', async () => {
   const response = await fetch(`${baseUrl}/api/v1/recommendations?category=hotel`);
   const body = await response.json();

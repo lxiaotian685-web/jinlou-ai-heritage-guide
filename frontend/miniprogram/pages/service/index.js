@@ -43,7 +43,7 @@ function resolveTicketLinks(ticket) {
 }
 
 function resolveTicketState(ticket, links) {
-  if (ticket && ticket.enabled === true && ticket.appId) return 'open';
+  if (ticket && ticket.appId && (ticket.enabled === true || Boolean(ticket.path))) return 'open';
   if (links && (links.miniLink || links.legacyLink)) return 'link';
   return 'pending';
 }
