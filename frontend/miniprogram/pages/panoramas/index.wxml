@@ -17,7 +17,7 @@
       <view class="target-copy">
         <text class="target-label">本次识别目标</text>
         <text class="target-title serif">金楼木雕构件</text>
-        <text class="target-description">请在现场将画面中心对准同一处构件。当前为对准式AR试点，真实图像锁定仍待现场标定。</text>
+        <text class="target-description">请将画面中心对准木雕构件。当前采用对准式 AR，由你确认目标后进入热点探索。</text>
       </view>
     </view>
     <view class="guide-card card">
@@ -36,9 +36,14 @@
       <image wx:else class="fallback-image" src="/images/jinlou-01.jpg" mode="aspectFill" />
       <view class="stage-shade"></view>
       <view class="stage-badge">{{useFallback ? '参考图模式' : (cameraReady ? '相机已就绪' : '正在启动相机')}}</view>
+      <view wx:if="{{stage === 'camera'}}" class="scan-copy">
+        <text>将木雕置于框内</text>
+        <text>保持稳定 · 由你确认目标</text>
+      </view>
       <view wx:if="{{stage === 'camera'}}" class="target-frame"><view class="corner corner-a"></view><view class="corner corner-b"></view><view class="corner corner-c"></view><view class="corner corner-d"></view></view>
       <block wx:if="{{stage === 'discovered'}}">
-        <button wx:for="{{hotspots}}" wx:key="id" class="hotspot {{activeHotspot.id === item.id ? 'active' : ''}}" style="left:{{item.x}}%;top:{{item.y}}%;" data-id="{{item.id}}" bindtap="selectHotspot">{{item.number}}</button>
+        <button wx:for="{{hotspots}}" wx:key="id" class="hotspot {{activeHotspot.id === item.id ? 'active' : ''}} {{item.visited ? 'visited' : ''}}" style="left:{{item.x}}%;top:{{item.y}}%;" data-id="{{item.id}}" bindtap="selectHotspot">{{item.visited ? '✓' : item.number}}</button>
+        <view class="clue-counter">线索 {{visitedCount}} / 3</view>
       </block>
     </view>
 
@@ -50,33 +55,56 @@
 
     <view wx:if="{{stage === 'camera' && !cameraError}}" class="section align-panel">
       <text class="panel-title serif">把木雕放入取景框</text>
-      <text class="muted">试点版由你确认已经对准目标；正式图像锁定将在取得现场识别图后接入。</text>
+      <text class="muted">保持手机稳定，确认目标进入取景框后即可探索三个研学热点。</text>
       <button class="primary-button" bindtap="confirmTarget">已经对准 查看热点</button>
       <button class="secondary-button" bindtap="useImageFallback">使用参考图体验</button>
       <button class="text-button" bindtap="resetExperience">退出相机</button>
     </view>
 
     <view wx:if="{{stage === 'discovered'}}" class="section discovery-panel">
+      <view class="quest-heading">
+        <view>
+          <text class="quest-kicker">木雕观察任务</text>
+          <text class="panel-title serif">寻找三枚研学线索</text>
+        </view>
+        <text class="quest-count">{{visitedCount}}/3</text>
+      </view>
+      <view class="clue-track"><view class="clue-track-fill" style="width:{{visitedCount * 33.333}}%;"></view></view>
       <view class="hotspot-tabs">
-        <button wx:for="{{hotspots}}" wx:key="id" class="hotspot-tab {{activeHotspot.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectHotspot">{{item.number}} {{item.title}}</button>
+        <button wx:for="{{hotspots}}" wx:key="id" class="hotspot-tab {{activeHotspot.id === item.id ? 'active' : ''}} {{item.visited ? 'visited' : ''}}" data-id="{{item.id}}" bindtap="selectHotspot">{{item.visited ? '✓' : item.number}} {{item.title}}</button>
       </view>
       <view class="detail-card card">
         <text class="detail-index">发现 {{activeHotspot.number}}</text>
         <text class="detail-title serif">{{activeHotspot.title}}</text>
         <text class="detail-description">{{activeHotspot.description}}</text>
-        <text class="review-notice">当前内容用于教学演示，具体点位、术语与工序以景区审核资料为准。</text>
+        <text class="review-notice">观察时请与建筑保持安全距离，不触摸木雕构件。</text>
       </view>
       <view class="action-row">
         <button bindtap="openNarration">打开金楼音频讲解</button>
         <button bindtap="openAssistant">继续查看资料问答</button>
       </view>
-      <view class="quiz-card card">
-        <text class="quiz-label">寻宝彩蛋</text>
-        <text class="quiz-title serif">来参加一下研学问答吧！</text>
+      <view wx:if="{{!quizUnlocked}}" class="quiz-lock card">
+        <view class="lock-mark">?</view>
+        <view class="lock-copy">
+          <text class="quiz-label">隐藏彩蛋</text>
+          <text class="quiz-title serif">还差 {{3 - visitedCount}} 枚线索</text>
+          <text>点击画面中的编号，集齐三枚线索后解锁研学问答。</text>
+        </view>
+      </view>
+      <view wx:else class="quiz-card card {{quizPassed ? 'passed' : ''}}">
+        <text class="quiz-label">线索已集齐 · 寻宝彩蛋</text>
+        <text class="quiz-title serif">木雕观察挑战</text>
         <text class="detail-description">刚才的木雕为什么看起来更有立体感？</text>
-        <button wx:for="{{quizOptions}}" wx:key="id" class="quiz-option {{selectedAnswer === item.id ? (item.id === 'a' ? 'correct' : 'wrong') : ''}}" data-id="{{item.id}}" bindtap="answerQuiz">{{item.text}}</button>
+        <button wx:for="{{quizOptions}}" wx:key="id" disabled="{{quizPassed}}" class="quiz-option {{selectedAnswer === item.id ? (item.id === 'a' ? 'correct' : 'wrong') : ''}}" data-id="{{item.id}}" bindtap="answerQuiz"><text class="option-letter">{{item.id === 'a' ? 'A' : (item.id === 'b' ? 'B' : 'C')}}</text><text>{{item.text}}</text></button>
         <text wx:if="{{selectedAnswer && !quizPassed}}" class="quiz-feedback">差一点就找到答案啦！再看看“雕刻层次”和“饰金效果”两个热点。</text>
-        <text wx:if="{{quizPassed}}" class="quiz-feedback success">寻宝成功！不同深浅的雕刻塑造层次，饰金会突出重点细节。你已解锁“小小木雕观察员”。</text>
+        <view wx:if="{{quizPassed}}" class="egg-reward">
+          <view class="reward-seal"><text>金楼</text><text>观察员</text></view>
+          <view class="reward-copy">
+            <text class="reward-overline">寻宝成功</text>
+            <text class="reward-title serif">小小木雕观察员</text>
+            <text class="quiz-feedback success">不同深浅的雕刻塑造层次，饰金会突出重点细节。</text>
+          </view>
+        </view>
       </view>
       <button class="text-button restart-button" bindtap="resetExperience">重新体验</button>
     </view>
