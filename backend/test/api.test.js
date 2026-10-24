@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -19,6 +20,7 @@ import { buildVerifiedCloudAudioMap, CLOUD_AUDIO_ENV_ID, cloudAudioAssets } from
 let db;
 let server;
 let baseUrl;
+const ffmpegAvailable = spawnSync('ffmpeg', ['-version'], { stdio: 'ignore' }).status === 0;
 
 before(async () => {
   db = createDatabase();
@@ -718,6 +720,48 @@ test('narrations endpoint returns three languages for the main building', async 
       ['en', true, '/media/narrations/jinlou-en.wav'],
     ],
   );
+});
+
+test('speed variant endpoint reports a clear error when ffmpeg is missing', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-speed-'));
+  const speedServer = createApp(db, {
+    ffmpegPath: 'ffmpeg-missing-binary',
+    audioCacheDir: join(directory, 'cache'),
+  }).listen(0);
+  await new Promise((resolve) => speedServer.once('listening', resolve));
+  try {
+    const url = `http://127.0.0.1:${speedServer.address().port}/media/narrations/nanshan-hall-zh.wav?rate=1.25`;
+    const response = await fetch(url);
+    assert.equal(response.status, 503);
+    const body = await response.json();
+    assert.equal(body.error.code, 'AUDIO_SPEED_UNAVAILABLE');
+  } finally {
+    speedServer.closeAllConnections();
+    await new Promise((resolve) => speedServer.close(resolve));
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('speed variant endpoint returns a shorter wav when ffmpeg is available', { skip: !ffmpegAvailable }, async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-speed-ok-'));
+  const speedServer = createApp(db, { audioCacheDir: join(directory, 'cache') }).listen(0);
+  await new Promise((resolve) => speedServer.once('listening', resolve));
+  try {
+    const originalSize = statSync(resolve('public/media/narrations/nanshan-hall-zh.wav')).size;
+    const url = `http://127.0.0.1:${speedServer.address().port}/media/narrations/nanshan-hall-zh.wav?rate=1.5`;
+    const response = await fetch(url);
+    assert.equal(response.status, 200);
+    const audio = Buffer.from(await response.arrayBuffer());
+    assert.equal(audio.subarray(0, 4).toString('ascii'), 'RIFF');
+    assert.ok(audio.length < originalSize);
+    assert.ok(existsSync(join(directory, 'cache', 'nanshan-hall-zh-1.5.wav')));
+    const cached = await fetch(url);
+    assert.equal(cached.status, 200);
+  } finally {
+    speedServer.closeAllConnections();
+    await new Promise((resolve) => speedServer.close(resolve));
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('narrations endpoint returns 404 for an unknown spot', async () => {

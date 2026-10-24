@@ -75,10 +75,18 @@ Page({
     }
     if (this.audioLoading) return;
     this.audioLoading = true;
-    this.setData({ audioStatus: '正在准备普通话试听…', audioError: '' });
+    this.setData({ audioStatus: `正在准备${this.audioLanguageLabel()}试听…`, audioError: '' });
     try {
-      const source = await this.resolveAudioSource();
-      this.createAudio(source.url);
+      const plan = this.audioPlan(this.data.playbackRate);
+      const sourceUrl = plan.mode === 'variant' ? plan.url : (await this.resolveAudioSource()).url;
+      this.rateFallbackDone = false;
+      this.shouldPlayAfterFallback = true;
+      this.createAudio(sourceUrl, {
+        mode: plan.mode,
+        contentPosition: 0,
+        playerRate: plan.mode === 'variant' ? 1 : plan.rate,
+        sourceRate: plan.mode === 'variant' ? plan.rate : 1,
+      });
       this.audio.play();
     } catch (error) {
       console.error('Audio source resolution failed', error);
@@ -118,28 +126,52 @@ Page({
       wx.getFileSystemManager().access({ path: filePath, success: () => resolve(true), fail: () => resolve(false) });
     });
   },
-  getLocalAudioUrl() {
+  getLocalAudioUrl(rate = 1) {
     const { apiBaseUrl } = getApp().globalData;
     const audioUrl = this.data.activeNarration.audioUrl;
-    return /^https?:\/\//.test(audioUrl) ? audioUrl : `${apiBaseUrl.replace(/\/api\/v1$/, '')}${audioUrl}`;
+    const base = /^https?:\/\//.test(audioUrl)
+      ? audioUrl
+      : `${apiBaseUrl.replace(/\/api\/v1$/, '')}${audioUrl}`;
+    if (rate === 1) return base;
+    return `${base}${base.includes('?') ? '&' : '?'}rate=${rate}`;
   },
-  createAudio(sourceUrl) {
+  audioPlan(rate) {
+    const audioUrl = this.data.activeNarration?.audioUrl || '';
+    if (audioUrl.startsWith('cloud://')) return { mode: 'native', rate };
+    return { mode: 'variant', rate, url: this.getLocalAudioUrl(rate) };
+  },
+  createAudio(sourceUrl, options = {}) {
+    const { startAt = 0, playerRate = 1, sourceRate = 1, mode = 'native', contentPosition = startAt } = options;
     this.audio = wx.createInnerAudioContext();
     this.audio.src = sourceUrl;
-    this.audio.playbackRate = this.data.playbackRate;
-    this.audio.onPlay(() => this.setData({ isPlaying: true, audioStatus: '正在播放普通话试听。', audioError: '' }));
-    this.audio.onPause(() => this.setData({ isPlaying: false, audioStatus: '讲解已暂停。' }));
+    this.audio.startTime = startAt;
+    this.audio.playbackRate = playerRate;
+    this.sourceRate = sourceRate;
+    this.audioMode = mode;
+    this.variantContentPosition = contentPosition;
+    this.audio.onPlay(() => {
+      this.switchingRate = false;
+      this.setData({ isPlaying: true, audioStatus: `正在播放${this.audioLanguageLabel()}试听。`, audioError: '' });
+    });
+    this.audio.onPause(() => {
+      if (this.switchingRate) return;
+      this.setData({ isPlaying: false, audioStatus: '讲解已暂停。' });
+    });
     this.audio.onStop(() => this.setData({ isPlaying: false, audioStatus: '' }));
-    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: '普通话试听已播放完毕。' }));
+    this.audio.onEnded(() => this.setData({ isPlaying: false, audioProgress: 100, audioStatus: `${this.audioLanguageLabel()}试听已播放完毕。` }));
     this.audio.onTimeUpdate(() => {
-      const duration = this.audio.duration || 0;
-      const current = this.audio.currentTime || 0;
+      const duration = (this.audio.duration || 0) * this.sourceRate;
+      const current = (this.audio.currentTime || 0) * this.sourceRate;
       this.setData({
         audioProgress: duration ? Math.round((current / duration) * 100) : 0,
         audioTime: `${this.formatTime(current)} / ${this.formatTime(duration)}`,
       });
     });
     this.audio.onError(() => {
+      if (this.audioMode === 'variant' && !this.rateFallbackDone) {
+        this.fallbackToNativeRate();
+        return;
+      }
       this.setData({ isPlaying: false });
       this.destroyAudio();
       this.setData({ audioStatus: '', audioError: '音频加载失败，请检查网络，或直接阅读下方讲解文字稿。' });
@@ -147,20 +179,78 @@ Page({
   },
   seekAudio(event) {
     if (!this.audio || !this.audio.duration) return wx.showToast({ title: '请先播放讲解', icon: 'none' });
-    const target = Math.min(this.audio.duration, Math.max(0, this.audio.currentTime + Number(event.currentTarget.dataset.seconds)));
+    const offset = Number(event.currentTarget.dataset.seconds) / (this.sourceRate || 1);
+    const target = Math.min(this.audio.duration, Math.max(0, this.audio.currentTime + offset));
     this.audio.seek(target);
   },
   setPlaybackRate(event) {
     const playbackRate = Number(event.currentTarget.dataset.rate);
     if (!PLAYBACK_RATES.includes(playbackRate)) return;
     wx.setStorageSync('narrationPlaybackRate', playbackRate);
-    if (this.audio) this.audio.playbackRate = playbackRate;
     this.setData({ playbackRate });
+    const audio = this.audio;
+    if (!audio) return;
+    const plan = this.audioPlan(playbackRate);
+    if (plan.mode === 'native') {
+      this.applyPlaybackRate(playbackRate);
+      return;
+    }
+    const contentPosition = (audio.currentTime || 0) * (this.sourceRate || 1);
+    const wasPlaying = this.data.isPlaying;
+    this.rateFallbackDone = false;
+    this.shouldPlayAfterFallback = wasPlaying;
+    this.destroyAudio();
+    this.createAudio(plan.url, {
+      mode: 'variant',
+      contentPosition,
+      startAt: contentPosition / playbackRate,
+      playerRate: 1,
+      sourceRate: playbackRate,
+    });
+    if (wasPlaying) this.audio.play();
+  },
+  fallbackToNativeRate() {
+    const rate = this.data.playbackRate;
+    const position = this.variantContentPosition || 0;
+    const shouldPlay = this.shouldPlayAfterFallback;
+    this.rateFallbackDone = true;
+    this.destroyAudio();
+    this.createAudio(this.getLocalAudioUrl(1), {
+      startAt: position,
+      playerRate: rate,
+      sourceRate: 1,
+      contentPosition: position,
+    });
+    wx.showToast({ title: '无法生成无损变速，已回退原始音频（音调会变化）', icon: 'none', duration: 2500 });
+    if (shouldPlay) this.audio.play();
+  },
+  // 微信 InnerAudioContext 在播放中直接改 playbackRate 可能不生效，
+  // 官方社区通用做法是暂停后改速率再重新播放。
+  applyPlaybackRate(playbackRate) {
+    const audio = this.audio;
+    if (!audio) return;
+    if (!this.data.isPlaying) {
+      audio.playbackRate = playbackRate;
+      return;
+    }
+    const resumeAt = audio.currentTime || 0;
+    this.switchingRate = true;
+    audio.pause();
+    audio.playbackRate = playbackRate;
+    setTimeout(() => {
+      if (this.audio !== audio) return;
+      if (resumeAt > 0) audio.seek(resumeAt);
+      audio.play();
+    }, 150);
+  },
+  audioLanguageLabel() {
+    return this.data.activeNarration?.languageLabel || '普通话';
   },
   destroyAudio() {
     if (!this.audio) return;
     this.audio.destroy();
     this.audio = null;
+    this.sourceRate = 1;
   },
   formatTime(seconds) {
     const safeSeconds = Math.max(0, Math.floor(Number(seconds) || 0));
