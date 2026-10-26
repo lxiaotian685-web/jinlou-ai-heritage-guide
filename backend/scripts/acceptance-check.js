@@ -62,7 +62,9 @@ try {
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
   const arTemplate = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.wxml'), 'utf8');
   const arScript = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.js'), 'utf8');
-  check('AR木雕研学试点', ['<camera', '观察构件', '理解雕刻层次', '查看饰金效果', '使用参考图继续', '来参加一下研学问答吧', '小小木雕观察员'].every((text) => arTemplate.includes(text) || arScript.includes(text)));
+  check('AR木雕研学试点', ['<camera', '观察构件', '理解雕刻层次', '查看饰金效果', '使用参考图继续', '线索已集齐 · 寻宝彩蛋', '小小木雕观察员'].every((text) => arTemplate.includes(text) || arScript.includes(text)));
+  check('AR彩蛋需集齐三枚线索', arScript.includes('visitedHotspots.length === HOTSPOTS.length') && arTemplate.includes('还差 {{3 - visitedCount}} 枚线索') && arTemplate.includes('wx:if="{{!quizUnlocked}}"'));
+  check('AR产品文案无内部待办', !['待现场标定', '待专家确认', '待资料审核', '以景区审核资料为准'].some((text) => arTemplate.includes(text) || arScript.includes(text)));
   check('全景入口已替换', appConfig.tabBar.list.some((item) => item.pagePath === 'pages/panoramas/index' && item.text === 'AR研学') && homeTemplate.includes('AR木雕寻宝') && !homeTemplate.includes('全景漫游'));
   const spotDetailScript = readFileSync(resolve(frontendRoot, 'pages/spot-detail/index.js'), 'utf8');
   check('讲解音频地址由接口显式提供', spotDetailScript.includes("configuredUrl.startsWith('cloud://')") && spotDetailScript.includes('fileID: configuredUrl') && !spotDetailScript.includes('CLOUD_AUDIO_ROOT'));
