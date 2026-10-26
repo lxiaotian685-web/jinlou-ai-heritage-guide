@@ -236,6 +236,10 @@ Page({
     wx.makePhoneCall({
       phoneNumber: phone,
       success: () => this.trackAction(item.id, 'phone'),
+      fail: (error) => {
+        if (/cancel/i.test((error && error.errMsg) || '')) return;
+        wx.showToast({ title: '无法拨打电话，请稍后重试', icon: 'none' });
+      },
     });
   },
 
@@ -249,6 +253,7 @@ Page({
     wx.setClipboardData({
       data: link,
       success: () => this.trackAction(item.id, 'link'),
+      fail: () => wx.showToast({ title: '复制失败，请稍后重试', icon: 'none' }),
     });
   },
 
@@ -262,7 +267,14 @@ Page({
   },
 
   backToService() {
-    wx.navigateBack({ delta: 1 });
+    if (getCurrentPages().length > 1) {
+      wx.navigateBack({
+        delta: 1,
+        fail: () => wx.switchTab({ url: '/pages/service/index' }),
+      });
+      return;
+    }
+    wx.switchTab({ url: '/pages/service/index' });
   },
 
   toggleLargeText() {

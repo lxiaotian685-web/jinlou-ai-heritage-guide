@@ -43,7 +43,11 @@ Page({
     this.setData({ cameraReady: true, cameraError: '' });
   },
   handleCameraError(event) {
-    const message = event?.detail?.errMsg || '当前设备无法打开相机';
+    const errMsg = event?.detail?.errMsg || '';
+    const permissionDenied = /auth deny|auth denied|authorize:fail|permission denied|system permission/i.test(errMsg);
+    const message = permissionDenied
+      ? '未获得相机权限，可在右上角···设置中允许，或先用参考图继续。'
+      : (errMsg || '当前设备无法打开相机');
     this.setData({ cameraReady: false, cameraError: message });
   },
   confirmTarget() {
@@ -54,7 +58,7 @@ Page({
   },
   enterDiscovery(useFallback) {
     const hotspots = HOTSPOTS.map((item, index) => ({ ...item, visited: index === 0 }));
-    this.setData({ stage: 'discovered', useFallback, cameraError: '', hotspots, activeHotspot: hotspots[0], visitedHotspots: ['component'], visitedCount: 1, quizUnlocked: false });
+    this.setData({ stage: 'discovered', useFallback, cameraError: '', hotspots, activeHotspot: hotspots[0], visitedHotspots: ['component'], visitedCount: 1, quizUnlocked: false, selectedAnswer: '', quizPassed: false });
   },
   selectHotspot(event) {
     const id = event.currentTarget.dataset.id;
