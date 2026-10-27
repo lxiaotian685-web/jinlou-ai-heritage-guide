@@ -3,6 +3,9 @@
 // 这样即使云数据库、SDK 或依赖安装出问题，小程序仍能正常读取原有资料。
 const bundledSnapshot = require('./data.json');
 const { SOURCE_IDS, assistantSuggestions, resolveKnowledgeSources } = require('./knowledge-sources');
+const assistant = require('./assistant');
+
+const assistantProvider = assistant.selectProvider(process.env);
 
 const COLLECTION = 'bijiang_content';
 const ADMIN_LOG_COLLECTION = 'bijiang_admin_logs';
@@ -377,42 +380,38 @@ function buildAdminDashboard(snapshot) {
   };
 }
 
-function createKnowledgeAnswer(question, snapshot) {
-  const spots = snapshot.spots.data;
-  const matchedSpot = spots.find((spot) => question.includes(spot.name.replace(/（.*?）/g, '')));
-  const reviewed = (answer, sources) => ({ answer, mode: 'knowledge-base', sources: resolveKnowledgeSources(sources), reviewStatus: 'pending-scenic-review', publicStatus: 'review-draft', notice: '公开资料核对稿 · 待景区审核' });
-  const pending = (answer) => ({ answer, mode: 'knowledge-base', sources: [], reviewStatus: 'information-pending', publicStatus: 'not-ready', notice: '资料不足 · 待人工核对' });
-  const faq = (snapshot.faqs || []).find((item) => item.keywords.some((keyword) => question.includes(keyword)));
-  if (faq) return reviewed(faq.answer, faq.sources);
-  const service = snapshot.service.data;
-  const routes = snapshot.routes.data;
-  if (/拍照|摄影|录像|闪光灯|三脚架/.test(question)) return pending('未找到可靠资料：当前资料尚未确认景区的拍照、录像、闪光灯和三脚架规定。请以现场标识和工作人员要求为准。');
-  if (/停车|停车场|车停/.test(question)) return pending('未找到可靠资料：当前资料尚未确认景区停车场位置、开放时间和收费规则。请在出发前通过景区最新公开渠道确认。');
-  if (/老人|老年|儿童|小孩|轮椅|无障碍|婴儿车/.test(question)) return pending('未找到可靠资料：老人、儿童、轮椅和婴儿车的场内通行路线及无障碍设施尚待景区确认。到场后请优先咨询工作人员，并以现场开放区域为准。');
-  if (/门票|票价|购票|订票|优惠|免费/.test(question)) return pending('未找到可靠资料：官方订票入口、当前票价和优惠政策尚未配置。请通过景区最新公开渠道确认，避免按过期资料安排行程。');
-  if (/开放|几点|营业|闭馆|停止入园/.test(question)) {
-    if (/待|为准|未配置|未接入/.test(service.openingHours)) return pending('未找到可靠资料：景区开放时间、停止入园时间和节假日调整尚待景区确认，请以景区当日公告为准。');
-    return reviewed(`当前项目记录的开放时段为${service.openingHours}。临时闭馆、停止入园时间和节假日调整请以景区当日公告为准。`, [SOURCE_IDS.PROJECT_SERVICE_CONFIG]);
-  }
-  if (/交通|怎么去|地址|公交|地铁|自驾|坐车|乘车/.test(question)) {
-    if (/待|未配置|未接入/.test(`${service.address}${service.transport}`)) return pending('未找到可靠资料：景区准确地址和公共交通、停车信息尚待景区确认，请通过实时地图和景区最新公开渠道规划出行。');
-    return reviewed(`地址：${service.address}。交通参考：${service.transport}。出发时请结合实时地图规划路线。`, [SOURCE_IDS.PROJECT_SERVICE_CONFIG]);
-  }
-  if (/建议.*时间|游览.*多久|逛.*多久|需要多久|多长时间/.test(question)) return reviewed(`当前${routes.length}条路线的用时均为参考值：${routes.map((route) => `${route.name}${route.duration}`).join('；')}。实际用时会受停留、讲解和现场开放情况影响。`, [SOURCE_IDS.PROJECT_ROUTE_PLAN]);
-  if (/路线|怎么游|游览/.test(question)) return reviewed(`目前有${routes.length}条参考路线：${routes.map((route) => route.name).join('、')}。这些路线仍需景区确认和现场实走，请在“推荐路线”页面查看各站点。`, [SOURCE_IDS.PROJECT_ROUTE_PLAN]);
-  if (/电话|联系|咨询/.test(question)) {
-    if (/待|未配置|未接入/.test(service.phone)) return pending('未找到可靠资料：景区联系电话尚待确认，请以景区最新公开渠道为准。');
-    return reviewed(`当前项目记录的景区联系电话为${service.phone}。票务、停车、临时开放和特殊通行安排建议直接致电确认。`, [SOURCE_IDS.PROJECT_SERVICE_CONFIG]);
-  }
-  if (matchedSpot) {
-    const sources = [SOURCE_IDS.PROJECT_SPOT_RECORDS];
-    if (matchedSpot.id === 'jinlou') sources.unshift(SOURCE_IDS.SHUNDE_MUSEUM_JINLOU);
-    return reviewed(`${matchedSpot.name}属于“${matchedSpot.category}”。${matchedSpot.summary}`, sources);
-  }
-  return pending('未找到可靠资料。你可以改问某个景点、金楼名称与年代、重点看点、游览路线或木雕工艺；票务、开放和通行政策须以景区最新公告为准。');
+async function createKnowledgeAnswer(question, snapshot) {
+  const spots = snapshot.spots?.data || [];
+  const craftGuides = Object.fromEntries(Object.entries(snapshot.craftGuides || {})
+    .map(([spotId, resource]) => [spotId, resource?.data])
+    .filter(([, guide]) => guide));
+  const result = await assistant.answerQuestion({
+    question,
+    input: {
+      spots,
+      routes: snapshot.routes?.data || [],
+      service: snapshot.service?.data || {},
+      craftGuides,
+      faqs: snapshot.faqs || [],
+    },
+    provider: assistantProvider,
+    requestId: require('node:crypto').randomUUID(),
+  });
+  return {
+    answer: result.answer,
+    mode: result.mode,
+    sources: resolveKnowledgeSources(result.sourceIds),
+    reviewStatus: result.reviewStatus,
+    publicStatus: result.publicStatus,
+    fallbackReason: result.fallbackReason,
+    requestId: result.requestId,
+    model: result.model,
+    notice: result.notice,
+  };
 }
 
-function read(path, method, body, snapshot) {
+
+async function read(path, method, body, snapshot) {
   if (method === 'GET' && path === '/home') return { data: snapshot.home?.data || DEFAULT_HOME };
   if (method === 'GET' && path === '/spots') return snapshot.spots;
   if (method === 'GET' && path === '/panoramas') return snapshot.panoramas;
@@ -431,7 +430,7 @@ function read(path, method, body, snapshot) {
     const question = typeof body?.question === 'string' ? body.question.trim() : '';
     if (!question) return { error: { code: 'QUESTION_REQUIRED', message: '请输入问题' } };
     if (question.length > 200) return { error: { code: 'QUESTION_TOO_LONG', message: '问题不能超过200个字符' } };
-    return { data: createKnowledgeAnswer(question, snapshot) };
+    return { data: await createKnowledgeAnswer(question, snapshot) };
   }
   const recommendationMatch = path.match(/^\/recommendations\?category=([^&]+)$/);
   if (method === 'GET' && recommendationMatch) return snapshot.recommendations[decodeURIComponent(recommendationMatch[1])] || { data: [] };
@@ -554,7 +553,7 @@ exports.main = async (event = {}) => {
       return error('ANALYTICS_WRITE_FAILED', '统计暂时不可用');
     }
   }
-  const response = read(path, method, event.body, snapshot);
+  const response = await read(path, method, event.body, snapshot);
   if (response?.error) return error(response.error.code, response.error.message);
   if (!response) return error('NOT_FOUND', '云端接口不存在或资料尚未配置');
   return success(response);

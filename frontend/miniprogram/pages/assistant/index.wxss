@@ -16,7 +16,8 @@
 .error { color:#93000a; background:#ffdad6; }
 .sources { padding-top:8rpx; border-top:1rpx solid #e6dec8; color:#727671; font-size:21rpx; }
 .source-list { margin-top:4rpx; padding-top:12rpx; border-top:1rpx solid #e6dec8; display:flex; flex-direction:column; gap:12rpx; }
-.source-heading { color:#536657; font-size:23rpx; font-weight:600; }
+.source-heading { color:#536657; font-size:23rpx; font-weight:600; background:none; border:none; margin:0; padding:0; line-height:1.6; text-align:left; }
+.source-heading::after { border:none; }
 .source-item { padding:16rpx; border-radius:12rpx; background:#f7f2e8; display:flex; flex-direction:column; gap:6rpx; }
 .source-title { color:#382c24; font-size:23rpx; font-weight:600; }
 .source-meta, .source-scope { color:#727671; font-size:20rpx; line-height:1.5; }
