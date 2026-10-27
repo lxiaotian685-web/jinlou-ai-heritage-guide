@@ -12,9 +12,9 @@ const MINI_TICKET_LINK = String(config.ticketMiniLink || '').trim();
 const LEGACY_TICKET_LINK = String(config.ticketLegacyLink || '').trim();
 
 const NEARBY = [
-  { key: 'food-1', category: 'food', title: '附近美食', label: '餐饮推荐位', mark: '食', meta: '早餐 · 正餐 · 茶饮', image: '/images/arc/arc-colonnade.jpg' },
-  { key: 'hotel-1', category: 'hotel', title: '附近住宿', label: '住宿推荐位', mark: '宿', meta: '民宿 · 酒店 · 客栈', image: '/images/arc/arc-garden-moon.jpg' },
-  { key: 'food-2', category: 'food', title: '附近美食', label: '餐饮推荐位', mark: '食', meta: '小吃 · 甜品 · 咖啡', image: '/images/arc/arc-gable.jpg' },
+  { key: 'food-1', category: 'food', title: '顺德美食', label: '双皮奶与鱼皮', mark: '食', meta: '顺德特色 · 到店前核实', note: '美食示意图', image: '/images/arc/arc-colonnade.jpg' },
+  { key: 'hotel-1', category: 'hotel', title: '附近住宿', label: '拾光美宿酒店', mark: '宿', meta: '北滘碧江店 · 约700米', note: '房型示意图', image: '/images/arc/arc-garden-moon.jpg' },
+  { key: 'attraction-1', category: 'attraction', title: '周边景点', label: '清晖园', mark: '园', meta: '岭南园林 · 大良清晖路', note: '景观示意图', image: '/images/arc/arc-gable.jpg' },
 ];
 
 const PLACEHOLDER = /待接入|待确认|待景区|以景区最新公告为准/;

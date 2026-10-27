@@ -275,7 +275,7 @@ test('service content update validates coordinates and creates a pre-change back
     assert.equal(result.after.latitude, 22.9);
 
     const backupDb = new DatabaseSync(result.backupPath, { readOnly: true });
-    assert.equal(backupDb.prepare('SELECT address FROM service_config WHERE id = 1').get().address, '地址待景区确认');
+    assert.equal(backupDb.prepare('SELECT address FROM service_config WHERE id = 1').get().address, '广东省佛山市顺德区北滘镇碧江社区泰宁西路6号');
     backupDb.close();
   } finally {
     rmSync(directory, { recursive: true, force: true });
@@ -482,7 +482,7 @@ test('service endpoint marks ticket link as not configured', async () => {
   assert.equal(body.data.ticket.label, '订票入口准备中');
   assert.equal(body.data.ticket.appId, '');
   assert.equal(body.data.ticket.path, '');
-  assert.deepEqual(body.data.actions, { copyAddress: false, callPhone: false, openMap: false });
+  assert.deepEqual(body.data.actions, { copyAddress: true, callPhone: true, openMap: true });
 });
 
 test('service ticket is available when only mini program appId and path are configured', () => {
@@ -509,15 +509,15 @@ test('recommendations endpoint filters supported categories', async () => {
   assert.equal(response.status, 200);
   assert.equal(body.data.length, 1);
   assert.equal(body.data[0].category, 'hotel');
-  assert.equal(body.data[0].status, 'pending-review');
+  assert.equal(body.data[0].status, 'reviewed');
   assert.equal(body.data[0].sortOrder, 20);
-  assert.equal(body.data[0].description, '');
+  assert.match(body.data[0].description, /住宿平台截图/);
   assert.equal(body.data[0].phone, '');
   assert.equal(body.data[0].linkUrl, '');
-  assert.equal(body.data[0].productName, '');
+  assert.equal(body.data[0].productName, '附近住宿');
   assert.equal(body.data[0].latitude, null);
   assert.equal(body.data[0].longitude, null);
-  assert.equal(body.data[0].sourceNote, '景区接口 · 占位数据');
+  assert.equal(body.data[0].sourceNote, '用户提供截图 · 2026-10-27');
 });
 
 test('recommendations endpoint rejects unknown categories', async () => {
@@ -552,7 +552,7 @@ test('assistant covers reviewed visitor questions and keeps unknown policies pen
     ['重点看什么？', /饰金木雕/, 'review-draft'],
     ['建议游览多久？', /参考值/, 'review-draft'],
     ['几点开放？', /开放时间/, 'not-ready'],
-    ['怎么坐车去？', /地址/, 'not-ready'],
+    ['怎么坐车去？', /地址/, 'review-draft'],
     ['门票多少钱？', /尚未配置/, 'not-ready'],
     ['可以用闪光灯拍照吗？', /尚未确认/, 'not-ready'],
     ['轮椅可以走吗？', /无障碍设施尚待景区确认/, 'not-ready'],

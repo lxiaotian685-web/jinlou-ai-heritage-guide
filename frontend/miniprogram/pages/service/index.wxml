@@ -131,13 +131,11 @@
             <view class="nearby-card__wash"></view>
             <text class="nearby-card__mark serif">{{item.mark}}</text>
             <text class="nearby-card__code">AD / 0{{index + 1}}</text>
-            <text class="nearby-card__note">非商户图片</text>
-            <text class="nearby-card__hint">图片待景区提供</text>
+            <text class="nearby-card__note">{{item.note}}</text>
           </view>
           <view class="nearby-card__body">
             <view class="nearby-card__top">
               <text class="nearby-card__label serif">{{item.label}}</text>
-              <text class="arc-pending nearby-card__tag">待接入</text>
             </view>
             <text class="nearby-card__meta">{{item.meta}}</text>
           </view>
