@@ -188,7 +188,7 @@ Page({
     wx.showToast({ title: spotNote.rating || spotNote.text ? '私人记录已保存' : '空记录未保存', icon: 'none' });
   },
   clearPersonalNote() {
-    wx.showModal({ title: '清除这条私人记录？', content: '评分和笔记只保存在当前手机，清除后无法恢复。', confirmColor: '#9a4d3f', success: ({ confirm }) => {
+    wx.showModal({ title: '清除这条私人记录？', content: '评分和笔记只保存在当前手机，清除后无法恢复。', confirmColor: '#a6402d', success: ({ confirm }) => {
       if (!confirm) return;
       removeSpotNote(this.spotId);
       this.setData({ spotNote: { rating: 0, text: '', updatedAt: '' } });

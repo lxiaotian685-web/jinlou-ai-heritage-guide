@@ -1,52 +1,132 @@
-<view class="page section {{displayClass}}">
-  <view class="heading">
-    <text class="section-title serif">走进金楼</text>
-    <text class="muted">内容为开发阶段示例，待景区审核</text>
+<view class="page arc-page arc-grid-bg spots-page {{displayClass}}">
+  <view class="spots-head">
+    <view class="spots-head__top">
+      <text class="arc-eyebrow spots-head__eyebrow">SPOTS / 景点</text>
+      <text class="spots-head__folio">NO. 03</text>
+    </view>
+    <view class="spots-head__main">
+      <view class="spots-head__copy">
+        <text class="arc-title serif spots-head__title">走进金楼</text>
+        <text class="spots-head__lede">内容为开发阶段示例，待景区审核</text>
+      </view>
+      <view class="arc-seal spots-head__seal">金楼</view>
+    </view>
+    <view class="spots-head__rule">
+      <view class="spots-head__rule-line"></view>
+      <text class="spots-head__rule-meta">BIJIANG · SPOT ARCHIVE</text>
+    </view>
   </view>
-  <view wx:if="{{offlineNotice}}" class="offline-notice card">{{offlineNotice}}</view>
-  <view wx:if="{{loading}}" class="state card">正在读取景点…</view>
-  <view wx:elif="{{error}}" class="state card">
-    <text>{{error}}</text>
-    <button class="primary-button" bindtap="loadSpots">重新加载</button>
+
+  <view class="spots-body">
+    <view wx:if="{{offlineNotice}}" class="spots-offline">{{offlineNotice}}</view>
+
+    <view wx:if="{{loading}}" class="spots-state arc-card arc-card--ticks">
+      <text class="arc-eyebrow">READING THE ARCHIVE</text>
+      <text class="spots-state__title serif">正在读取景点…</text>
+      <view class="spots-state__line"></view>
+    </view>
+
+    <view wx:elif="{{error}}" class="arc-empty spots-error">
+      <text class="arc-eyebrow">ARCHIVE UNAVAILABLE</text>
+      <text class="spots-error__title serif">景点资料未能送达</text>
+      <text class="spots-error__body">{{error}}</text>
+      <view class="arc-empty__rule"></view>
+      <button class="arc-btn spots-error__btn" bindtap="loadSpots">重新加载</button>
+    </view>
+
+    <block wx:else>
+      <view class="progress-card arc-card">
+        <view class="progress-head">
+          <view class="progress-copy">
+            <text class="arc-eyebrow">VISIT PROGRESS</text>
+            <text class="progress-title serif">我的参观进度</text>
+          </view>
+          <view class="progress-nums">
+            <text class="progress-count serif">{{visitedIds.length}}</text>
+            <text class="progress-total serif">/ {{spots.length}}</text>
+          </view>
+        </view>
+        <view class="progress-track"><view class="progress-value" style="width:{{progressPercent}}%;"></view></view>
+      </view>
+
+      <view class="tools arc-card">
+        <view class="tools__head">
+          <text class="arc-eyebrow">FILTER / 检索</text>
+          <text class="tools__meta">ON THIS DEVICE</text>
+        </view>
+        <view class="search-row">
+          <input class="search-input" value="{{keyword}}" placeholder="搜索景点名称、类别或简介" placeholder-class="search-placeholder" confirm-type="search" bindinput="handleSearch" aria-label="搜索景点名称、类别或简介" />
+          <button wx:if="{{keyword || activeCategory !== '全部' || favoritesOnly || unvisitedOnly || sortMode !== 'default'}}" class="reset-button" bindtap="resetFilters">清空</button>
+        </view>
+        <view class="personal-filter-row">
+          <button class="filter-btn {{favoritesOnly ? 'active' : ''}}" bindtap="toggleFavoritesOnly">{{favoritesOnly ? '正在查看收藏' : '只看收藏'}} · {{favoriteIds.length}}</button>
+          <button class="filter-btn {{unvisitedOnly ? 'active' : ''}}" bindtap="toggleUnvisitedOnly">{{unvisitedOnly ? '正在查看未游览' : '只看未游览'}} · {{spots.length - visitedIds.length}}</button>
+        </view>
+        <text class="storage-note">收藏和参观进度保存在当前设备</text>
+        <view class="tools__rule"></view>
+        <view class="sort-row">
+          <text class="sort-row__label">排序</text>
+          <button wx:for="{{sortOptions}}" wx:key="id" class="{{sortMode === item.id ? 'active' : ''}}" data-sort="{{item.id}}" bindtap="selectSort">{{item.label}}</button>
+        </view>
+        <view class="tools__rule"></view>
+        <scroll-view class="category-scroll" scroll-x show-scrollbar="{{false}}">
+          <view class="category-list">
+            <button wx:for="{{categories}}" wx:key="*this" class="category-button {{activeCategory === item ? 'active' : ''}}" data-category="{{item}}" bindtap="selectCategory">{{item}}</button>
+          </view>
+        </scroll-view>
+        <text class="result-count">找到 {{filteredSpots.length}} 个景点</text>
+      </view>
+
+      <view wx:if="{{!filteredSpots.length}}" class="arc-empty spots-empty">
+        <text class="arc-eyebrow">NO MATCH</text>
+        <text class="empty-title serif">没有找到匹配景点</text>
+        <view class="arc-empty__rule"></view>
+        <text class="spots-empty__body">请更换关键词或清空筛选条件。</text>
+        <button class="arc-btn spots-empty__btn" bindtap="resetFilters">查看全部景点</button>
+      </view>
+
+      <view wx:else class="list">
+        <view wx:for="{{filteredSpots}}" wx:key="id" class="spot arc-card arc-card--ticks" hover-class="spot--press" data-id="{{item.id}}" bindtap="openSpot" aria-role="button" aria-label="{{item.name}}，查看景点档案">
+          <view class="spot__media arc-photo">
+            <image class="spot__cover" src="{{item.coverImage}}" mode="aspectFill" lazy-load="{{true}}" />
+            <view class="spot__shade"></view>
+            <view class="spot__folio">
+              <text class="spot__folio-label">NO.</text>
+              <text class="spot__folio-num serif">{{index + 1}}</text>
+            </view>
+          </view>
+          <view class="spot__body">
+            <view class="spot__meta">
+              <text class="spot__category">{{item.category}}</text>
+              <text class="spot__file">SPOT / {{index + 1}}</text>
+            </view>
+            <view class="name-row">
+              <text class="spot__name serif">{{item.name}}</text>
+              <text wx:if="{{item.namePronunciation}}" class="spot__pron">{{item.namePronunciation}}</text>
+            </view>
+            <text class="spot__summary">{{item.summary}}</text>
+            <view class="spot__tags">
+              <view wx:if="{{item.isVisited}}" class="arc-tag arc-tag--solid spot__tag"><text>已游览</text></view>
+              <view wx:if="{{item.isFavorite}}" class="arc-tag arc-tag--red spot__tag"><text>已收藏</text></view>
+              <view wx:if="{{item.hasAudio}}" class="arc-tag spot__tag"><text>语音讲解</text></view>
+              <view wx:if="{{item.hasPanorama}}" class="arc-tag spot__tag"><text>全景漫游</text></view>
+            </view>
+            <view class="arc-hair spot__hair"></view>
+            <view class="spot__foot">
+              <text class="spot__source">景点档案 · 内容待景区审核</text>
+              <view class="spot__enter">
+                <text>查看档案</text>
+                <text class="spot__arrow">→</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="spots-foot">
+        <view class="arc-hair arc-hair--dot"><text>END OF LIST</text></view>
+        <text class="spots-foot__note">景点资料以景区审核版本为准</text>
+      </view>
+    </block>
   </view>
-  <block wx:else>
-    <view class="progress-card card">
-      <view class="progress-head"><text class="progress-title serif">我的参观进度</text><text class="progress-count">{{visitedIds.length}} / {{spots.length}}</text></view>
-      <view class="progress-track"><view class="progress-value" style="width:{{progressPercent}}%;"></view></view>
-    </view>
-    <view class="tools card">
-      <view class="search-row">
-        <input class="search-input" value="{{keyword}}" placeholder="搜索景点名称、类别或简介" confirm-type="search" bindinput="handleSearch" />
-        <button wx:if="{{keyword || activeCategory !== '全部' || favoritesOnly || unvisitedOnly || sortMode !== 'default'}}" class="reset-button" bindtap="resetFilters">清空</button>
-      </view>
-      <view class="personal-filter-row">
-        <button class="favorite-filter {{favoritesOnly ? 'active' : ''}}" bindtap="toggleFavoritesOnly">{{favoritesOnly ? '正在查看收藏' : '只看收藏'}} · {{favoriteIds.length}}</button>
-        <button class="visit-filter {{unvisitedOnly ? 'active' : ''}}" bindtap="toggleUnvisitedOnly">{{unvisitedOnly ? '正在查看未游览' : '只看未游览'}} · {{spots.length - visitedIds.length}}</button>
-      </view>
-      <text class="storage-note">收藏和参观进度保存在当前设备</text>
-      <view class="sort-row"><text>排序</text><button wx:for="{{sortOptions}}" wx:key="id" class="{{sortMode === item.id ? 'active' : ''}}" data-sort="{{item.id}}" bindtap="selectSort">{{item.label}}</button></view>
-      <scroll-view class="category-scroll" scroll-x show-scrollbar="{{false}}">
-        <view class="category-list">
-          <button wx:for="{{categories}}" wx:key="*this" class="category-button {{activeCategory === item ? 'active' : ''}}" data-category="{{item}}" bindtap="selectCategory">{{item}}</button>
-        </view>
-      </scroll-view>
-      <text class="result-count">找到 {{filteredSpots.length}} 个景点</text>
-    </view>
-    <view wx:if="{{!filteredSpots.length}}" class="state empty card">
-      <text class="empty-title serif">没有找到匹配景点</text>
-      <text class="muted">请更换关键词或清空筛选条件。</text>
-      <button class="primary-button" bindtap="resetFilters">查看全部景点</button>
-    </view>
-    <view wx:else class="list">
-      <view wx:for="{{filteredSpots}}" wx:key="id" class="spot card" data-id="{{item.id}}" bindtap="openSpot">
-        <image class="cover" src="{{item.coverImage}}" mode="aspectFill" />
-        <view class="content">
-          <text class="category">{{item.category}}</text>
-          <view class="name-row"><text class="name serif">{{item.name}}</text><text wx:if="{{item.namePronunciation}}" class="name-pronunciation">{{item.namePronunciation}}</text></view>
-          <text class="summary">{{item.summary}}</text>
-          <view class="tags"><text wx:if="{{item.isVisited}}" class="visited-tag">已游览</text><text wx:if="{{item.isFavorite}}" class="favorite-tag">已收藏</text><text wx:if="{{item.hasAudio}}">语音讲解</text><text wx:if="{{item.hasPanorama}}">全景漫游</text></view>
-        </view>
-      </view>
-    </view>
-  </block>
 </view>

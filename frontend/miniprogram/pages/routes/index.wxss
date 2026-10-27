@@ -1,5 +1,599 @@
-.heading-row { display:flex; justify-content:space-between; align-items:flex-start; gap:20rpx; margin-bottom:24rpx; }.heading { display:flex; flex-direction:column; gap:10rpx; }.heading .muted { font-size:24rpx; }.home-button { flex:none; margin:0; padding:0 20rpx; height:62rpx; line-height:62rpx; border-radius:14rpx; background:#ede8de; color:#382c24; font-size:23rpx; }.route-status { padding:22rpx; margin-bottom:22rpx; display:flex; flex-direction:column; gap:14rpx; }.status-head { display:flex; justify-content:space-between; align-items:center; gap:12rpx; }.status-title { color:#7b581b; font-size:27rpx; font-weight:600; }.status-date { color:#8a817b; font-size:20rpx; }.status-copy,.safety-copy { color:#625850; font-size:23rpx; line-height:1.55; }.status-grid { display:flex; flex-wrap:wrap; gap:10rpx; }.status-grid text { padding:7rpx 12rpx; border-radius:8rpx; background:#fff3d9; color:#795c25; font-size:21rpx; }.safety-copy { padding-top:12rpx; border-top:1rpx solid #e6dec8; }
-.route-list { display:flex; flex-direction:column; gap:22rpx; }.route-card { padding:28rpx; }.route-head { display:flex; justify-content:space-between; align-items:center; min-height:88rpx; }.route-copy { display:flex; flex-direction:column; gap:8rpx; min-width:0; }.name-row { display:flex; flex-wrap:wrap; align-items:center; gap:12rpx; }.route-name { font-size:36rpx; font-weight:600; }.verify-badge { padding:5rpx 10rpx; border-radius:8rpx; background:#f4e6c8; color:#7b581b; font-size:19rpx; }.theme { color:#4e4540; font-size:25rpx; }.toggle { flex:none; color:#7b581b; font-size:24rpx; }
-.meta { display:flex; flex-wrap:wrap; gap:12rpx; margin-top:16rpx; }.meta text { background:#f2ede3; color:#536657; padding:7rpx 12rpx; border-radius:8rpx; font-size:22rpx; }.route-detail { border-top:1rpx solid #e6dec8; margin-top:22rpx; padding-top:20rpx; display:flex; flex-direction:column; gap:16rpx; }.passage-notice { padding:16rpx; border-radius:12rpx; background:#fff7e8; color:#765d35; font-size:22rpx; line-height:1.5; }.stop { display:flex; align-items:center; gap:16rpx; font-size:27rpx; }.number { width:42rpx; height:42rpx; line-height:42rpx; text-align:center; border-radius:50%; background:#382c24; color:#fffaf0; font-size:21rpx; }.map-button { margin:10rpx 0 0; background:#382c24; color:#fffaf0; border-radius:14rpx; font-size:26rpx; }.state { padding:30rpx; display:flex; flex-direction:column; gap:20rpx; }
-.offline-notice { margin-bottom:20rpx; padding:20rpx 24rpx; background:#fff4dc; color:#7b581b; border-color:#e3c98e; font-size:23rpx; line-height:1.5; }
-.share-route-button { margin:0; background:#fffcf6; color:#7b581b; border:1rpx solid #d8c8aa; border-radius:14rpx; font-size:24rpx; }
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   推荐游线 · B 蚝壳青灰
+   浅色档案页头；游线按档案卡排版，展开区以细线分隔。
+   ========================================================================== */
+
+.routes-page {
+  box-sizing: border-box;
+  padding: 0 32rpx calc(52rpx + env(safe-area-inset-bottom));
+}
+
+/* ---------- 页头 ---------- */
+.routes-head {
+  padding: 36rpx 0 0;
+}
+
+.routes-head__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.routes-head__tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.routes-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.routes-head__back {
+  flex: none;
+}
+
+.routes-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 16rpx;
+}
+
+.routes-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.routes-head__title {
+  font-size: 64rpx;
+  letter-spacing: 6rpx;
+}
+
+.routes-head__seal {
+  flex: none;
+  margin-top: 6rpx;
+}
+
+.routes-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 26rpx;
+}
+
+.routes-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.routes-head__rule-meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.routes-body {
+  padding-top: 26rpx;
+}
+
+/* ---------- 离线提示 ---------- */
+.routes-offline {
+  margin-bottom: 20rpx;
+  padding: 16rpx 20rpx;
+  background: var(--arc-cream);
+  border: 1rpx solid var(--arc-line);
+  border-left: 3rpx solid var(--arc-red);
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--arc-blue);
+}
+
+/* ---------- 游线状态 ---------- */
+.routes-status {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-bottom: 22rpx;
+  padding: 26rpx;
+}
+
+.routes-status__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6rpx 18rpx;
+}
+
+.routes-status__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 36rpx;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.routes-status__date {
+  flex: none;
+  font-size: 22rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+.routes-status__copy {
+  font-size: 24rpx;
+  line-height: 1.8;
+  letter-spacing: 0.5rpx;
+  color: var(--arc-blue);
+}
+
+.routes-status__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 2rpx;
+}
+
+.routes-status__tag {
+  font-size: 19rpx;
+  letter-spacing: 1rpx;
+}
+
+.routes-status__safety {
+  margin-top: 6rpx;
+  padding-left: 16rpx;
+  border-left: 3rpx solid var(--arc-red);
+  font-size: 24rpx;
+  line-height: 1.75;
+  letter-spacing: 0.5rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 加载 / 错误 ---------- */
+.routes-state {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-bottom: 22rpx;
+  padding: 32rpx;
+}
+
+.routes-state__title {
+  font-size: 34rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.routes-state__line {
+  width: 88rpx;
+  height: 2rpx;
+  background: var(--arc-red);
+}
+
+.routes-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14rpx;
+}
+
+.routes-error__title {
+  font-size: 36rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.routes-error__body {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--arc-muted);
+}
+
+.routes-error__btn {
+  width: auto;
+  min-width: 260rpx;
+  min-height: 88rpx;
+  margin-top: 4rpx;
+}
+
+/* ---------- 空状态 ---------- */
+.routes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.routes-empty__title {
+  font-size: 34rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.routes-empty__body {
+  max-width: 540rpx;
+  font-size: 24rpx;
+  line-height: 1.75;
+  color: var(--arc-muted);
+  text-align: center;
+}
+
+.routes-empty__btn {
+  width: auto;
+  min-width: 260rpx;
+  min-height: 88rpx;
+  margin-top: 6rpx;
+}
+
+/* ---------- 游线列表 ---------- */
+.routes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+
+.routes-card {
+  padding: 24rpx 26rpx 26rpx;
+}
+
+.routes-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+  min-height: 88rpx;
+}
+
+.routes-card__head--press .routes-card__name {
+  color: var(--arc-red);
+}
+
+.routes-card__head--press .routes-card__chevron {
+  border-color: var(--arc-red);
+}
+
+.routes-card__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.routes-card__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.routes-card__name {
+  font-size: 36rpx;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+  transition: color 160ms ease;
+}
+
+.routes-card__verify {
+  flex: none;
+  font-size: 19rpx;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.routes-card__theme {
+  font-size: 25rpx;
+  line-height: 1.7;
+  letter-spacing: 0.5rpx;
+  color: var(--arc-muted);
+}
+
+.routes-card__toggle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  min-height: 64rpx;
+  padding-top: 4rpx;
+}
+
+.routes-card__toggle-text {
+  font-size: 22rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+.routes-card__chevron {
+  width: 12rpx;
+  height: 12rpx;
+  margin-top: -6rpx;
+  border-right: 2rpx solid var(--arc-muted);
+  border-bottom: 2rpx solid var(--arc-muted);
+  transform: rotate(45deg);
+  transition: transform 180ms ease, border-color 160ms ease;
+}
+
+.routes-card__chevron--up {
+  margin-top: 6rpx;
+  transform: rotate(-135deg);
+}
+
+.routes-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 16rpx;
+}
+
+.routes-card__meta-tag {
+  padding: 5rpx 12rpx;
+  font-size: 20rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.routes-card__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.routes-card__hair {
+  margin-bottom: 2rpx;
+}
+
+.routes-card__passage {
+  padding: 14rpx 16rpx;
+  background: var(--arc-oyster);
+  border-left: 2rpx solid var(--arc-line-strong);
+  font-size: 24rpx;
+  line-height: 1.75;
+  letter-spacing: 0.5rpx;
+  color: var(--arc-blue);
+}
+
+.routes-card__stops {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.routes-stop {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  min-height: 44rpx;
+}
+
+.routes-stop__num {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 34rpx;
+  height: 34rpx;
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 50%;
+  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
+  font-size: 18rpx;
+  line-height: 1;
+  letter-spacing: 1rpx;
+  color: var(--arc-blue);
+}
+
+.routes-stop__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--arc-ink);
+}
+
+.routes-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+  margin-top: 2rpx;
+}
+
+.routes-card__action {
+  min-height: 88rpx;
+  padding: 0 12rpx;
+  font-size: 25rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ---------- 页脚 ---------- */
+.routes-foot {
+  margin-top: 40rpx;
+}
+
+.routes-foot__note {
+  display: block;
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: 22rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .routes-head__title {
+  font-size: 76rpx;
+}
+
+.font-large .routes-head__back {
+  font-size: 26rpx;
+}
+
+.font-large .routes-status__title {
+  font-size: 42rpx;
+}
+
+.font-large .routes-status__date,
+.font-large .routes-status__copy,
+.font-large .routes-status__safety {
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+.font-large .routes-status__tag {
+  font-size: 25rpx;
+}
+
+.font-large .routes-state__title,
+.font-large .routes-error__title,
+.font-large .routes-empty__title {
+  font-size: 40rpx;
+}
+
+.font-large .routes-error__body,
+.font-large .routes-empty__body,
+.font-large .routes-foot__note {
+  font-size: 28rpx;
+}
+
+.font-large .routes-card__name {
+  font-size: 44rpx;
+}
+
+.font-large .routes-card__verify,
+.font-large .routes-card__meta-tag {
+  font-size: 24rpx;
+}
+
+.font-large .routes-card__theme {
+  font-size: 31rpx;
+}
+
+.font-large .routes-card__toggle-text {
+  font-size: 28rpx;
+}
+
+.font-large .routes-card__passage,
+.font-large .routes-stop__text {
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+.font-large .routes-stop__num {
+  width: 40rpx;
+  height: 40rpx;
+  font-size: 22rpx;
+}
+
+.font-large .routes-card__actions {
+  grid-template-columns: 1fr;
+}
+
+.font-large .routes-card__action,
+.font-large .routes-error__btn,
+.font-large .routes-empty__btn {
+  min-height: 96rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.routes-page.high-contrast {
+  background-color: #fff;
+  background-image: none;
+}
+
+.high-contrast .arc-card,
+.high-contrast .arc-empty {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .routes-offline {
+  background: #fff;
+  border-color: #393939;
+  border-left-color: var(--arc-red);
+  color: #111;
+}
+
+.high-contrast .routes-head__folio,
+.high-contrast .routes-head__rule-meta,
+.high-contrast .routes-card__verify,
+.high-contrast .routes-card__meta-tag {
+  color: #222;
+}
+
+.high-contrast .routes-head__back {
+  border: 0;
+  border-bottom: 2rpx solid #111;
+  color: #111;
+}
+
+.high-contrast .arc-hair--dot {
+  background: transparent;
+}
+
+.high-contrast .arc-hair--dot::before,
+.high-contrast .arc-hair--dot::after {
+  background: #393939;
+}
+
+.high-contrast .routes-status__title,
+.high-contrast .routes-status__copy,
+.high-contrast .routes-card__name,
+.high-contrast .routes-stop__text {
+  color: #111;
+}
+
+.high-contrast .routes-status__date,
+.high-contrast .routes-status__safety,
+.high-contrast .routes-card__theme,
+.high-contrast .routes-card__toggle-text,
+.high-contrast .routes-error__body,
+.high-contrast .routes-foot__note {
+  color: #222;
+}
+
+.high-contrast .routes-card__passage {
+  background: #fff;
+  border-left-color: #393939;
+  color: #111;
+}
+
+.high-contrast .routes-card__verify,
+.high-contrast .routes-card__meta-tag,
+.high-contrast .routes-empty__body,
+.high-contrast .routes-stop__num {
+  border-color: #393939;
+  color: #111;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .routes-card__name,
+  .routes-card__chevron {
+    transition: none;
+  }
+}

@@ -120,7 +120,7 @@ Page({
   openPrivacy() { wx.navigateTo({ url: '/pages/privacy/index' }); },
   confirmClear(title, content, action) {
     wx.showModal({
-      title, content, confirmColor: '#9a4d3f',
+      title, content, confirmColor: '#a6402d',
       success: ({ confirm }) => {
         if (!confirm) return;
         action();

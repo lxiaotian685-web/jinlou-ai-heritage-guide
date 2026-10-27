@@ -1,17 +1,298 @@
-<view class="page section">
-  <view class="heading"><text class="section-title serif">{{title}}</text><text class="muted">内容待景区审核与接入</text></view>
-  <view wx:if="{{loading}}" class="state card">正在读取推荐内容…</view>
-  <view wx:elif="{{error}}" class="state card"><text>{{error}}</text><button class="primary-button" bindtap="loadRecommendations">重新加载</button></view>
-  <view wx:elif="{{!items.length}}" class="state card">暂无已审核上线的推荐内容</view>
-  <view wx:else class="list">
-    <view wx:for="{{items}}" wx:key="id" class="recommendation card">
-      <image src="{{item.image}}" mode="aspectFill" />
-      <view class="content">
-        <text class="type">{{item.type}}</text><text class="name serif">{{item.name}}</text>
-        <text class="muted">{{item.address}}</text><text class="muted">{{item.availability}}</text><text wx:if="{{item.description}}" class="muted">{{item.description}}</text>
-        <view class="actions"><button data-id="{{item.id}}" bindtap="showDetail">查看详情</button><button bindtap="showMapPending">打开地图</button></view>
+<template name="emptyState">
+  <view class="arc-empty empty-panel">
+    <view class="empty-art">
+      <view class="empty-art__table"></view>
+      <view class="empty-art__plate"></view>
+      <view class="empty-art__ring"></view>
+      <view class="empty-art__chop empty-art__chop--a"></view>
+      <view class="empty-art__chop empty-art__chop--b"></view>
+    </view>
+    <text class="empty-title serif">{{headline}}</text>
+    <view class="arc-empty__rule"></view>
+    <text class="empty-body">{{body}}</text>
+    <view class="empty-actions">
+      <button class="arc-btn" bindtap="showCluePending">提交补充线索</button>
+      <button class="arc-btn arc-btn--ghost" bindtap="backToService">返回服务页</button>
+    </view>
+  </view>
+</template>
+
+<view class="arc-page arc-grid-bg rec-page {{displayClass}}">
+
+  <view class="masthead">
+    <view class="masthead__top">
+      <text class="arc-eyebrow">NEARBY / 周边</text>
+      <view class="masthead__stamp">
+        <view class="masthead__stamp-dot"></view>
+        <text>FIELD NOTE 01</text>
+      </view>
+    </view>
+    <text class="arc-title rec-title">附近推荐</text>
+    <text class="arc-lede rec-lede">吃住行，先在景区周边。</text>
+    <view class="masthead__source">
+      <view class="masthead__source-rule"></view>
+      <text>信息来源 · 景区接口与运营补充；未接入的数据宁可留白，不写推测值。</text>
+    </view>
+  </view>
+
+  <view class="band">
+    <view class="arc-photo band-photo">
+      <image src="/images/arc/arc-brick.jpg" mode="aspectFill" />
+      <view class="band-overlay">
+        <text>片区影像 · 非商户图片</text>
+        <text class="band-overlay__code">ARC / BRICK 01</text>
+      </view>
+    </view>
+    <view class="arc-caption band-caption">
+      <text>片区影像档案 · 仅作气氛</text>
+      <text>FILE / ARC-BRICK.JPG</text>
+    </view>
+  </view>
+
+  <view class="arc-head tabs-head">
+    <text class="arc-head__index">01</text>
+    <text class="arc-head__label">分类索引</text>
+    <view class="arc-head__rule"></view>
+    <text class="arc-head__meta">04 CAT.</text>
+  </view>
+
+  <view class="tabs">
+    <view
+      wx:for="{{categories}}"
+      wx:key="key"
+      class="tab {{activeCategory === item.key ? 'tab--active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchCategory"
+      hover-class="tab--press"
+      hover-stay-time="80"
+      aria-role="button"
+      aria-label="{{item.label}}分类"
+    >
+      <text class="tab__label">{{item.label}}</text>
+      <text class="tab__index">{{item.en}}</text>
+    </view>
+  </view>
+
+  <view class="arc-head list-head">
+    <text class="arc-head__index">02</text>
+    <text class="arc-head__label">{{activeMeta.label}}条目</text>
+    <view class="arc-head__rule"></view>
+    <text class="arc-head__meta">{{loading ? 'READING' : (error ? 'ERROR' : (items.length ? items.length + ' REC.' : 'EMPTY'))}}</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-panel">
+    <view class="loading-lines">
+      <view class="loading-line loading-line--wide"></view>
+      <view class="loading-line"></view>
+      <view class="loading-line loading-line--short"></view>
+    </view>
+    <text class="loading-note">正在调取街区资料…</text>
+  </view>
+
+  <view wx:elif="{{error}}" class="arc-empty error-panel">
+    <text class="error-code">API / READ FAILED</text>
+    <view class="arc-empty__rule"></view>
+    <text class="error-title serif">这一栏暂时没有读出来</text>
+    <text class="error-body">{{error}}</text>
+    <button class="arc-btn arc-btn--ghost error-retry" bindtap="loadRecommendations">重新读取</button>
+  </view>
+
+  <view wx:elif="{{!items.length}}" class="empty-main">
+    <text class="empty-caption">STATE · 暂无收录</text>
+    <template is="emptyState" data="{{...emptyState}}" />
+  </view>
+
+  <block wx:else>
+    <view class="rec-list">
+      <view wx:for="{{items}}" wx:key="indexText" class="arc-card arc-card--ticks rec-card">
+        <view class="arc-photo card-media material material--{{item.category}}">
+          <image
+            wx:if="{{item.showImage}}"
+            class="card-image"
+            src="{{item.image}}"
+            mode="aspectFill"
+            lazy-load="{{true}}"
+            data-index="{{index}}"
+            binderror="onImageError"
+          />
+          <block wx:if="{{!item.showImage}}">
+            <view wx:if="{{item.category === 'food'}}" class="glyph glyph--food">
+              <view class="g-steam g-steam--a"></view>
+              <view class="g-steam g-steam--b"></view>
+              <view class="g-bowl"></view>
+              <view class="g-table"></view>
+            </view>
+            <view wx:elif="{{item.category === 'hotel'}}" class="glyph glyph--hotel">
+              <view class="g-head"></view>
+              <view class="g-mattress"></view>
+              <view class="g-pillow"></view>
+              <view class="g-bed"></view>
+              <view class="g-leg g-leg--a"></view>
+              <view class="g-leg g-leg--b"></view>
+            </view>
+            <view wx:elif="{{item.category === 'transport'}}" class="glyph glyph--transport">
+              <view class="g-route"></view>
+              <view class="g-pin g-pin--a"></view>
+              <view class="g-pin g-pin--b"></view>
+              <view class="g-arrow"></view>
+              <view class="g-tick g-tick--a"></view>
+              <view class="g-tick g-tick--b"></view>
+              <view class="g-tick g-tick--c"></view>
+            </view>
+            <view wx:else class="glyph glyph--attraction">
+              <view class="g-roof g-roof--l"></view>
+              <view class="g-roof g-roof--r"></view>
+              <view class="g-ridge"></view>
+              <view class="g-pillar g-pillar--l"></view>
+              <view class="g-pillar g-pillar--r"></view>
+              <view class="g-base"></view>
+            </view>
+
+            <text class="material-code">MATERIAL / {{item.categoryEn}}</text>
+            <view class="material-label">
+              <view class="material-label__mark"></view>
+              <text>图片待景区提供</text>
+            </view>
+            <text class="arc-ghost-num media-num">{{item.indexText}}</text>
+          </block>
+        </view>
+
+        <view class="card-body">
+          <view class="card-meta">
+            <view class="arc-tag">
+              <view class="arc-tag__dot"></view>
+              <text>{{item.categoryLabel}}</text>
+            </view>
+            <text wx:if="{{item.needsReview}}" class="arc-pending">待景区审核</text>
+            <text class="card-index">{{item.categoryEn}} / {{item.indexText}}</text>
+          </view>
+
+          <text class="card-name serif">{{item.name}}</text>
+
+          <view wx:if="{{item.hasFacts}}" class="card-facts">
+            <view wx:if="{{item.type}}" class="fact">
+              <text class="fact__key">类型</text>
+              <text class="fact__val">{{item.type}}</text>
+            </view>
+            <view wx:if="{{item.address}}" class="fact">
+              <text class="fact__key">地址</text>
+              <text class="fact__val">{{item.address}}</text>
+            </view>
+            <view wx:if="{{item.availability}}" class="fact">
+              <text class="fact__key">营业</text>
+              <text class="fact__val">{{item.availability}}</text>
+            </view>
+          </view>
+          <text wx:else class="card-missing">类别、地址与营业信息待景区补充。</text>
+
+          <text wx:if="{{item.description}}" class="card-desc">{{item.description}}</text>
+
+          <view class="card-foot">
+            <text class="card-source">信息来源 · {{item.sourceText}}</text>
+            <view class="card-actions">
+              <button class="link-btn" data-id="{{item.id}}" data-index="{{index}}" bindtap="showDetail">查看详情</button>
+              <button class="link-btn link-btn--quiet" bindtap="showMapPending">打开地图</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{showSpecimen}}" class="demo-block">
+      <view class="arc-head demo-head">
+        <text class="arc-head__index">03</text>
+        <text class="arc-head__label">空白状态</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">STATE SPECIMEN</text>
+      </view>
+      <view class="arc-caption demo-caption">
+        <text>STATE · 空数据演示</text>
+        <text>非真实商户</text>
+      </view>
+      <template is="emptyState" data="{{...emptyState}}" />
+    </view>
+  </block>
+
+  <view class="a11y-strip">
+    <view class="a11y-copy">
+      <text class="a11y-eyebrow">阅读辅助 / ACCESS</text>
+      <text class="a11y-copy__note">设置会保存在当前手机</text>
+    </view>
+    <view
+      class="a11y-pill {{isLarge ? 'is-on' : ''}}"
+      bindtap="toggleLargeText"
+      hover-class="a11y-pill--hover"
+      aria-role="switch"
+      aria-checked="{{isLarge}}"
+    >
+      <view class="a11y-pill__copy">
+        <text class="a11y-pill__title">大字模式</text>
+        <text class="a11y-pill__note">正文 17px / 行高 1.8</text>
+      </view>
+      <view class="a11y-switch">
+        <view class="a11y-switch__knob"></view>
       </view>
     </view>
   </view>
-  <view wx:if="{{activeItem}}" class="mask" bindtap="closeDetail"><view class="sheet" catchtap="stopPropagation"><text class="sheet-title serif">{{activeItem.name}}</text><text>{{activeItem.description || '商家详细介绍待接入。'}}</text><text wx:if="{{activeItem.productName}}">推荐：{{activeItem.productName}}</text><text wx:if="{{activeItem.address}}">地址：{{activeItem.address}}</text><button wx:if="{{activeItem.phone}}" bindtap="callMerchant">拨打电话</button><button wx:if="{{activeItem.linkUrl}}" bindtap="copyMerchantLink">复制商家链接</button><button class="primary-button" bindtap="closeDetail">返回列表</button></view></view>
+
+  <view class="rec-colophon">
+    <text>NEARBY RECORDS / 01</text>
+    <view class="rec-colophon__line"></view>
+    <text>资料以景区审核为准</text>
+  </view>
+
+  <block wx:if="{{activeItem}}">
+    <view class="arc-mask" bindtap="closeDetail" aria-role="button" aria-label="关闭详情"></view>
+    <view class="arc-sheet rec-sheet" catchtap="stopPropagation">
+      <view class="arc-sheet__handle"></view>
+
+      <view class="sheet-head">
+        <view class="sheet-kicker">
+          <text class="arc-eyebrow">RECORD / {{activeItem.categoryEn}} · {{activeItem.indexText}}</text>
+          <text wx:if="{{activeItem.needsReview}}" class="arc-pending">待景区审核</text>
+        </view>
+        <text class="sheet-title serif">{{activeItem.name}}</text>
+        <view class="sheet-tags">
+          <view class="arc-tag">
+            <view class="arc-tag__dot"></view>
+            <text>{{activeItem.categoryLabel}}</text>
+          </view>
+          <text class="sheet-tags__file">FILE / {{activeItem.indexText}}</text>
+        </view>
+      </view>
+
+      <scroll-view scroll-y class="sheet-scroll">
+        <text class="sheet-desc">{{activeItem.description || '详细介绍待景区补充。'}}</text>
+
+        <view class="sheet-facts">
+          <view wx:if="{{activeItem.productName}}" class="sheet-fact">
+            <text class="sheet-fact__key">推荐产品</text>
+            <text class="sheet-fact__val">{{activeItem.productName}}</text>
+          </view>
+          <view class="sheet-fact">
+            <text class="sheet-fact__key">地址</text>
+            <text class="sheet-fact__val">{{activeItem.address || '待景区补充'}}</text>
+          </view>
+          <view wx:if="{{activeItem.availability}}" class="sheet-fact">
+            <text class="sheet-fact__key">营业</text>
+            <text class="sheet-fact__val">{{activeItem.availability}}</text>
+          </view>
+          <view wx:if="{{activeItem.hasLocation}}" class="sheet-fact">
+            <text class="sheet-fact__key">位置</text>
+            <text class="sheet-fact__val">坐标已登记，导航待开放</text>
+          </view>
+        </view>
+
+        <text class="sheet-source">信息来源 · {{activeItem.sourceText}}</text>
+      </scroll-view>
+
+      <view class="sheet-actions">
+        <view class="sheet-actions__row">
+          <button class="arc-btn" bindtap="callMerchant">{{activeItem.hasPhone ? '拨打电话' : '电话待接入'}}</button>
+          <button class="arc-btn arc-btn--ghost" bindtap="copyMerchantLink">{{activeItem.hasLink ? '复制商家链接' : '链接待接入'}}</button>
+        </view>
+        <button class="arc-btn arc-btn--ghost sheet-back" bindtap="closeDetail">返回列表</button>
+      </view>
+    </view>
+  </block>
 </view>

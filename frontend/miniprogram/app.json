@@ -18,21 +18,43 @@
   "lazyCodeLoading": "requiredComponents",
   "window": {
     "navigationBarTitleText": "碧江金楼",
-    "navigationBarBackgroundColor": "#f6f1e7",
+    "navigationBarBackgroundColor": "#f2ede4",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f6f1e7",
+    "backgroundColor": "#f2ede4",
+    "backgroundColorTop": "#f2ede4",
+    "backgroundColorBottom": "#f2ede4",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#80756f",
-    "selectedColor": "#382c24",
-    "backgroundColor": "#fffcf6",
-    "borderStyle": "white",
+    "color": "#5d6862",
+    "selectedColor": "#a6402d",
+    "backgroundColor": "#faf6ee",
+    "borderStyle": "black",
     "list": [
-      { "pagePath": "pages/index/index", "text": "首页" },
-      { "pagePath": "pages/guide/index", "text": "导览" },
-      { "pagePath": "pages/panoramas/index", "text": "全景" },
-      { "pagePath": "pages/service/index", "text": "服务" }
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/guide/index",
+        "text": "导览",
+        "iconPath": "images/tabbar/guide.png",
+        "selectedIconPath": "images/tabbar/guide-active.png"
+      },
+      {
+        "pagePath": "pages/panoramas/index",
+        "text": "AR研学",
+        "iconPath": "images/tabbar/panorama.png",
+        "selectedIconPath": "images/tabbar/panorama-active.png"
+      },
+      {
+        "pagePath": "pages/service/index",
+        "text": "服务",
+        "iconPath": "images/tabbar/service.png",
+        "selectedIconPath": "images/tabbar/service-active.png"
+      }
     ]
   },
   "sitemapLocation": "sitemap.json"

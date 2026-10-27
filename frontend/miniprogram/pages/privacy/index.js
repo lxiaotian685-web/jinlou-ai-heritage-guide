@@ -26,7 +26,7 @@ Page({
     };
     const selected = actions[type];
     if (!selected) return;
-    wx.showModal({ title: selected[0], content: '此操作只影响当前手机，且无法撤销。', confirmColor: '#9a4d3f', success: ({ confirm }) => {
+    wx.showModal({ title: selected[0], content: '此操作只影响当前手机，且无法撤销。', confirmColor: '#a6402d', success: ({ confirm }) => {
       if (!confirm) return; selected[1](); this.refresh(); wx.showToast({ title: '已清除', icon: 'none' });
     } });
   },

@@ -1,33 +1,166 @@
-<view class="page {{displayClass}}">
+<view class="page arc-page arc-grid-bg home-page {{displayClass}}">
+
   <view class="hero">
     <view class="hero-side-stage" wx:if="{{activeHero}}">
-      <image class="hero-card hero-card-left" src="{{activeHero.previousImage}}" mode="aspectFill" />
-      <image class="hero-card hero-card-right" src="{{activeHero.nextImage}}" mode="aspectFill" />
+      <image class="hero-aside hero-aside--prev" src="{{activeHero.previousImage}}" mode="aspectFill" />
+      <image class="hero-aside hero-aside--next" src="{{activeHero.nextImage}}" mode="aspectFill" />
     </view>
+
     <swiper class="hero-swiper" circular autoplay interval="4800" duration="700" bindchange="handleHeroChange">
       <swiper-item wx:for="{{heroSlides}}" wx:key="image">
         <view class="hero-stage">
-          <image class="hero-card hero-card-main" src="{{item.image}}" mode="aspectFill" />
+          <image class="hero-image" src="{{item.image}}" mode="aspectFill" />
         </view>
       </swiper-item>
     </swiper>
-    <view class="hero-shade"></view>
-    <view class="hero-copy">
-      <text class="eyebrow">顺德北滘</text>
-      <text class="title serif">{{home.title}}</text>
-      <text class="subtitle">{{home.subtitle}}</text>
+
+    <view class="hero-grade"></view>
+    <view class="hero-scrim"></view>
+
+    <view class="hero-frame">
+      <view class="hero-frame__corner hero-frame__corner--tl"></view>
+      <view class="hero-frame__corner hero-frame__corner--bl"></view>
+      <view class="hero-frame__corner hero-frame__corner--br"></view>
     </view>
-    <view class="hero-dots"><view wx:for="{{heroSlides}}" wx:key="image" class="hero-dot {{heroCurrent === index ? 'active' : ''}}"></view></view>
+
+    <view class="arc-seal hero-seal"><text>碧</text><text>江</text></view>
+
+    <view class="hero-vertical arc-vertical"><text>导览手记</text></view>
+
+    <view class="hero-copy">
+      <view class="hero-eyebrow">
+        <view class="hero-eyebrow__rule"></view>
+        <text class="arc-eyebrow hero-eyebrow__text">碧江金楼 · 顺德北滘</text>
+      </view>
+      <text class="hero-title serif">{{home.title}}</text>
+      <text class="hero-subtitle">{{home.subtitle}}</text>
+    </view>
+
+    <view class="hero-foot">
+      <view class="hero-foot__label">
+        <text>导览手记</text>
+        <view class="hero-foot__line"></view>
+        <text>ARCHIVE / 01</text>
+      </view>
+      <view class="hero-dots">
+        <view wx:for="{{heroSlides}}" wx:key="image" class="hero-dot {{heroCurrent === index ? 'active' : ''}}"></view>
+      </view>
+    </view>
   </view>
-  <view class="section intro card">
-    <text class="section-title serif">今天，怎么逛</text>
-    <text class="description">先从景点故事开始，也可以切换大字模式慢慢看。</text>
-    <view class="intro-actions"><button class="primary-button" bindtap="goToSpots">开始游览</button><button class="display-toggle" bindtap="toggleFontSize">{{displaySettings.fontSize === 'large' ? '标准字' : '大字'}}</button></view>
+
+  <view class="home-sheet">
+    <view class="arc-card arc-card--ticks intro">
+      <text class="arc-ghost-num intro-ghost">01</text>
+      <view class="intro-top">
+        <text class="arc-eyebrow">TODAY / 今日</text>
+        <text class="intro-folio">FOLIO 01</text>
+      </view>
+      <text class="arc-title intro-title">今天，怎么逛</text>
+      <view class="intro-rule"></view>
+      <text class="description">先从景点故事开始，也可以切换大字模式慢慢看。</text>
+      <view class="intro-actions">
+        <button class="arc-btn intro-primary" bindtap="goToSpots">开始游览</button>
+        <button class="intro-toggle" bindtap="toggleFontSize">{{displaySettings.fontSize === 'large' ? '标准字' : '大字'}}</button>
+      </view>
+      <view class="intro-meta">
+        <text>READING MODE</text>
+        <text>阅读设置 · 随手可换</text>
+      </view>
+    </view>
   </view>
-  <view wx:if="{{continueCard}}" class="section continue-wrap"><view class="continue-card card"><view><text class="continue-label">继续游览</text><text class="continue-title serif">{{continueCard.title}}</text><text class="continue-description">{{continueCard.description}}</text></view><button bindtap="continueVisit">{{continueCard.buttonText}}</button></view></view>
-  <view class="section feature-grid">
-    <view class="feature card" bindtap="goToPanoramas"><text class="feature-title serif">全景漫游</text><text class="muted">体验交互框架</text></view>
-    <view class="feature card" bindtap="goToAssistant"><text class="feature-title serif">常见问题</text><text class="muted">查看景区资料答疑</text></view>
-    <view class="feature card visit-center" bindtap="goToVisitCenter"><text class="feature-title serif">我的游览</text><text class="muted">收藏、进度与当前路线</text></view>
+
+  <view wx:if="{{continueCard}}" class="home-block">
+    <view class="arc-head home-head">
+      <text class="arc-head__index">02</text>
+      <text class="arc-head__label">继续游览</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">RESUME</text>
+    </view>
+    <view class="arc-card arc-card--ticks continue-card">
+      <text class="arc-ghost-num continue-ghost">02</text>
+      <view class="continue-top">
+        <text class="arc-eyebrow">ROUTE / 路线</text>
+        <view class="arc-tag">
+          <view class="arc-tag__dot"></view>
+          <text>续游</text>
+        </view>
+      </view>
+      <text class="continue-title serif">{{continueCard.title}}</text>
+      <text class="continue-description">{{continueCard.description}}</text>
+      <view class="continue-track">
+        <view class="continue-track__lead"></view>
+        <view class="continue-track__line"></view>
+        <text class="continue-track__meta">ROUTE PROGRESS</text>
+      </view>
+      <button class="arc-btn continue-button" bindtap="continueVisit">{{continueCard.buttonText}}</button>
+    </view>
+
   </view>
+
+  <view class="home-block">
+    <view class="arc-head home-head">
+      <text class="arc-head__index">03</text>
+      <text class="arc-head__label">导览入口</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">INDEX</text>
+    </view>
+
+    <view class="entry-grid">
+      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToArStudy" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="AR木雕寻宝，对准木雕发现工艺细节">
+        <view class="arc-photo entry__media">
+          <image src="/images/arc/arc-pond.jpg" mode="aspectFill" lazy-load="{{true}}" />
+          <view class="entry__grade"></view>
+          <view class="entry__scrim"></view>
+        </view>
+        <view class="entry__body">
+          <text class="entry__index">01</text>
+          <text class="entry__label serif">AR木雕寻宝</text>
+          <text class="entry__meta">对准木雕，发现工艺细节</text>
+          <text class="entry__code">AR STUDY</text>
+        </view>
+      </view>
+
+      <view class="entry entry--half arc-card arc-card--ticks" bindtap="goToAssistant" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="常见问题，查看景区资料答疑">
+        <view class="arc-photo entry__media">
+          <image src="/images/arc/arc-hall.jpg" mode="aspectFill" lazy-load="{{true}}" />
+          <view class="entry__grade"></view>
+          <view class="entry__scrim"></view>
+        </view>
+        <view class="entry__body">
+          <text class="entry__index">02</text>
+          <text class="entry__label serif">常见问题</text>
+          <text class="entry__meta">查看景区资料答疑</text>
+          <text class="entry__code">FAQ</text>
+        </view>
+      </view>
+
+      <view class="entry entry--wide arc-card arc-card--ticks" bindtap="goToVisitCenter" hover-class="entry--press" hover-stay-time="80" aria-role="button" aria-label="我的游览，收藏、进度与当前路线">
+        <view class="arc-photo entry__media">
+          <image src="/images/arc/arc-courtyard.jpg" mode="aspectFill" lazy-load="{{true}}" />
+          <view class="entry__grade"></view>
+          <view class="entry__scrim"></view>
+        </view>
+        <view class="entry__body">
+          <text class="entry__index">03</text>
+          <text class="entry__label serif">我的游览</text>
+          <text class="entry__meta">收藏、进度与当前路线</text>
+          <text class="entry__code">VISIT LOG</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="arc-caption entry-caption">
+      <text>影像档案 · 入口底图</text>
+      <text>ARC / 01—03</text>
+    </view>
+  </view>
+
+  <view class="home-foot">
+    <view class="arc-hair arc-hair--dot"><text>END OF NOTES</text></view>
+    <view class="home-foot__row">
+      <text class="home-foot__mark serif">碧江金楼 · 导览手记</text>
+      <text class="home-foot__code">ARCHIVE / HOME</text>
+    </view>
+  </view>
+
 </view>
