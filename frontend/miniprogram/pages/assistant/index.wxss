@@ -449,10 +449,22 @@
 }
 
 .source-heading {
+  align-self: flex-start;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
   color: var(--arc-blue);
   font-size: 22rpx;
   font-weight: 600;
   letter-spacing: 1rpx;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.source-heading::after {
+  border: none;
 }
 
 .source-item {

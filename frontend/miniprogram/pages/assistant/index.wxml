@@ -69,17 +69,21 @@
 
     <view wx:elif="{{answer}}" class="arc-card arc-card--ticks faq-answer {{answer.isError ? 'is-error' : ''}}">
       <text class="faq-answer__question serif">{{selectedQuestion}}</text>
-      <view wx:if="{{answer.notice}}" class="arc-tag faq-answer__tag"><text>{{answer.notice}}</text></view>
-      <text class="faq-answer__text">{{answer.text}}</text>
+    <view wx:if="{{answer.notice}}" class="arc-tag faq-answer__tag"><text>{{answer.notice}}</text></view>
+    <text wx:if="{{answer.modeLabel}}" class="arc-eyebrow">回答方式：{{answer.modeLabel}}</text>
+    <text wx:if="{{answer.fallbackHint}}" class="faq-answer__text">{{answer.fallbackHint}}</text>
+    <text class="faq-answer__text">{{answer.text}}</text>
       <button wx:if="{{answer.canRetry}}" class="retry-button" bindtap="retryLastQuestion">重新尝试</button>
-      <view wx:if="{{answer.sources && answer.sources.length}}" class="source-list">
-        <text class="source-heading">回答来源</text>
-        <view wx:for="{{answer.sources}}" wx:key="id" class="source-item">
+    <view wx:if="{{answer.sources && answer.sources.length}}" class="source-list">
+      <button class="source-heading" bindtap="toggleSources">{{sourcesExpanded ? '收起来源' : '查看回答来源（' + answer.sources.length + '）'}}</button>
+      <block wx:if="{{sourcesExpanded}}">
+      <view wx:for="{{answer.sources}}" wx:key="id" class="source-item">
           <text class="source-title">{{index + 1}}. {{item.title}}</text>
           <text wx:if="{{item.organization}}" class="source-meta">{{item.organization}} · {{item.verificationLabel}}</text>
           <text wx:if="{{item.scope}}" class="source-scope">支持范围：{{item.scope}}</text>
           <button wx:if="{{item.url}}" class="source-link" data-url="{{item.url}}" bindtap="copySourceUrl">复制资料链接</button>
         </view>
+      </block>
       </view>
       <text wx:if="{{answer.publicStatus}}" class="sources">公开状态：{{answer.publicStatus}}</text>
     </view>
