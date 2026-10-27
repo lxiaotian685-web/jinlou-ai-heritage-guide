@@ -204,7 +204,7 @@
     <view wx:if="{{ticketMiniLink}}" class="ticket-linkfield">
       <view class="ticket-linkfield__copy">
         <text class="ticket-linkfield__label">新版 · 购票小程序</text>
-        <text class="ticket-linkfield__value">{{ticketMiniLink}}</text>
+        <text class="ticket-linkfield__value" user-select="{{true}}">{{ticketMiniLink}}</text>
       </view>
       <button class="ticket-linkfield__action" data-kind="mini" bindtap="copyTicketLinkFromSheet">{{copiedKey === 'mini' ? '已复制' : '复制'}}</button>
     </view>
@@ -212,7 +212,7 @@
     <view wx:if="{{ticketLegacyLink}}" class="ticket-linkfield">
       <view class="ticket-linkfield__copy">
         <text class="ticket-linkfield__label">旧版 · 购票入口</text>
-        <text class="ticket-linkfield__value">{{ticketLegacyLink}}</text>
+        <text class="ticket-linkfield__value" user-select="{{true}}">{{ticketLegacyLink}}</text>
       </view>
       <button class="ticket-linkfield__action" data-kind="legacy" bindtap="copyTicketLinkFromSheet">{{copiedKey === 'legacy' ? '已复制' : '复制'}}</button>
     </view>

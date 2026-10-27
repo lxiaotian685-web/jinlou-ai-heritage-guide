@@ -1,84 +1,256 @@
-<view class="page ar-page">
-  <view class="section heading">
-    <text class="eyebrow">单点试验 · 金楼木雕</text>
-    <text class="section-title serif">AR木雕寻宝</text>
-    <text class="muted">对准指定木雕，认识构件、雕刻层次与饰金效果。</text>
+<view class="arc-page arc-grid-bg panoramas-page {{displayClass}} {{stage === 'intro' ? '' : 'is-stage'}}">
+  <!-- 页头：档案式标题 -->
+  <view class="ar-mast">
+    <view class="ar-mast__meta">
+      <text class="arc-eyebrow ar-mast__eyebrow">ARCHIVE 03 · 单点试验</text>
+      <text class="ar-mast__place">碧江金楼 · 金漆木雕</text>
+    </view>
+    <text class="arc-title ar-mast__title serif">AR 木雕寻宝</text>
+    <text class="arc-lede ar-mast__lede">对准指定木雕，认识构件、雕刻层次与饰金效果。</text>
   </view>
 
-  <view class="section progress-row">
-    <text class="progress-step {{stage !== 'intro' ? 'active' : ''}}">1 对准目标</text>
-    <text class="progress-step {{stage === 'discovered' ? 'active' : ''}}">2 探索热点</text>
-    <text class="progress-step {{quizPassed ? 'active' : ''}}">3 完成研学</text>
+  <!-- 流程索引：对准 → 探索 → 完成 -->
+  <view class="ar-steps">
+    <view class="ar-step is-on {{stage === 'discovered' ? '' : 'is-current'}}">
+      <view class="ar-step__dot"></view>
+      <text class="ar-step__label">对准目标</text>
+    </view>
+    <view class="ar-step {{stage === 'discovered' ? 'is-on' : ''}} {{stage === 'discovered' && !quizPassed ? 'is-current' : ''}}">
+      <view class="ar-step__dot"></view>
+      <text class="ar-step__label">探索热点</text>
+    </view>
+    <view class="ar-step {{quizPassed ? 'is-on is-current' : ''}}">
+      <view class="ar-step__dot"></view>
+      <text class="ar-step__label">完成研学</text>
+    </view>
   </view>
 
-  <view wx:if="{{stage === 'intro'}}" class="section intro-section">
-    <view class="target-card card">
-      <image src="/images/jinlou-01.jpg" mode="aspectFill" />
-      <view class="target-copy">
-        <text class="target-label">本次识别目标</text>
-        <text class="target-title serif">金楼木雕构件</text>
-        <text class="target-description">请在现场将画面中心对准同一处构件。当前为对准式AR试点，真实图像锁定仍待现场标定。</text>
+  <!-- ============ A. 开始页 ============ -->
+  <view wx:if="{{stage === 'intro'}}" class="ar-intro">
+    <view class="arc-head">
+      <text class="arc-head__index">01</text>
+      <text class="arc-head__label">目标影像</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">TARGET</text>
+    </view>
+
+    <view class="ar-specimen">
+      <view class="arc-photo ar-specimen__photo">
+        <image src="/images/jinlou-01.jpg" mode="aspectFill" />
+        <text class="ar-specimen__tag">图版 01</text>
+      </view>
+      <view class="arc-caption ar-specimen__caption">
+        <text>参考影像 · 金楼木雕构件</text>
+        <text>JINLOU / 01</text>
       </view>
     </view>
-    <view class="guide-card card">
-      <text class="guide-title">体验前准备</text>
-      <text>保持手机稳定，并允许使用相机。</text>
-      <text>让目标木雕完整进入取景框。</text>
-      <text>无法使用相机时，可切换参考图模式。</text>
+
+    <view>
+      <text class="ar-kicker">本次识别目标</text>
+      <text class="ar-h2 serif">金楼木雕构件</text>
+      <text class="ar-body">请将画面中心对准木雕构件。当前采用对准式 AR，由你确认目标后进入热点探索。</text>
     </view>
-    <button class="primary-button start-button" bindtap="startExperience">开始AR体验</button>
-    <view wx:if="{{completedBefore}}" class="completed-note">这台手机已经完成过本次研学任务</view>
+
+    <view class="arc-head">
+      <text class="arc-head__index">02</text>
+      <text class="arc-head__label">体验前准备</text>
+      <view class="arc-head__rule"></view>
+      <text class="arc-head__meta">3 STEPS</text>
+    </view>
+
+    <view class="ar-prep">
+      <view class="ar-prep__item">
+        <text class="ar-prep__num">01</text>
+        <text class="ar-prep__text">保持手机稳定，并允许使用相机。</text>
+      </view>
+      <view class="ar-prep__item">
+        <text class="ar-prep__num">02</text>
+        <text class="ar-prep__text">让目标木雕完整进入取景框。</text>
+      </view>
+      <view class="ar-prep__item">
+        <text class="ar-prep__num">03</text>
+        <text class="ar-prep__text">无法使用相机时，可切换参考图模式。</text>
+      </view>
+    </view>
+
+    <button class="arc-btn ar-cta" bindtap="startExperience">开始 AR 体验</button>
+
+    <!-- 历史完成标记：仅展示，不新增事件 -->
+    <view wx:if="{{completedBefore}}" class="ar-stamp">
+      <view class="arc-seal ar-stamp__seal"><text>已完成</text></view>
+      <view class="ar-stamp__copy">
+        <text class="ar-stamp__title serif">已完成 · 小小木雕观察员</text>
+        <text class="ar-stamp__note">这台手机已经完成过本次研学任务，可随时重新体验。</text>
+      </view>
+    </view>
   </view>
 
   <block wx:else>
-    <view class="ar-stage">
-      <camera wx:if="{{!useFallback && !cameraError}}" class="camera" device-position="back" flash="off" bindinitdone="handleCameraReady" binderror="handleCameraError"></camera>
-      <image wx:else class="fallback-image" src="/images/jinlou-01.jpg" mode="aspectFill" />
-      <view class="stage-shade"></view>
-      <view class="stage-badge">{{useFallback ? '参考图模式' : (cameraReady ? '相机已就绪' : '正在启动相机')}}</view>
-      <view wx:if="{{stage === 'camera'}}" class="target-frame"><view class="corner corner-a"></view><view class="corner corner-b"></view><view class="corner corner-c"></view><view class="corner corner-d"></view></view>
+    <view class="ar-stage {{stage === 'discovered' ? 'is-discovery' : ''}}">
+      <camera wx:if="{{!useFallback && !cameraError}}" class="ar-stage__media" device-position="back" flash="off" bindinitdone="handleCameraReady" binderror="handleCameraError"></camera>
+      <image wx:else class="ar-stage__media" src="/images/jinlou-01.jpg" mode="aspectFill" />
+      <view class="ar-stage__shade"></view>
+
+      <view class="ar-stage__top">
+        <view class="ar-status">
+          <view class="ar-status__dot {{cameraReady && !useFallback && !cameraError ? 'is-ready' : ''}} {{useFallback || cameraError ? 'is-fallback' : ''}}"></view>
+          <text class="ar-status__text">{{useFallback || cameraError ? '参考图模式' : (cameraReady ? '相机已就绪' : '正在启动相机')}}</text>
+        </view>
+        <view wx:if="{{stage === 'discovered'}}" class="ar-chip">线索 {{visitedCount}} / 3</view>
+      </view>
+
+      <block wx:if="{{stage === 'camera'}}">
+        <view class="ar-frame">
+          <view class="ar-frame__corner ar-frame__corner--tl"></view>
+          <view class="ar-frame__corner ar-frame__corner--tr"></view>
+          <view class="ar-frame__corner ar-frame__corner--bl"></view>
+          <view class="ar-frame__corner ar-frame__corner--br"></view>
+          <view class="ar-frame__scan"></view>
+        </view>
+        <view class="ar-scan-copy">
+          <text class="ar-scan-copy__title">将木雕置于框内</text>
+          <text class="ar-scan-copy__hint">保持稳定 · 由你确认目标</text>
+        </view>
+      </block>
+
       <block wx:if="{{stage === 'discovered'}}">
-        <button wx:for="{{hotspots}}" wx:key="id" class="hotspot {{activeHotspot.id === item.id ? 'active' : ''}}" style="left:{{item.x}}%;top:{{item.y}}%;" data-id="{{item.id}}" bindtap="selectHotspot">{{item.number}}</button>
+        <button
+          wx:for="{{hotspots}}"
+          wx:key="id"
+          class="ar-hotspot {{activeHotspot.id === item.id ? 'is-active' : ''}} {{item.visited ? 'is-visited' : ''}}"
+          style="left:{{item.x}}%;top:{{item.y}}%;"
+          data-id="{{item.id}}"
+          bindtap="selectHotspot"
+          aria-label="{{item.title}}"
+        >{{item.visited ? '✓' : item.number}}</button>
       </block>
     </view>
 
-    <view wx:if="{{cameraError && stage === 'camera'}}" class="section camera-error card">
-      <text class="error-title">相机暂时不可用</text>
-      <text>{{cameraError}}</text>
-      <button bindtap="useImageFallback">使用参考图继续</button>
+    <!-- 相机失败：只显示错误卡片 -->
+    <view wx:if="{{stage === 'camera' && cameraError}}" class="ar-panel">
+      <view class="ar-sheet__handle"></view>
+      <view class="ar-error">
+        <text class="ar-kicker ar-kicker--red">CAMERA OFFLINE</text>
+        <text class="ar-h2 serif">相机暂时不可用</text>
+        <text class="ar-body ar-error__msg">{{cameraError}}</text>
+        <text class="ar-body ar-body--sm">可以改用参考图，继续同一套热点与问答流程。</text>
+        <view class="ar-actions">
+          <button class="arc-btn ar-btn--block" bindtap="useImageFallback">使用参考图继续</button>
+          <button class="arc-btn arc-btn--ghost ar-btn--block" bindtap="startExperience">重新尝试相机</button>
+        </view>
+      </view>
     </view>
 
-    <view wx:if="{{stage === 'camera' && !cameraError}}" class="section align-panel">
-      <text class="panel-title serif">把木雕放入取景框</text>
-      <text class="muted">试点版由你确认已经对准目标；正式图像锁定将在取得现场识别图后接入。</text>
-      <button class="primary-button" bindtap="confirmTarget">已经对准 查看热点</button>
-      <button class="secondary-button" bindtap="useImageFallback">使用参考图体验</button>
-      <button class="text-button" bindtap="resetExperience">退出相机</button>
+    <!-- 取景确认 -->
+    <view wx:if="{{stage === 'camera' && !cameraError}}" class="ar-panel">
+      <view class="ar-sheet__handle"></view>
+      <view class="ar-panel__head">
+        <text class="ar-kicker">取景确认</text>
+        <text class="ar-panel__step">CAMERA / 01</text>
+      </view>
+      <text class="ar-h2 serif">把木雕放入取景框</text>
+      <text class="ar-body">保持手机稳定，确认目标进入取景框后即可探索三个研学热点。</text>
+      <view class="ar-actions">
+        <button class="arc-btn ar-btn--block" bindtap="confirmTarget">已经对准 · 查看热点</button>
+        <button class="arc-btn arc-btn--ghost ar-btn--block" bindtap="useImageFallback">使用参考图体验</button>
+      </view>
+      <button class="ar-quiet" bindtap="resetExperience"><text class="ar-quiet__label">退出相机</text></button>
     </view>
 
-    <view wx:if="{{stage === 'discovered'}}" class="section discovery-panel">
-      <view class="hotspot-tabs">
-        <button wx:for="{{hotspots}}" wx:key="id" class="hotspot-tab {{activeHotspot.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectHotspot">{{item.number}} {{item.title}}</button>
+    <!-- ============ C. 热点探索 ============ -->
+    <view wx:if="{{stage === 'discovered'}}" class="ar-panel ar-discovery">
+      <view class="ar-sheet__handle"></view>
+
+      <view class="ar-quest">
+        <view class="ar-quest__copy">
+          <text class="ar-kicker">木雕观察任务</text>
+          <text class="ar-h2 serif">寻找三枚研学线索</text>
+        </view>
+        <view class="ar-quest__count">
+          <text class="ar-quest__num">{{visitedCount}}</text>
+          <text class="ar-quest__total">/ 3</text>
+        </view>
       </view>
-      <view class="detail-card card">
-        <text class="detail-index">发现 {{activeHotspot.number}}</text>
-        <text class="detail-title serif">{{activeHotspot.title}}</text>
-        <text class="detail-description">{{activeHotspot.description}}</text>
-        <text class="review-notice">当前内容用于教学演示，具体点位、术语与工序以景区审核资料为准。</text>
+
+      <view class="ar-track">
+        <view wx:for="{{hotspots}}" wx:key="id" class="ar-track__seg {{item.visited ? 'is-on' : ''}}"></view>
       </view>
-      <view class="action-row">
-        <button bindtap="openNarration">打开金楼音频讲解</button>
-        <button bindtap="openAssistant">继续查看资料问答</button>
+
+      <scroll-view class="ar-tabs" scroll-x enable-flex show-scrollbar="{{false}}">
+        <view class="ar-tabs__track">
+          <button
+            wx:for="{{hotspots}}"
+            wx:key="id"
+            class="ar-tab {{activeHotspot.id === item.id ? 'is-active' : ''}} {{item.visited ? 'is-visited' : ''}}"
+            data-id="{{item.id}}"
+            bindtap="selectHotspot"
+          >{{item.visited ? '✓' : item.number}} {{item.title}}</button>
+        </view>
+      </scroll-view>
+
+      <view class="ar-detail arc-card arc-card--ticks">
+        <view class="ar-detail__head">
+          <text class="ar-kicker">发现编号</text>
+          <text class="ar-detail__no">NO. 0{{activeHotspot.number}} / 03</text>
+        </view>
+        <text class="ar-detail__title serif">{{activeHotspot.title}}</text>
+        <text class="ar-body ar-detail__desc">{{activeHotspot.description}}</text>
+        <view class="arc-hair ar-detail__rule"></view>
+        <view class="ar-safety">
+          <view class="ar-safety__mark"></view>
+          <text class="ar-safety__text">观察时请与建筑保持安全距离，不触摸木雕构件。</text>
+        </view>
       </view>
-      <view class="quiz-card card">
-        <text class="quiz-label">寻宝彩蛋</text>
-        <text class="quiz-title serif">来参加一下研学问答吧！</text>
-        <text class="detail-description">刚才的木雕为什么看起来更有立体感？</text>
-        <button wx:for="{{quizOptions}}" wx:key="id" class="quiz-option {{selectedAnswer === item.id ? (item.id === 'a' ? 'correct' : 'wrong') : ''}}" data-id="{{item.id}}" bindtap="answerQuiz">{{item.text}}</button>
-        <text wx:if="{{selectedAnswer && !quizPassed}}" class="quiz-feedback">差一点就找到答案啦！再看看“雕刻层次”和“饰金效果”两个热点。</text>
-        <text wx:if="{{quizPassed}}" class="quiz-feedback success">寻宝成功！不同深浅的雕刻塑造层次，饰金会突出重点细节。你已解锁“小小木雕观察员”。</text>
+
+      <view class="ar-pair">
+        <button class="arc-btn ar-pair__btn" bindtap="openNarration">打开金楼音频讲解</button>
+        <button class="arc-btn arc-btn--ghost ar-pair__btn" bindtap="openAssistant">继续查看资料问答</button>
       </view>
-      <button class="text-button restart-button" bindtap="resetExperience">重新体验</button>
+
+      <!-- 未解锁：虚线隐藏卡 -->
+      <view wx:if="{{!quizUnlocked}}" class="ar-lock">
+        <view class="ar-lock__mark">?</view>
+        <view class="ar-lock__copy">
+          <text class="ar-kicker">隐藏彩蛋</text>
+          <text class="ar-lock__title serif">还差 {{3 - visitedCount}} 枚线索</text>
+          <text class="ar-body ar-body--sm">点击画面中的编号，集齐三枚线索后解锁研学问答。</text>
+        </view>
+      </view>
+      <view wx:else class="ar-quiz {{quizPassed ? 'is-passed' : ''}}">
+        <view class="ar-quiz__head">
+          <text class="ar-kicker">线索已集齐 · 寻宝彩蛋</text>
+          <text class="ar-quiz__state">{{quizPassed ? '已解锁' : '待作答'}}</text>
+        </view>
+        <text class="ar-quiz__title serif">木雕观察挑战</text>
+        <text class="ar-body ar-quiz__question">刚才的木雕为什么看起来更有立体感？</text>
+
+        <view class="ar-options">
+          <button
+            wx:for="{{quizOptions}}"
+            wx:key="id"
+            disabled="{{quizPassed}}"
+            class="ar-option {{selectedAnswer === item.id ? (item.id === 'a' ? 'is-correct' : 'is-wrong') : ''}}"
+            data-id="{{item.id}}"
+            bindtap="answerQuiz"
+          >
+            <text class="ar-option__letter">{{item.id === 'a' ? 'A' : (item.id === 'b' ? 'B' : 'C')}}</text>
+            <text class="ar-option__text">{{item.text}}</text>
+          </button>
+        </view>
+
+        <text wx:if="{{selectedAnswer && !quizPassed}}" class="ar-feedback">差一点就找到答案啦！再看看“雕刻层次”和“饰金效果”两个热点，再试一次。</text>
+
+        <view wx:if="{{quizPassed}}" class="ar-reward">
+          <view class="arc-seal ar-reward__seal"><text>金楼</text><text>观察员</text></view>
+          <view class="ar-reward__copy">
+            <text class="ar-kicker ar-kicker--red">寻宝成功</text>
+            <text class="ar-reward__title serif">小小木雕观察员</text>
+            <text class="ar-feedback is-success">不同深浅的雕刻塑造层次，饰金会突出重点细节。</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="ar-quiet" bindtap="resetExperience"><text class="ar-quiet__label">重新体验</text></button>
     </view>
   </block>
 </view>

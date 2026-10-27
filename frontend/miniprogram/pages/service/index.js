@@ -43,7 +43,10 @@ function resolveTicketLinks(ticket) {
 }
 
 function resolveTicketState(ticket, links) {
-  if (ticket && ticket.appId && (ticket.enabled === true || Boolean(ticket.path))) return 'open';
+  const source = ticket || {};
+  // 接口明确关闭时保持「准备中」，但仍可复制已提供的官方链接，不假装能购票。
+  if (source.enabled === false) return 'pending';
+  if (source.appId && source.path) return 'open';
   if (links && (links.miniLink || links.legacyLink)) return 'link';
   return 'pending';
 }
@@ -116,8 +119,11 @@ Page({
     if (state === 'pending') {
       wx.showModal({
         title: '订票入口准备中',
-        content: '官方购票平台尚未配置。本小程序不代售、不收款，请以景区最新公告为准。',
+        content: this.data.ticketHasLink
+          ? '官方购票小程序入口尚未接通，可先复制官方链接，在微信内粘贴打开。本小程序不代售、不收款，票价与退改规则以官方平台为准。'
+          : '官方购票平台尚未配置。本小程序不代售、不收款，请以景区最新公告为准。',
         showCancel: false,
+        confirmText: '知道了',
       });
       return;
     }
@@ -126,11 +132,19 @@ Page({
       return;
     }
     const ticket = (this.data.service && this.data.service.ticket) || {};
+    if (typeof wx.navigateToMiniProgram !== 'function') {
+      this.openTicketSheet('failed');
+      return;
+    }
     wx.navigateToMiniProgram({
       appId: ticket.appId,
       path: ticket.path || '',
       success: () => {
-        this.setData({ ticketState: 'open', ticketStateLine: ticketStateLine('open') });
+        this.setData({
+          ticketState: 'open',
+          ticketStateLine: ticketStateLine('open'),
+          ticketPrimaryLabel: ticketPrimaryLabel('open'),
+        });
       },
       fail: () => {
         this.setData({
@@ -151,7 +165,11 @@ Page({
     }
     wx.setClipboardData({
       data: link,
-      success: () => wx.showToast({ title: '购票链接已复制', icon: 'none' }),
+      success: () => wx.showToast({
+        title: this.data.ticketMiniLink ? '小程序链接已复制，请粘贴到微信聊天发送' : '购票链接已复制',
+        icon: 'none',
+      }),
+      fail: () => wx.showToast({ title: '复制失败，请长按链接手动复制', icon: 'none' }),
     });
   },
   openTicketSheet(mode) {
@@ -181,23 +199,40 @@ Page({
     wx.setClipboardData({
       data: link,
       success: () => this.setData({ copiedKey: kind }),
+      fail: () => wx.showToast({ title: '复制失败，请长按链接手动复制', icon: 'none' }),
     });
   },
   copyAddress() {
-    if (!this.data.service.actions.copyAddress) return this.showPending('正式地址尚未配置');
-    wx.setClipboardData({ data: this.data.service.address });
+    const service = this.data.service || {};
+    const actions = service.actions || {};
+    if (!actions.copyAddress) return this.showPending('正式地址尚未配置');
+    wx.setClipboardData({
+      data: service.address,
+      fail: () => this.showPending('复制失败，请稍后重试'),
+    });
   },
   callPhone() {
-    if (!this.data.service.actions.callPhone) return this.showPending('正式联系电话尚未配置');
-    wx.makePhoneCall({ phoneNumber: this.data.service.phone });
+    const service = this.data.service || {};
+    const actions = service.actions || {};
+    if (!actions.callPhone) return this.showPending('正式联系电话尚未配置');
+    wx.makePhoneCall({
+      phoneNumber: service.phone,
+      fail: (error) => {
+        if (/cancel/i.test((error && error.errMsg) || '')) return;
+        this.showPending('无法拨打电话，请稍后重试');
+      },
+    });
   },
   openMap() {
-    if (!this.data.service.actions.openMap) return this.showPending('地图坐标尚未配置');
+    const service = this.data.service || {};
+    const actions = service.actions || {};
+    if (!actions.openMap) return this.showPending('地图坐标尚未配置');
     wx.openLocation({
-      latitude: this.data.service.latitude,
-      longitude: this.data.service.longitude,
+      latitude: service.latitude,
+      longitude: service.longitude,
       name: '碧江金楼',
-      address: this.data.service.address,
+      address: service.address,
+      fail: () => this.showPending('无法打开地图，请稍后重试'),
     });
   },
   showPending(message) {
@@ -205,7 +240,10 @@ Page({
   },
   openRecommendations(event) {
     const { category, title } = event.currentTarget.dataset;
-    wx.navigateTo({ url: `/pages/recommendations/index?category=${category}&title=${encodeURIComponent(title)}` });
+    wx.navigateTo({
+      url: `/pages/recommendations/index?category=${category}&title=${encodeURIComponent(title)}`,
+      fail: () => wx.showToast({ title: '页面打开失败，请稍后重试', icon: 'none' }),
+    });
   },
   noop() {},
 });
