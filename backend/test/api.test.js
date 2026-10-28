@@ -738,6 +738,52 @@ test('knowledge retrieval returns scored snippets with reasons', () => {
   assert.match(matches[0].reason, /标题精确匹配|关键词命中|正文相关/);
 });
 
+test('provider selection prefers the generic OpenAI-compatible configuration', () => {
+  assert.equal(assistantCore.selectProvider({}).name, 'mock');
+  assert.equal(assistantCore.selectProvider({ DASHSCOPE_API_KEY: 'test-key' }).name, 'qwen');
+  const provider = assistantCore.selectProvider({
+    LLM_API_KEY: 'test-key',
+    LLM_BASE_URL: 'https://api.example.com/v1',
+    LLM_MODEL: 'free-model',
+    LLM_PROVIDER: 'free-provider',
+  });
+  assert.equal(provider.name, 'free-provider');
+});
+
+test('openai compatible provider posts retrieval context to the chat endpoint', async () => {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, options) => {
+    calls.push({ url, body: JSON.parse(options.body) });
+    return {
+      ok: true,
+      async json() {
+        return { choices: [{ message: { content: '整理后的回答' } }] };
+      },
+    };
+  };
+  try {
+    const provider = assistantCore.createOpenAICompatibleProvider({
+      apiKey: 'test-key',
+      baseUrl: 'https://api.example.com/v1/',
+      model: 'free-model',
+      name: 'free-provider',
+    });
+    const result = await provider.answer({
+      question: '木雕看什么？',
+      matches: [{ title: '木雕工艺', content: '观察花罩与藻井。', category: 'craft', reason: '关键词命中' }],
+    });
+    assert.equal(result.answer, '整理后的回答');
+    assert.equal(result.model, 'free-model');
+    assert.equal(calls[0].url, 'https://api.example.com/v1/chat/completions');
+    assert.equal(calls[0].body.model, 'free-model');
+    assert.match(calls[0].body.messages[1].content, /观察花罩与藻井/);
+    assert.equal(calls[0].body.messages[1].content.includes('test-key'), false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('launch readiness requires identity, privacy and authorization data', () => {
   const incomplete = evaluateLaunchReadiness({ customerServicePhone: '0757-26632123' });
   assert.equal(incomplete.ready, false);

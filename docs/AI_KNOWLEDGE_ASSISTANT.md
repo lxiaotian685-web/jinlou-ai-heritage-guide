@@ -76,12 +76,31 @@
 
 | 变量 | 说明 |
 |---|---|
-| `DASHSCOPE_API_KEY`（或 `QWEN_API_KEY`） | 通义千问 API Key，仅在云函数环境变量中配置 |
-| `QWEN_MODEL` | 模型名称，默认 `qwen-plus` |
-| `QWEN_ENDPOINT` | 接口地址，默认 DashScope OpenAI 兼容端点 |
-| `QWEN_TIMEOUT_MS` | 超时毫秒数，默认 8000 |
+| `LLM_API_KEY` | 任意 OpenAI 兼容接口的 Key（优先使用） |
+| `LLM_BASE_URL` | 接口根地址，例如 `https://api.siliconflow.cn/v1` |
+| `LLM_MODEL` | 模型名，例如 `Qwen/Qwen2.5-7B-Instruct` |
+| `LLM_PROVIDER` | 仅用于响应里的 `model` 名称展示 |
+| `LLM_TIMEOUT_MS` | 超时毫秒数，默认 8000 |
+| `DASHSCOPE_API_KEY`（或 `QWEN_API_KEY`） | 通义千问专用配置，未设置 `LLM_*` 时生效 |
+| `QWEN_MODEL` | 默认 `qwen-plus` |
+| `QWEN_ENDPOINT` | 默认 `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| `QWEN_TIMEOUT_MS` | 默认 8000 |
 
-未配置 Key 时使用 Mock Provider，`model` 返回 `mock`，行为与规则回答一致；配置 Key 后自动切换为 `qwen`。
+选择顺序：`LLM_*` → `DASHSCOPE_API_KEY` → Mock。未配置任何 Key 时使用 Mock Provider，`model` 返回 `mock`。
+
+### 免费或带免费额度的 OpenAI 兼容服务
+
+以下都需要**你本人注册账号**后获取 Key，注册通常要手机号或邮箱验证；Key 只能放进云函数环境变量或本机临时环境变量，不要提交到仓库。
+
+| 服务 | 接口根地址 | 免费额度说明 |
+|---|---|---|
+| 硅基流动 SiliconFlow | `https://api.siliconflow.cn/v1` | 国内可直连，注册送额度，含 Qwen 等开源模型 |
+| 智谱 GLM-4-Flash | `https://open.bigmodel.cn/api/paas/v4` | GLM-4-Flash 免费模型 |
+| 阿里云百炼 DashScope | `https://dashscope.aliyuncs.com/compatible-mode/v1` | 新用户免费额度，Qwen 系列 |
+| OpenRouter | `https://openrouter.ai/api/v1` | 有 `:free` 模型，国内访问可能不稳定 |
+| Groq | `https://api.groq.com/openai/v1` | 免费额度，国内访问可能不稳定 |
+
+本机无账号方案：安装 Ollama 后运行 `ollama run qwen2.5:7b`，把 `LLM_BASE_URL` 设为 `http://127.0.0.1:11434/v1`，`LLM_MODEL` 设为 `qwen2.5:7b`，Key 可填任意非空字符串。
 
 ## 安全与回退
 
