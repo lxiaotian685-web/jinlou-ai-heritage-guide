@@ -44,8 +44,7 @@
         <text>{{ticketStateLine}}</text>
       </view>
       <view class="ticket-panel__actions">
-        <button class="arc-btn ticket-panel__primary {{ticketState === 'pending' ? 'ticket-panel__primary--pending' : ''}}" bindtap="handleTicket">{{ticketPrimaryLabel}}</button>
-        <button wx:if="{{ticketHasLink}}" class="arc-btn ticket-panel__secondary" bindtap="copyTicketLink">{{ticketSecondaryLabel}}</button>
+        <button wx:if="{{ticketHasLink}}" class="arc-btn ticket-panel__primary" bindtap="copyTicketLink">{{ticketSecondaryLabel}}</button>
       </view>
       <view class="ticket-panel__rule"></view>
       <text class="ticket-panel__disclaimer">票价、开放时间、退改规则以官方平台为准</text>
