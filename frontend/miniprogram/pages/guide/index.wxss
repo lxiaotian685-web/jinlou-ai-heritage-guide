@@ -506,66 +506,6 @@
   color: var(--arc-ink);
 }
 
-/* ---------- 地图资料状态 ---------- */
-.map-status {
-  margin-bottom: 22rpx;
-  padding: 24rpx;
-}
-
-.map-status__head {
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-  margin-bottom: 14rpx;
-}
-
-.map-status__title {
-  font-size: 30rpx;
-  line-height: 1.4;
-  letter-spacing: 2rpx;
-  color: var(--arc-ink);
-}
-
-.map-status__rows {
-  margin: 2rpx 0;
-}
-
-.map-status__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 20rpx;
-  padding: 11rpx 0;
-  font-size: 22rpx;
-  line-height: 1.6;
-}
-
-.map-status__row + .map-status__row {
-  border-top: 1rpx solid var(--arc-line);
-}
-
-.map-status__key {
-  flex: none;
-  letter-spacing: 1rpx;
-  color: var(--arc-muted);
-}
-
-.map-status__val {
-  flex: 1;
-  min-width: 0;
-  text-align: right;
-  color: var(--arc-ink);
-}
-
-.map-status__source {
-  display: block;
-  margin-top: 14rpx;
-  font-size: 20rpx;
-  line-height: 1.7;
-  letter-spacing: 0.5rpx;
-  color: var(--arc-muted);
-}
-
 /* ---------- 当前游线 ---------- */
 .selected-route {
   position: relative;
@@ -895,10 +835,6 @@
   font-size: 20rpx;
 }
 
-.font-large .map-status__key {
-  font-size: 26rpx;
-}
-
 .font-large .now-label {
   font-size: 26rpx;
 }
@@ -908,8 +844,6 @@
   font-size: 24rpx;
 }
 
-.font-large .map-status__row,
-.font-large .map-status__source,
 .font-large .selected-theme,
 .font-large .next-stop,
 .font-large .complete-note {
@@ -989,7 +923,6 @@
 .high-contrast .guide-notice__text,
 .high-contrast .point-sheet__note,
 .high-contrast .point-list__count,
-.high-contrast .map-status__source,
 .high-contrast .progress-label,
 .high-contrast .progress-total,
 .high-contrast .next-stop,
@@ -999,10 +932,6 @@
 .high-contrast .guide-foot__note,
 .high-contrast .map-caption {
   color: #222;
-}
-
-.high-contrast .map-status__key {
-  color: #333;
 }
 
 .high-contrast .text-btn {
