@@ -7,7 +7,7 @@
         "name": "南山祠",
         "summary": "南山祠是碧江金楼古建筑群中的祠堂建筑之一，体现古村宅第、祠堂、书塾与园林相互结合的空间特色。现有公开资料尚未确认其具体始建年代与祭祀对象。",
         "category": "祠堂建筑",
-        "coverImage": "/images/jinlou-03.jpg",
+        "coverImage": "/images/spot-nanshan-hall-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       },
@@ -70,7 +70,7 @@
         "name": "镬耳民居",
         "summary": "镬耳民居点位用于观察岭南传统民居的镬耳山墙、青砖墙面及院落关系。该名称来自景区现场分布牌，具体建筑年代、原住户和修缮沿革仍待景区资料确认。",
         "category": "建筑形制",
-        "coverImage": "/images/jinlou-02.jpg",
+        "coverImage": "/images/spot-wokear-residence-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       },
@@ -97,7 +97,7 @@
         "name": "民居构件展示",
         "summary": "民居构件展示点集中帮助游客辨认传统建筑中的门窗、隔扇、梁架、砖雕和木雕等构件。具体构件名称、年代、来源及修缮信息仍须以景区展签和审核资料为准。",
         "category": "建筑展陈",
-        "coverImage": "/images/jinlou-01.jpg",
+        "coverImage": "/images/spot-components-exhibit-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       },
@@ -146,7 +146,7 @@
         "name": "南山祠",
         "summary": "南山祠是碧江金楼古建筑群中的祠堂建筑之一，体现古村宅第、祠堂、书塾与园林相互结合的空间特色。现有公开资料尚未确认其具体始建年代与祭祀对象。",
         "category": "祠堂建筑",
-        "coverImage": "/images/jinlou-03.jpg",
+        "coverImage": "/images/spot-nanshan-hall-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       }
@@ -223,7 +223,7 @@
         "name": "镬耳民居",
         "summary": "镬耳民居点位用于观察岭南传统民居的镬耳山墙、青砖墙面及院落关系。该名称来自景区现场分布牌，具体建筑年代、原住户和修缮沿革仍待景区资料确认。",
         "category": "建筑形制",
-        "coverImage": "/images/jinlou-02.jpg",
+        "coverImage": "/images/spot-wokear-residence-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       }
@@ -256,7 +256,7 @@
         "name": "民居构件展示",
         "summary": "民居构件展示点集中帮助游客辨认传统建筑中的门窗、隔扇、梁架、砖雕和木雕等构件。具体构件名称、年代、来源及修缮信息仍须以景区展签和审核资料为准。",
         "category": "建筑展陈",
-        "coverImage": "/images/jinlou-01.jpg",
+        "coverImage": "/images/spot-components-exhibit-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       }
