@@ -36,7 +36,7 @@
 
     <view class="ar-specimen">
       <view class="arc-photo ar-specimen__photo">
-        <image src="/images/spot-components-exhibit-v1.jpg" mode="aspectFill" />
+        <image src="/images/ar-jinlou-target-v2.jpg" mode="aspectFill" />
         <text class="ar-specimen__tag">图版 01</text>
       </view>
       <view class="arc-caption ar-specimen__caption">
@@ -88,7 +88,7 @@
   <block wx:else>
     <view class="ar-stage {{stage === 'discovered' ? 'is-discovery' : ''}}">
       <camera wx:if="{{!useFallback && !cameraError}}" class="ar-stage__media" device-position="back" flash="off" bindinitdone="handleCameraReady" binderror="handleCameraError"></camera>
-      <image wx:else class="ar-stage__media" src="/images/spot-components-exhibit-v1.jpg" mode="aspectFill" />
+      <image wx:else class="ar-stage__media" src="/images/ar-jinlou-target-v2.jpg" mode="aspectFill" />
       <view class="ar-stage__shade"></view>
 
       <view class="ar-stage__top">
