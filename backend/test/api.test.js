@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -781,6 +781,55 @@ test('openai compatible provider posts retrieval context to the chat endpoint', 
     assert.equal(calls[0].body.messages[1].content.includes('test-key'), false);
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test('visitor assistant copy hides internal review wording', () => {
+  const pageDirectory = resolve('../frontend/miniprogram/pages/assistant');
+  const copy = ['index.js', 'index.wxml'].map((file) => readFileSync(join(pageDirectory, file), 'utf8')).join('\n');
+  for (const forbidden of ['待景区复核', '待景区审核', '待专家复核', '待现场实走', 'review-draft']) {
+    assert.equal(copy.includes(forbidden), false, forbidden);
+  }
+});
+
+test('rate limiter blocks requests after the per-minute quota', () => {
+  let timestamp = 1000;
+  const limiter = assistantCore.createRateLimiter({ perMinute: 2, perDay: 5, now: () => timestamp });
+  assert.equal(limiter.check('visitor-a').allowed, true);
+  assert.equal(limiter.check('visitor-a').allowed, true);
+  assert.deepEqual(limiter.check('visitor-a'), { allowed: false, reason: 'minute' });
+  timestamp += 61000;
+  assert.equal(limiter.check('visitor-a').allowed, true);
+});
+
+test('assistant falls back to rule answers when the rate limit is hit', async () => {
+  let providerCalled = false;
+  const assistantServer = createApp(db, {
+    assistantRateLimiter: { check: () => ({ allowed: false, reason: 'minute' }) },
+    assistantProvider: {
+      name: 'should-not-run',
+      async answer() {
+        providerCalled = true;
+        return { answer: 'unexpected', model: 'should-not-run' };
+      },
+    },
+  }).listen(0);
+  await new Promise((resolve) => assistantServer.once('listening', resolve));
+  try {
+    const url = `http://127.0.0.1:${assistantServer.address().port}/api/v1/assistant/chat`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ question: '金楼的木雕有什么特色？' }),
+    });
+    const body = await response.json();
+    assert.equal(body.data.mode, 'rule_fallback');
+    assert.equal(body.data.fallbackReason, 'rate_limited');
+    assert.equal(providerCalled, false);
+    assert.match(body.data.answer, /木雕/);
+  } finally {
+    assistantServer.closeAllConnections();
+    await new Promise((resolve) => assistantServer.close(resolve));
   }
 });
 

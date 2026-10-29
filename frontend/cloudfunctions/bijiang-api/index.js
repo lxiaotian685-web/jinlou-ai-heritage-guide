@@ -6,6 +6,10 @@ const { SOURCE_IDS, assistantSuggestions, resolveKnowledgeSources } = require('.
 const assistant = require('./assistant');
 
 const assistantProvider = assistant.selectProvider(process.env);
+const assistantRateLimiter = assistant.createRateLimiter({
+  perMinute: Number(process.env.ASSISTANT_RATE_LIMIT_PER_MINUTE) || 60,
+  perDay: Number(process.env.ASSISTANT_RATE_LIMIT_PER_DAY) || 300,
+});
 
 const COLLECTION = 'bijiang_content';
 const ADMIN_LOG_COLLECTION = 'bijiang_admin_logs';
@@ -380,7 +384,7 @@ function buildAdminDashboard(snapshot) {
   };
 }
 
-async function createKnowledgeAnswer(question, snapshot) {
+async function createKnowledgeAnswer(question, snapshot, clientKey = 'anonymous') {
   const spots = snapshot.spots?.data || [];
   const craftGuides = Object.fromEntries(Object.entries(snapshot.craftGuides || {})
     .map(([spotId, resource]) => [spotId, resource?.data])
@@ -395,6 +399,8 @@ async function createKnowledgeAnswer(question, snapshot) {
       faqs: snapshot.faqs || [],
     },
     provider: assistantProvider,
+    rateLimiter: assistantRateLimiter,
+    clientKey,
     requestId: require('node:crypto').randomUUID(),
   });
   return {
@@ -411,7 +417,7 @@ async function createKnowledgeAnswer(question, snapshot) {
 }
 
 
-async function read(path, method, body, snapshot) {
+async function read(path, method, body, snapshot, clientKey = 'anonymous') {
   if (method === 'GET' && path === '/home') return { data: snapshot.home?.data || DEFAULT_HOME };
   if (method === 'GET' && path === '/spots') return snapshot.spots;
   if (method === 'GET' && path === '/panoramas') return snapshot.panoramas;
@@ -430,7 +436,7 @@ async function read(path, method, body, snapshot) {
     const question = typeof body?.question === 'string' ? body.question.trim() : '';
     if (!question) return { error: { code: 'QUESTION_REQUIRED', message: '请输入问题' } };
     if (question.length > 200) return { error: { code: 'QUESTION_TOO_LONG', message: '问题不能超过200个字符' } };
-    return { data: await createKnowledgeAnswer(question, snapshot) };
+    return { data: await createKnowledgeAnswer(question, snapshot, clientKey) };
   }
   const recommendationMatch = path.match(/^\/recommendations\?category=([^&]+)$/);
   if (method === 'GET' && recommendationMatch) return snapshot.recommendations[decodeURIComponent(recommendationMatch[1])] || { data: [] };
@@ -553,7 +559,8 @@ exports.main = async (event = {}) => {
       return error('ANALYTICS_WRITE_FAILED', '统计暂时不可用');
     }
   }
-  const response = await read(path, method, event.body, snapshot);
+  const clientKey = event.userInfo?.openId || event.clientKey || 'anonymous';
+  const response = await read(path, method, event.body, snapshot, clientKey);
   if (response?.error) return error(response.error.code, response.error.message);
   if (!response) return error('NOT_FOUND', '云端接口不存在或资料尚未配置');
   return success(response);

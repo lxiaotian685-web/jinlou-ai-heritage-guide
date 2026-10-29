@@ -34,7 +34,7 @@ function ruleAnswer(matches) {
   return `根据已登记资料：${top.join('\n')}`;
 }
 
-async function answerQuestion({ question, input, provider, requestId = '' }) {
+async function answerQuestion({ question, input, provider, requestId = '', clientKey = 'anonymous', rateLimiter = null }) {
   const text = String(question || '').trim();
 
   if (SENSITIVE_PATTERN.test(text)) {
@@ -85,6 +85,20 @@ async function answerQuestion({ question, input, provider, requestId = '' }) {
   const reviewStatus = topItem.reviewStatus
     || (matches.some((match) => match.item.reviewStatus === 'pending-expert-review') ? 'pending-expert-review' : 'pending-scenic-review');
   const publicStatus = topItem.publicStatus || 'review-draft';
+
+  if (rateLimiter && !rateLimiter.check(clientKey).allowed) {
+    return reply({
+      mode: 'rule_fallback',
+      answer: ruleAnswer(matches),
+      sourceIds,
+      reviewStatus,
+      publicStatus,
+      requestId,
+      fallbackReason: 'rate_limited',
+      model: provider.name,
+      matches,
+    });
+  }
 
   try {
     const result = await provider.answer({

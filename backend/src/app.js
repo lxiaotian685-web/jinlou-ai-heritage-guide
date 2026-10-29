@@ -55,6 +55,10 @@ export function createApp(db, options = {}) {
 
   const adminToken = options.adminToken || '';
   const assistantProvider = options.assistantProvider || assistantCore.selectProvider(process.env);
+  const assistantRateLimiter = options.assistantRateLimiter || assistantCore.createRateLimiter({
+    perMinute: Number(process.env.ASSISTANT_RATE_LIMIT_PER_MINUTE) || 60,
+    perDay: Number(process.env.ASSISTANT_RATE_LIMIT_PER_DAY) || 300,
+  });
   const backupBeforeAdminWrite = () => {
     if (!options.databasePath || !options.backupDirectory) return '';
     return createBackup({ databasePath: options.databasePath, backupDirectory: options.backupDirectory }).backupPath;
@@ -218,6 +222,8 @@ export function createApp(db, options = {}) {
       input: buildAssistantInput(db),
       provider: assistantProvider,
       requestId: randomUUID(),
+      clientKey: request.ip || 'anonymous',
+      rateLimiter: assistantRateLimiter,
     });
     return response.json({
       data: {

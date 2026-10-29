@@ -60,7 +60,7 @@
 | `sources` | 引用的来源数组（id、名称、机构、链接、审核状态、支持范围） |
 | `reviewStatus` | 审核状态 |
 | `publicStatus` | `review-draft` / `public` / `not-ready` |
-| `fallbackReason` | 回退原因：`timeout` / `unauthorized` / `http_error` / `empty_response` / `provider_error` |
+| `fallbackReason` | 回退原因：`timeout` / `unauthorized` / `http_error` / `empty_response` / `provider_error` / `rate_limited` |
 | `requestId` | 单次请求标识，便于排查 |
 | `model` | `mock` / `qwen` / Provider 名称 |
 | `notice` | 给人看的回答方式说明 |
@@ -85,6 +85,8 @@
 | `QWEN_MODEL` | 默认 `qwen-plus` |
 | `QWEN_ENDPOINT` | 默认 `https://dashscope.aliyuncs.com/compatible-mode/v1` |
 | `QWEN_TIMEOUT_MS` | 默认 8000 |
+| `ASSISTANT_RATE_LIMIT_PER_MINUTE` | 单个访客每分钟模型调用上限，默认 60 |
+| `ASSISTANT_RATE_LIMIT_PER_DAY` | 单个访客每天模型调用上限，默认 300 |
 
 选择顺序：`LLM_*` → `DASHSCOPE_API_KEY` → Mock。未配置任何 Key 时使用 Mock Provider，`model` 返回 `mock`。
 
@@ -109,6 +111,8 @@
 - 资料不足不猜测；固定信息未配置时明确说明“尚未配置”。
 - 模型任何失败都不影响主流程：自动回退到 `rule_fallback`，页面提示“模型暂不可用或超时，已改用规则回答”。
 - 日志与响应不包含 API Key；`requestId` 仅用于串联排查。
+- 频率与额度保护：按访客维度做滑动窗口限流（每分钟 / 每天），超限时不调用模型，直接回退 `rule_fallback`（`fallbackReason=rate_limited`）。限流为进程内计数，云函数冷启动会重置，属于基础保护而非全局配额。
+- 访客文案：接口保留 `reviewStatus` / `publicStatus` 等内部字段，但问答页不展示“待景区复核、待景区审核、review-draft”等内部流程用语，只显示中性的“参考资料 / 正在整理”等提示。
 
 ## 测试
 

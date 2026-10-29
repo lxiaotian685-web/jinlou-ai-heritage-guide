@@ -7,7 +7,7 @@
     <view class="faq-head__main">
       <view class="faq-head__copy">
         <text class="arc-title serif faq-head__title">研学资料问答</text>
-        <text class="arc-lede">输入问题或选择推荐问题。当前为受控资料检索，不调用生成式模型；资料不足时会明确提示待核对。</text>
+        <text class="arc-lede">输入问题或选择推荐问题。答案来自已整理的项目资料，资料不足时会提示暂未收录。</text>
       </view>
       <view class="arc-seal faq-head__seal">问</view>
     </view>
@@ -69,7 +69,6 @@
 
     <view wx:elif="{{answer}}" class="arc-card arc-card--ticks faq-answer {{answer.isError ? 'is-error' : ''}}">
       <text class="faq-answer__question serif">{{selectedQuestion}}</text>
-    <view wx:if="{{answer.notice}}" class="arc-tag faq-answer__tag"><text>{{answer.notice}}</text></view>
     <text wx:if="{{answer.modeLabel}}" class="arc-eyebrow">回答方式：{{answer.modeLabel}}</text>
     <text wx:if="{{answer.fallbackHint}}" class="faq-answer__text">{{answer.fallbackHint}}</text>
     <text class="faq-answer__text">{{answer.text}}</text>
@@ -85,14 +84,14 @@
         </view>
       </block>
       </view>
-      <text wx:if="{{answer.publicStatus}}" class="sources">公开状态：{{answer.publicStatus}}</text>
+      <text wx:if="{{answer.publicStatus}}" class="sources">资料说明：{{answer.publicStatus}}</text>
     </view>
 
     <view wx:else class="arc-empty faq-empty">
       <text class="arc-eyebrow">FREE QUESTION</text>
       <text class="faq-empty__title serif">可以自由提问</text>
       <view class="arc-empty__rule"></view>
-      <text class="faq-empty__text">系统不会编造票价、开放时间、人物故事或工艺结论；没有可靠资料时会建议人工核对。</text>
+      <text class="faq-empty__text">系统不会编造票价、开放时间、人物故事或工艺结论；没有对应资料时会提示暂未收录。</text>
     </view>
   </view>
 </view>

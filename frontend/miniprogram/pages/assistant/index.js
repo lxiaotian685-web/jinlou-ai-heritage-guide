@@ -11,11 +11,8 @@ const FALLBACK_QUESTIONS = [
 ].map((question, index) => ({ id: `fallback-${index}`, question }));
 
 function verificationStatusLabel(status) {
-  if (status === 'verified-public-reference') return '已核对公开资料';
-  if (status === 'pending-scenic-review') return '待景区复核';
-  if (status === 'pending-expert-review') return '待专家复核';
-  if (status === 'pending-field-check') return '待现场实走';
-  return '待补充核对';
+  if (status === 'verified-public-reference') return '公开资料';
+  return '项目整理资料';
 }
 
 function normalizeSources(sources = []) {
@@ -28,9 +25,9 @@ function normalizeSources(sources = []) {
 }
 
 function publicStatusLabel(status) {
-  if (status === 'public') return '景区已审核';
-  if (status === 'not-ready') return '暂不作为正式发布答案';
-  return '公开资料核对稿，待景区审核';
+  if (status === 'public') return '已确认资料';
+  if (status === 'not-ready') return '暂无正式答案';
+  return '参考资料';
 }
 
 const MODE_LABELS = {
