@@ -19,10 +19,12 @@
   const value = (id) => $(id).value.trim();
   const setValue = (id, next = '') => { $(id).value = next ?? ''; };
   const bundledSpotCovers = {
+    'nanshan-hall': './assets/spots/spot-nanshan-hall-v1.jpg',
     zhifangdi: './assets/spots/zhifangdi-cover.jpg', duizhao: './assets/spots/duizhao-cover.jpg', jinlou: './assets/spots/jinlou-cover-v2.jpg',
     shouqingwu: './assets/spots/shouqingwu-cover.jpg', 'boshao-clinic': './assets/spots/boshao-clinic-cover.jpg', nilou: './assets/spots/nilou-cover.jpg',
     'wokear-house': './assets/spots/wokear-house-cover.jpg', 'yiyu-school': './assets/spots/yiyu-school-cover.jpg', 'twenty-four-odes': './assets/spots/twenty-four-odes-cover.jpg',
     'baoyue-pavilion': './assets/spots/baoyue-pavilion-cover.jpg', 'diequ-pavilion': './assets/spots/diequ-pavilion-cover.jpg', garden: './assets/spots/garden-cover.jpg',
+    'wokear-residence': './assets/spots/spot-wokear-residence-v1.jpg', 'components-exhibit': './assets/spots/spot-components-exhibit-v1.jpg',
   };
   const placeholderSpotImage = /^\/images\/jinlou-0[1-3]\.jpg$/;
   const defaultHomeSlides = Array.from({ length: 6 }, (_, index) => `/images/jinlou-home-slide-${index + 1}.jpg`);

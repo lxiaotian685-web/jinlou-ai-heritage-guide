@@ -556,8 +556,8 @@ test('assistant covers reviewed visitor questions and keeps unknown policies pen
     ['几点开放？', /开放时间/, 'not-ready'],
     ['怎么坐车去？', /地址/, 'not-ready'],
     ['门票多少钱？', /尚未配置/, 'not-ready'],
-    ['可以用闪光灯拍照吗？', /尚未确认/, 'not-ready'],
-    ['轮椅可以走吗？', /无障碍设施尚待景区确认/, 'not-ready'],
+    ['可以用闪光灯拍照吗？', /资料库暂未收录/, 'not-ready'],
+    ['轮椅可以走吗？', /资料库暂未收录/, 'not-ready'],
   ];
   for (const [question, answerPattern, publicStatus] of cases) {
     const response = await fetch(`${baseUrl}/api/v1/assistant/chat`, {
@@ -570,6 +570,9 @@ test('assistant covers reviewed visitor questions and keeps unknown policies pen
     assert.match(body.data.answer, answerPattern, question);
     assert.equal(body.data.publicStatus, publicStatus, question);
     assert.ok(body.data.notice, question);
+    for (const forbidden of ['待景区', '待专家', '待人工', '待现场', 'review-draft']) {
+      assert.equal(`${body.data.answer}${body.data.notice}`.includes(forbidden), false, `${question}: ${forbidden}`);
+    }
   }
 });
 
@@ -759,7 +762,7 @@ test('openai compatible provider posts retrieval context to the chat endpoint', 
     return {
       ok: true,
       async json() {
-        return { choices: [{ message: { content: '整理后的回答' } }] };
+        return { choices: [{ message: { content: '整理后的回答，细节仍待景区专家审核确认。' } }] };
       },
     };
   };
@@ -774,7 +777,8 @@ test('openai compatible provider posts retrieval context to the chat endpoint', 
       question: '木雕看什么？',
       matches: [{ title: '木雕工艺', content: '观察花罩与藻井。', category: 'craft', reason: '关键词命中' }],
     });
-    assert.equal(result.answer, '整理后的回答');
+    assert.equal(result.answer.includes('整理后的回答'), true);
+    assert.equal(result.answer.includes('待景区'), false);
     assert.equal(result.model, 'free-model');
     assert.equal(calls[0].url, 'https://api.example.com/v1/chat/completions');
     assert.equal(calls[0].body.model, 'free-model');

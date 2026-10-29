@@ -19,6 +19,17 @@ function isPending(value) {
   return !value || PENDING_PATTERN.test(String(value));
 }
 
+function routeDuration(value) {
+  const text = String(value || '').trim();
+  return !text || /待现场|待实测|待确认/.test(text) ? '建议按兴趣和停留时间安排' : text;
+}
+
+function routeTheme(value) {
+  return String(value || '主题路线')
+    .replace('参考公开游客实走记录，顺序待景区确认', '串联碧江金楼主要参观点')
+    .replace(/待景区确认|待现场实走/g, '结合现场开放情况调整');
+}
+
 function bigramOverlap(question, content) {
   if (question.length < 2 || content.length < 2) return 0;
   const grams = new Set();
@@ -60,7 +71,7 @@ function buildKnowledgeItems({ spots = [], routes = [], service = {}, craftGuide
       id: `route:${route.id}`,
       category: 'route',
       title: `推荐路线：${route.name}`,
-      content: `${route.name}，${route.theme || '主题路线'}，参考用时${route.duration}。${stops.length ? `途经：${stops.join('、')}。` : ''}路线仍需景区确认和现场实走。`,
+      content: `${route.name}，${routeTheme(route.theme)}，参考用时${routeDuration(route.duration)}。${stops.length ? `途经：${stops.join('、')}。` : ''}请结合现场开放情况灵活调整。`,
       keywords: [route.name, route.theme, '路线', '游线', '怎么游', '游览顺序'].filter(Boolean),
       sourceId: SOURCE_IDS.PROJECT_ROUTE_PLAN,
       sourceIds: [SOURCE_IDS.PROJECT_ROUTE_PLAN],
@@ -194,13 +205,13 @@ function retrieve(items, question, limit = 3) {
 
 function fixedFact({ service = {}, routes = [] }, question) {
   if (/拍照|摄影|录像|闪光灯|三脚架/.test(question)) {
-    return { missing: '未找到可靠资料：当前资料尚未确认景区的拍照、录像、闪光灯和三脚架规定。请以现场标识和工作人员要求为准。' };
+    return { missing: '资料库暂未收录拍照、录像、闪光灯和三脚架的具体规定，请以现场标识和工作人员要求为准。' };
   }
   if (/停车|停车场|车停/.test(question)) {
-    return { missing: '未找到可靠资料：当前资料尚未确认景区停车场位置、开放时间和收费规则。请在出发前通过景区最新公开渠道确认。' };
+    return { missing: '资料库暂未收录停车场位置、开放时间和收费规则，请在出发前通过景区公开渠道或地图服务确认。' };
   }
   if (/老人|老年|儿童|小孩|轮椅|无障碍|婴儿车/.test(question)) {
-    return { missing: '未找到可靠资料：老人、儿童、轮椅和婴儿车的场内通行路线及无障碍设施尚待景区确认。到场后请优先咨询工作人员，并以现场开放区域为准。' };
+    return { missing: '资料库暂未收录老人、儿童、轮椅和婴儿车的完整通行说明。到场后请优先咨询工作人员，并以现场开放区域为准。' };
   }
   if (/门票|票价|购票|订票|优惠|免费/.test(question)) {
     if (!service?.ticket?.enabled) {
@@ -210,33 +221,33 @@ function fixedFact({ service = {}, routes = [] }, question) {
   }
   if (/开放|几点|营业|闭馆|停止入园/.test(question)) {
     if (isPending(service.openingHours)) {
-      return { missing: '未找到可靠资料：景区开放时间、停止入园时间和节假日调整尚待景区确认，请以景区当日公告为准。' };
+      return { missing: '资料库暂未收录当前开放时间、停止入园时间和节假日调整，请以景区当日公告为准。' };
     }
     return { answer: `当前项目记录的开放时段为${service.openingHours}。临时闭馆、停止入园时间和节假日调整请以景区当日公告为准。`, sourceIds: [SOURCE_IDS.PROJECT_SERVICE_CONFIG] };
   }
   if (/交通|怎么去|地址|公交|地铁|自驾|坐车|乘车/.test(question)) {
     if (isPending(`${service.address}${service.transport}`)) {
-      return { missing: '未找到可靠资料：景区准确地址和公共交通、停车信息尚待景区确认，请通过实时地图和景区最新公开渠道规划出行。' };
+      return { missing: '资料库暂未收录完整的地址与公共交通信息，请通过实时地图和景区公开渠道规划出行。' };
     }
     return { answer: `地址：${service.address}。交通参考：${service.transport}。出发时请结合实时地图规划路线。`, sourceIds: [SOURCE_IDS.PROJECT_SERVICE_CONFIG] };
   }
   if (/电话|联系|咨询/.test(question)) {
     if (isPending(service.phone)) {
-      return { missing: '未找到可靠资料：景区联系电话尚待确认，请以景区最新公开渠道为准。' };
+      return { missing: '资料库暂未收录联系电话，请以景区公开渠道为准。' };
     }
     return { answer: `当前项目记录的景区联系电话为${service.phone}。票务、停车、临时开放和特殊通行安排建议直接致电确认。`, sourceIds: [SOURCE_IDS.PROJECT_SERVICE_CONFIG] };
   }
   if (/建议.*时间|游览.*多久|逛.*多久|需要多久|多长时间/.test(question)) {
     if (!routes.length) return { missing: '未找到可靠资料：景区游览用时尚未整理。' };
     return {
-      answer: `当前${routes.length}条路线的用时均为参考值：${routes.map((route) => `${route.name}${route.duration}`).join('；')}。实际用时会受停留、讲解和现场开放情况影响。`,
+      answer: `当前${routes.length}条路线的用时均为参考值：${routes.map((route) => `${route.name}${routeDuration(route.duration)}`).join('；')}。实际用时会受停留、讲解和现场开放情况影响。`,
       sourceIds: [SOURCE_IDS.PROJECT_ROUTE_PLAN],
     };
   }
   if (/路线|怎么游|游览/.test(question)) {
     if (!routes.length) return { missing: '未找到可靠资料：景区参考路线尚未整理。' };
     return {
-      answer: `目前有${routes.length}条参考路线：${routes.map((route) => route.name).join('、')}。这些路线仍需景区确认和现场实走，请在“推荐路线”页面查看各站点。`,
+      answer: `目前有${routes.length}条参考路线：${routes.map((route) => route.name).join('、')}。请在“推荐路线”页面查看各站点，并结合现场开放情况灵活调整。`,
       sourceIds: [SOURCE_IDS.PROJECT_ROUTE_PLAN],
     };
   }

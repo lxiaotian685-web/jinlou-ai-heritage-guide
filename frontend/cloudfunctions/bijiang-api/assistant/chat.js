@@ -3,15 +3,23 @@ const { buildKnowledgeItems, fixedFact, retrieve } = require('./knowledge');
 const SENSITIVE_PATTERN = /密钥|api[\s_-]?key|系统提示|提示词|prompt|忽略.*(规则|指令)|开发者模式|后台口令|token|数据库密码/i;
 
 const STATUS_LABELS = {
-  fixed_fact: '固定信息 · 待景区复核',
-  knowledge_rag: '公开资料核对稿 · 待景区审核',
-  rule_fallback: '公开资料核对稿 · 待景区审核（模型不可用，已用规则回答）',
-  not_ready: '资料不足 · 待人工核对',
+  fixed_fact: '来自已整理资料',
+  knowledge_rag: '已根据资料库生成回答',
+  rule_fallback: '已根据资料库直接回答',
+  not_ready: '资料库暂未收录',
 };
+
+function visitorSafeText(value) {
+  return String(value || '')
+    .replace(/(?:仍|尚|还)?待(?:景区|专家|现场|人工)[^，。；\n]*(?:审核|复核|确认|实走|标定)[^，。；\n]*/g, '相关细节请以现场展签和开放情况为准')
+    .replace(/review-draft|pending-(?:scenic|expert|field)-review/gi, '')
+    .replace(/\s+([，。；])/g, '$1')
+    .trim();
+}
 
 function reply({ mode, answer, sourceIds = [], reviewStatus, publicStatus, requestId = '', fallbackReason = '', model = '', matches = [] }) {
   return {
-    answer,
+    answer: visitorSafeText(answer),
     mode,
     sourceIds,
     reviewStatus,
@@ -19,7 +27,7 @@ function reply({ mode, answer, sourceIds = [], reviewStatus, publicStatus, reque
     fallbackReason,
     requestId,
     model,
-    notice: STATUS_LABELS[mode] || '',
+    notice: visitorSafeText(STATUS_LABELS[mode] || ''),
     matches: matches.map((match) => ({
       id: match.item.id,
       title: match.item.title,

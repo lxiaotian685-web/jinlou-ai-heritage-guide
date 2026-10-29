@@ -1,21 +1,21 @@
-# 研学资料问答接入说明（知识库 + 通义千问）
+# 研学资料问答接入说明（知识库 + DeepSeek）
 
-更新时间：2026-10-27
+更新时间：2026-10-30
 
 ## 目标与边界
 
 - 问答链路固定为：固定信息查询 → 知识库检索 → 模型整理 → 返回答案、来源与状态。
 - 模型只允许整理检索到的资料，不得补充资料外的事实；资料不足时返回“资料库暂未收录”。
-- 默认使用本地 Mock Provider，不依赖任何外部平台；配置 `DASHSCOPE_API_KEY` 后切换到通义千问。
+- 默认使用本地 Mock Provider；云端已配置 `DEEPSEEK_API_KEY`，使用 `deepseek-chat` 整理检索结果。
 - 本模块不涉及音频播放器、AR 状态机、后台其他模块和无关页面。
-- 未上传 CloudBase、未发布微信版本；API Key 只允许放在云函数环境变量中，不进入代码、`data.json`、提交或 PR 截图。
+- `bijiang-api` 已部署 CloudBase 并完成真实 DeepSeek 调用；API Key 只存在于云函数环境变量和本机受控环境变量中，不进入代码、`data.json`、提交或截图。未上传或发布微信版本。
 
 ## 代码位置
 
 | 位置 | 作用 |
 |---|---|
 | `frontend/cloudfunctions/bijiang-api/assistant/knowledge.js` | 知识条目构建、固定信息、检索打分 |
-| `frontend/cloudfunctions/bijiang-api/assistant/providers.js` | Provider 接口、Mock Provider、通义千问 Provider |
+| `frontend/cloudfunctions/bijiang-api/assistant/providers.js` | Provider 接口、Mock、DeepSeek、通义千问及 OpenAI 兼容 Provider |
 | `frontend/cloudfunctions/bijiang-api/assistant/chat.js` | 问答编排、敏感问题拦截、失败回退 |
 | `frontend/cloudfunctions/bijiang-api/assistant/index.js` | 统一导出 |
 | `frontend/cloudfunctions/bijiang-api/index.js` | 云函数 `/assistant/chat` 入口 |
@@ -80,7 +80,11 @@
 | `LLM_BASE_URL` | 接口根地址，例如 `https://api.siliconflow.cn/v1` |
 | `LLM_MODEL` | 模型名，例如 `Qwen/Qwen2.5-7B-Instruct` |
 | `LLM_PROVIDER` | 仅用于响应里的 `model` 名称展示 |
-| `LLM_TIMEOUT_MS` | 超时毫秒数，默认 8000 |
+| `LLM_TIMEOUT_MS` | 超时毫秒数，默认 15000 |
+| `DEEPSEEK_API_KEY` | DeepSeek 专用 Key；未配置完整 `LLM_*` 时优先使用 |
+| `DEEPSEEK_BASE_URL` | 默认 `https://api.deepseek.com` |
+| `DEEPSEEK_MODEL` | 默认 `deepseek-chat` |
+| `DEEPSEEK_TIMEOUT_MS` | 默认 15000 |
 | `DASHSCOPE_API_KEY`（或 `QWEN_API_KEY`） | 通义千问专用配置，未设置 `LLM_*` 时生效 |
 | `QWEN_MODEL` | 默认 `qwen-plus` |
 | `QWEN_ENDPOINT` | 默认 `https://dashscope.aliyuncs.com/compatible-mode/v1` |
@@ -88,7 +92,7 @@
 | `ASSISTANT_RATE_LIMIT_PER_MINUTE` | 单个访客每分钟模型调用上限，默认 60 |
 | `ASSISTANT_RATE_LIMIT_PER_DAY` | 单个访客每天模型调用上限，默认 300 |
 
-选择顺序：`LLM_*` → `DASHSCOPE_API_KEY` → Mock。未配置任何 Key 时使用 Mock Provider，`model` 返回 `mock`。
+选择顺序：完整 `LLM_*` → `DEEPSEEK_API_KEY` → `DASHSCOPE_API_KEY` → Mock。未配置任何 Key 时使用 Mock Provider，`model` 返回 `mock`。
 
 ### 免费或带免费额度的 OpenAI 兼容服务
 
@@ -112,7 +116,8 @@
 - 模型任何失败都不影响主流程：自动回退到 `rule_fallback`，页面提示“模型暂不可用或超时，已改用规则回答”。
 - 日志与响应不包含 API Key；`requestId` 仅用于串联排查。
 - 频率与额度保护：按访客维度做滑动窗口限流（每分钟 / 每天），超限时不调用模型，直接回退 `rule_fallback`（`fallbackReason=rate_limited`）。限流为进程内计数，云函数冷启动会重置，属于基础保护而非全局配额。
-- 访客文案：接口保留 `reviewStatus` / `publicStatus` 等内部字段，但问答页不展示“待景区复核、待景区审核、review-draft”等内部流程用语，只显示中性的“参考资料 / 正在整理”等提示。
+- 访客文案：接口保留 `reviewStatus` / `publicStatus` 等内部字段，但问答页与回答正文不展示“待景区复核、待景区审核、review-draft”等内部流程用语；送入模型的片段和模型输出均会做游客文案净化。
+- Node.js 16 兼容：运行时没有全局 `fetch` 时自动使用原生 HTTPS 请求；云函数超时为 20 秒，模型请求超时为 15 秒。
 
 ## 测试
 
@@ -125,9 +130,9 @@ npm.cmd run acceptance:check
 
 覆盖：知识条目字段完整性、检索命中与评分原因、固定信息不调用模型、无资料提示、模型超时回退、敏感问题不泄露、来源返回。
 
-## 未完成事项
+## 当前状态与后续验收
 
-- 云函数未部署、未做线上联调；`DASHSCOPE_API_KEY` 需由负责人配置到云函数环境变量。
-- 未使用真实千问 Key 做线上验收，`qwen` 分支仅完成接口实现与单元级注入测试。
-- 微信开发者工具完整问答录屏/连续截图需由接手同学补充。
-- 知识条目目前由现有数据库与快照生成，尚未接入向量检索；后续如资料量增大再评估。
+- CloudBase `bijiang-api` 已部署，真实 `deepseek-chat` 回答、固定电话查询、推荐问题和无资料兜底均已云端验证。
+- 后端测试 46/46、集中自动验收核心项目全部通过、云端契约检查 14/14。
+- 仍需在微信开发者工具和真机完成问答页视觉、弱网重试与连续提问录屏；该步骤不影响当前云函数能力。
+- 当前资料量适合关键词检索；只有资料规模明显扩大后再评估向量检索，避免为比赛演示引入不必要复杂度。

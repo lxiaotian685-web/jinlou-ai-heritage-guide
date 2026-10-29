@@ -6,7 +6,7 @@
       "name": "bijiang-api",
       "runtime": "Nodejs16.13",
       "handler": "index.main",
-      "timeout": 5,
+      "timeout": 20,
       "memorySize": 256,
       "installDependency": true
     },

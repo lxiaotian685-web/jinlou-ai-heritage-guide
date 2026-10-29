@@ -25,6 +25,12 @@ const DEFAULT_HOME = {
   title: '一卷书香 · 一院金光',
   subtitle: '碧江金楼智慧导览',
 };
+const CONFIRMED_SERVICE = {
+  address: '广东省佛山市顺德区北滘镇碧江社区泰宁西路6号',
+  openingHours: '每日08:30—17:00；停止入园时间及临时闭园安排请以景区当日公告为准',
+  phone: '0757-26632123',
+  transport: '公交可在德云市场站下车后步行前往；具体线路、停车位置及实时路况请以地图导航和景区公告为准。',
+};
 const RECOMMENDATION_ACTIONS = ['detail', 'phone', 'link'];
 
 const error = (code, message) => ({ ok: false, error: { code, message } });
@@ -394,7 +400,7 @@ async function createKnowledgeAnswer(question, snapshot, clientKey = 'anonymous'
     input: {
       spots,
       routes: snapshot.routes?.data || [],
-      service: snapshot.service?.data || {},
+      service: { ...(snapshot.service?.data || {}), ...CONFIRMED_SERVICE },
       craftGuides,
       faqs: snapshot.faqs || [],
     },
@@ -429,7 +435,7 @@ async function read(path, method, body, snapshot, clientKey = 'anonymous') {
     meta: {
       maxQuestionLength: 200,
       answerMode: 'controlled-knowledge-base',
-      notice: '答案仅来自已登记资料；资料不足时会明确提示待人工核对。',
+      notice: '答案仅来自已整理资料；资料不足时会明确提示暂未收录。',
     },
   };
   if (method === 'POST' && path === '/assistant/chat') {

@@ -204,7 +204,7 @@ export function createApp(db, options = {}) {
       meta: {
         maxQuestionLength: 200,
         answerMode: 'controlled-knowledge-base',
-        notice: '答案仅来自已登记资料；资料不足时会明确提示待人工核对。',
+        notice: '答案仅来自已整理资料；资料不足时会明确提示暂未收录。',
       },
     });
   });
