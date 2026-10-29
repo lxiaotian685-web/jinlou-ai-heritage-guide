@@ -554,7 +554,7 @@ test('assistant covers reviewed visitor questions and keeps unknown policies pen
     ['重点看什么？', /饰金木雕/, 'review-draft'],
     ['建议游览多久？', /参考值/, 'review-draft'],
     ['几点开放？', /开放时间/, 'not-ready'],
-    ['怎么坐车去？', /地址/, 'review-draft'],
+    ['怎么坐车去？', /地址/, 'not-ready'],
     ['门票多少钱？', /尚未配置/, 'not-ready'],
     ['可以用闪光灯拍照吗？', /尚未确认/, 'not-ready'],
     ['轮椅可以走吗？', /无障碍设施尚待景区确认/, 'not-ready'],
@@ -741,6 +741,7 @@ test('knowledge retrieval returns scored snippets with reasons', () => {
 test('provider selection prefers the generic OpenAI-compatible configuration', () => {
   assert.equal(assistantCore.selectProvider({}).name, 'mock');
   assert.equal(assistantCore.selectProvider({ DASHSCOPE_API_KEY: 'test-key' }).name, 'qwen');
+  assert.equal(assistantCore.selectProvider({ DEEPSEEK_API_KEY: 'test-key' }).name, 'deepseek');
   const provider = assistantCore.selectProvider({
     LLM_API_KEY: 'test-key',
     LLM_BASE_URL: 'https://api.example.com/v1',
