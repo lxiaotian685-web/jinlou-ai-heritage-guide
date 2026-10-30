@@ -403,45 +403,22 @@
   background: transparent !important;
 }
 
-/* ---------- 交通与停车 ---------- */
-.visit-transport {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  margin: 16rpx 32rpx 0;
-  padding: 24rpx 26rpx;
-}
-
-.visit-transport__mark {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64rpx;
-  height: 64rpx;
-  border: 1rpx solid var(--arc-line-strong);
-  border-radius: 4rpx;
-  font-family: "Songti SC", "Noto Serif SC", SimSun, serif;
-  font-size: 26rpx;
-  color: var(--arc-blue);
-}
-
-.visit-transport__copy {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-}
-
-.visit-transport__copy .visit-card__label {
-  width: auto;
-  padding-top: 0;
-}
-
-/* ---------- 位置示意 ---------- */
-.plate {
+/* ---------- 导览地图 ---------- */
+.guide-map {
   margin: 20rpx 32rpx 0;
+}
+
+.guide-map__image {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1rpx solid var(--arc-line-strong);
+  border-radius: 12rpx;
+  background: var(--arc-cream);
+}
+
+.guide-map__caption {
+  margin-top: 10rpx;
 }
 
 .plate__frame {

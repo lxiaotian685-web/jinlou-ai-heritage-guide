@@ -44,8 +44,7 @@
         <text>{{ticketStateLine}}</text>
       </view>
       <view class="ticket-panel__actions">
-        <button class="arc-btn ticket-panel__primary {{ticketState === 'pending' ? 'ticket-panel__primary--pending' : ''}}" bindtap="handleTicket">{{ticketPrimaryLabel}}</button>
-        <button wx:if="{{ticketHasLink}}" class="arc-btn ticket-panel__secondary" bindtap="copyTicketLink">{{ticketSecondaryLabel}}</button>
+        <button wx:if="{{ticketHasLink}}" class="arc-btn ticket-panel__primary" bindtap="copyTicketLink">{{ticketSecondaryLabel}}</button>
       </view>
       <view class="ticket-panel__rule"></view>
       <text class="ticket-panel__disclaimer">票价、开放时间、退改规则以官方平台为准</text>
@@ -86,33 +85,15 @@
       <view class="visit-actions">
         <button class="arc-btn arc-btn--ghost visit-action {{service.actions.copyAddress ? '' : 'is-pending'}}" bindtap="copyAddress" aria-label="复制景区地址">复制地址</button>
         <button class="arc-btn arc-btn--ghost visit-action {{service.actions.callPhone ? '' : 'is-pending'}}" bindtap="callPhone" aria-label="拨打景区电话">电话</button>
-        <button class="arc-btn arc-btn--ghost visit-action {{service.actions.openMap ? '' : 'is-pending'}}" bindtap="openMap" aria-label="在地图中打开景区位置">地图</button>
+        <button class="arc-btn arc-btn--ghost visit-action {{service.actions.openMap ? '' : 'is-pending'}}" bindtap="openMap" aria-label="使用腾讯地图导航到碧江金楼">导航</button>
       </view>
     </view>
 
-    <view class="arc-card visit-transport">
-      <view class="visit-transport__mark">交</view>
-      <view class="visit-transport__copy">
-        <text class="visit-card__label">交通与停车</text>
-        <text class="visit-card__text">{{service.transport}}</text>
-      </view>
-      <text wx:if="{{serviceMeta.transportPending}}" class="arc-pending">待接入</text>
-    </view>
-
-    <view class="plate">
-      <view class="plate__frame">
-        <view class="plate__grid"></view>
-        <view class="plate__block plate__block--a"></view>
-        <view class="plate__block plate__block--b"></view>
-        <view class="plate__block plate__block--c"></view>
-        <view class="plate__ring"></view>
-        <view class="plate__pin"></view>
-        <text class="plate__north">N</text>
-        <text class="plate__micro">ABSTRACT SITE PLAN</text>
-      </view>
-      <view class="arc-caption plate__caption">
-        <text>位置示意 · {{service.actions.openMap ? '可打开地图' : '导航能力待接入'}}</text>
-        <text>SCHEMATIC</text>
+    <view class="guide-map">
+      <image class="guide-map__image" src="/images/bijiang-handdrawn-map-v1.jpg" mode="widthFix" bindtap="openMap" aria-role="button" aria-label="查看碧江金楼导览图并打开腾讯地图导航" />
+      <view class="arc-caption guide-map__caption">
+        <text>碧江金楼导览图 · 点击打开腾讯地图导航</text>
+        <text>VISITOR MAP</text>
       </view>
     </view>
 
@@ -131,13 +112,11 @@
             <view class="nearby-card__wash"></view>
             <text class="nearby-card__mark serif">{{item.mark}}</text>
             <text class="nearby-card__code">AD / 0{{index + 1}}</text>
-            <text class="nearby-card__note">非商户图片</text>
-            <text class="nearby-card__hint">图片待景区提供</text>
+            <text class="nearby-card__note">{{item.note}}</text>
           </view>
           <view class="nearby-card__body">
             <view class="nearby-card__top">
               <text class="nearby-card__label serif">{{item.label}}</text>
-              <text class="arc-pending nearby-card__tag">待接入</text>
             </view>
             <text class="nearby-card__meta">{{item.meta}}</text>
           </view>

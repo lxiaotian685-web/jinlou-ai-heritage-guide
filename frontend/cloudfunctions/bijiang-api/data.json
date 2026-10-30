@@ -7,7 +7,7 @@
         "name": "南山祠",
         "summary": "南山祠是碧江金楼古建筑群中的祠堂建筑之一，体现古村宅第、祠堂、书塾与园林相互结合的空间特色。现有公开资料尚未确认其具体始建年代与祭祀对象。",
         "category": "祠堂建筑",
-        "coverImage": "/images/jinlou-03.jpg",
+        "coverImage": "/images/spot-nanshan-hall-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       },
@@ -70,7 +70,7 @@
         "name": "镬耳民居",
         "summary": "镬耳民居点位用于观察岭南传统民居的镬耳山墙、青砖墙面及院落关系。该名称来自景区现场分布牌，具体建筑年代、原住户和修缮沿革仍待景区资料确认。",
         "category": "建筑形制",
-        "coverImage": "/images/jinlou-02.jpg",
+        "coverImage": "/images/spot-wokear-residence-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       },
@@ -97,7 +97,7 @@
         "name": "民居构件展示",
         "summary": "民居构件展示点集中帮助游客辨认传统建筑中的门窗、隔扇、梁架、砖雕和木雕等构件。具体构件名称、年代、来源及修缮信息仍须以景区展签和审核资料为准。",
         "category": "建筑展陈",
-        "coverImage": "/images/jinlou-01.jpg",
+        "coverImage": "/images/spot-components-exhibit-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       },
@@ -146,7 +146,7 @@
         "name": "南山祠",
         "summary": "南山祠是碧江金楼古建筑群中的祠堂建筑之一，体现古村宅第、祠堂、书塾与园林相互结合的空间特色。现有公开资料尚未确认其具体始建年代与祭祀对象。",
         "category": "祠堂建筑",
-        "coverImage": "/images/jinlou-03.jpg",
+        "coverImage": "/images/spot-nanshan-hall-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       }
@@ -223,7 +223,7 @@
         "name": "镬耳民居",
         "summary": "镬耳民居点位用于观察岭南传统民居的镬耳山墙、青砖墙面及院落关系。该名称来自景区现场分布牌，具体建筑年代、原住户和修缮沿革仍待景区资料确认。",
         "category": "建筑形制",
-        "coverImage": "/images/jinlou-02.jpg",
+        "coverImage": "/images/spot-wokear-residence-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       }
@@ -256,7 +256,7 @@
         "name": "民居构件展示",
         "summary": "民居构件展示点集中帮助游客辨认传统建筑中的门窗、隔扇、梁架、砖雕和木雕等构件。具体构件名称、年代、来源及修缮信息仍须以景区展签和审核资料为准。",
         "category": "建筑展陈",
-        "coverImage": "/images/jinlou-01.jpg",
+        "coverImage": "/images/spot-components-exhibit-v1.jpg",
         "hasPanorama": false,
         "hasAudio": true
       }
@@ -1028,16 +1028,16 @@
         "url": "",
         "label": "订票入口准备中"
       },
-      "address": "地址待景区确认",
-      "openingHours": "以景区最新公告为准",
-      "phone": "联系电话待景区确认",
-      "transport": "公交与停车信息待接入",
-      "latitude": null,
-      "longitude": null,
+      "address": "广东省佛山市顺德区北滘镇碧江社区泰宁西路6号",
+      "openingHours": "每日08:30—17:00；停止入园时间及临时闭园安排请以景区当日公告为准",
+      "phone": "0757-26632123",
+      "transport": "公交可在德云市场站下车后步行前往；具体线路、停车位置及实时路况请以地图导航和景区公告为准。",
+      "latitude": 22.942558,
+      "longitude": 113.262272,
       "actions": {
-        "copyAddress": false,
-        "callPhone": false,
-        "openMap": false
+        "copyAddress": true,
+        "callPhone": true,
+        "openMap": true
       }
     }
   },
@@ -1047,11 +1047,15 @@
         {
           "id": "food-1",
           "category": "food",
-          "name": "推荐美食待接入",
-          "type": "餐饮",
-          "address": "地址待接入",
-          "availability": "营业信息待接入",
-          "image": "/images/jinlou-01.jpg"
+          "name": "顺德特色美食",
+          "type": "餐饮参考",
+          "address": "碧江金楼周边",
+          "availability": "营业时间请以到店信息为准",
+          "image": "/images/arc/arc-colonnade.jpg",
+          "description": "可留意双皮奶、鱼皮等顺德特色风味。",
+          "productName": "双皮奶与鱼皮",
+          "status": "reviewed",
+          "sourceNote": "比赛展示资料 · 非商户广告"
         }
       ]
     },
@@ -1060,11 +1064,15 @@
         {
           "id": "hotel-1",
           "category": "hotel",
-          "name": "推荐酒店待接入",
-          "type": "住宿",
-          "address": "地址待接入",
-          "availability": "营业信息待接入",
-          "image": "/images/jinlou-02.jpg"
+          "name": "拾光美宿酒店（北滘碧江店）",
+          "type": "住宿参考",
+          "address": "距碧江金楼步行约700米",
+          "availability": "房态与价格请以住宿平台实时信息为准",
+          "image": "/images/arc/arc-garden-moon.jpg",
+          "description": "用户提供的住宿平台截图显示该店位于景点附近。",
+          "productName": "附近住宿",
+          "status": "reviewed",
+          "sourceNote": "用户提供截图 · 2026-10-27"
         }
       ]
     },
@@ -1086,11 +1094,15 @@
         {
           "id": "attraction-1",
           "category": "attraction",
-          "name": "周边景点待接入",
-          "type": "景点",
-          "address": "地址待接入",
-          "availability": "开放信息待接入",
-          "image": "/images/jinlou-01.jpg"
+          "name": "清晖园",
+          "type": "岭南园林",
+          "address": "佛山市顺德区大良街道清晖路23号",
+          "availability": "开放安排请以景区当日公告为准",
+          "image": "/images/arc/arc-gable.jpg",
+          "description": "可作为碧江金楼行程后的顺德古建延伸参观。",
+          "productName": "周边景点",
+          "status": "reviewed",
+          "sourceNote": "比赛展示资料 · 出发前核实"
         }
       ]
     }

@@ -1621,3 +1621,15 @@ page {
 .high-contrast .ar-chip {
   border-color: #fff;
 }
+
+/* 研学首页独立问答入口：不依赖 AR 相机或通关状态。 */
+.ar-assistant-entry {
+  margin: 24rpx 32rpx 0;
+  padding: 24rpx;
+}
+.ar-assistant-entry__copy {
+  margin: 10rpx 0 20rpx;
+}
+@media (max-width: 360px) {
+  .ar-assistant-entry { margin-right: 24rpx; margin-left: 24rpx; }
+}

@@ -81,30 +81,6 @@
       </view>
     </view>
 
-    <view wx:if="{{mapMeta}}" class="map-status arc-card">
-      <view class="map-status__head">
-        <text class="arc-eyebrow">MAP RECORD</text>
-        <text class="map-status__title serif">地图资料状态</text>
-      </view>
-      <view class="arc-hair"></view>
-      <view class="map-status__rows">
-        <view class="map-status__row">
-          <text class="map-status__key">官方高清图</text>
-          <text class="map-status__val">待提供</text>
-        </view>
-        <view class="map-status__row">
-          <text class="map-status__key">入口出口</text>
-          <text class="map-status__val">待确认</text>
-        </view>
-        <view class="map-status__row">
-          <text class="map-status__key">无障碍通道</text>
-          <text class="map-status__val">待确认</text>
-        </view>
-      </view>
-      <view class="arc-hair"></view>
-      <text class="map-status__source">点位依据：{{mapMeta.source}}；核对至 {{mapMeta.lastReviewed}}</text>
-    </view>
-
     <block wx:if="{{selectedRoute}}">
       <view class="arc-head guide-heading">
         <text class="arc-head__index">02</text>

@@ -57,7 +57,7 @@ try {
   const privacyTemplate = readFileSync(resolve(frontendRoot, 'pages/privacy/index.wxml'), 'utf8');
   check('本地数据页面精简', ['data-type="visit"', 'data-type="notes"', 'data-type="display"'].every((item) => privacyTemplate.includes(item)) && !privacyTemplate.includes('接口缓存') && !privacyTemplate.includes('匿名互动标识'));
   const apiService = readFileSync(resolve(frontendRoot, 'services/api.js'), 'utf8');
-  check('缓存快速回退', apiService.includes('timeout: cached ? 1500 : 8000'));
+  check('缓存快速回退', apiService.includes('cached ? 1500 : 8000') && apiService.includes("'/assistant/chat' ? 35000"));
   const homeTemplate = readFileSync(resolve(frontendRoot, 'pages/index/index.wxml'), 'utf8');
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
   const arTemplate = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.wxml'), 'utf8');
@@ -72,7 +72,8 @@ try {
   check('音频失败保留文字降级', spotDetailScript.includes('audioError') && spotDetailTemplate.includes('{{audioError}}') && spotDetailTemplate.includes('讲解文字稿'));
   const spotImages = require(resolve(frontendRoot, 'utils/spot-images.js'));
   const missingSpotImages = Object.values(spotImages.bundledCovers).filter((imagePath) => !existsSync(resolve(frontendRoot, imagePath.slice(1))));
-  check('实拍景点封面', Object.keys(spotImages.bundledCovers).length === 12 && missingSpotImages.length === 0, `${12 - missingSpotImages.length}/12`);
+  const expectedSpotCovers = 15;
+  check('实拍景点封面', Object.keys(spotImages.bundledCovers).length === expectedSpotCovers && missingSpotImages.length === 0, `${expectedSpotCovers - missingSpotImages.length}/${expectedSpotCovers}`);
   check('首页叠放轮播图', [1, 2, 3, 4, 5, 6].every((index) => existsSync(resolve(frontendRoot, `images/jinlou-home-slide-${index}.jpg`))));
   const adminWebRoot = resolve(frontendRoot, '../admin-web');
   check('独立云端管理网站', ['index.html', 'styles.css', 'redesign.css', 'app.js', 'config.js', 'assets/home-hero.jpg'].every((file) => existsSync(resolve(adminWebRoot, file))));
@@ -81,7 +82,7 @@ try {
   check('后台欢迎语包含碧江金楼', adminTemplate.includes('欢迎使用碧江金楼运营管理平台'));
   check('后台图片直接上传', ['选择照片', '图片文件地址', 'uploadSelectedImage', '/admin/media/images'].every((text) => adminTemplate.includes(text) || adminScript.includes(text)));
   const missingAdminSpotImages = Object.values(spotImages.bundledCovers).filter((imagePath) => !existsSync(resolve(adminWebRoot, 'assets/spots', imagePath.split('/').pop())));
-  check('后台显示原有景点封面', missingAdminSpotImages.length === 0 && adminScript.includes("shouqingwu: './assets/spots/shouqingwu-cover.jpg'") && adminTemplate.includes('spot-preview-empty'), `${12 - missingAdminSpotImages.length}/12`);
+  check('后台显示原有景点封面', missingAdminSpotImages.length === 0 && adminScript.includes("shouqingwu: './assets/spots/shouqingwu-cover.jpg'") && adminTemplate.includes('spot-preview-empty'), `${expectedSpotCovers - missingAdminSpotImages.length}/${expectedSpotCovers}`);
   check('商家分类与上架流程简化', adminTemplate.includes('当前分类') && adminTemplate.includes('保存草稿') && adminTemplate.includes('保存并上架'));
   check('商家缺图不再误用首页封面', adminTemplate.includes('ad-preview-empty') && adminScript.includes('showStoredAdPreview'));
   check('后台运营数据看板', ['运营数据', '商家互动排行', 'analytics-total', '/admin/recommendation-analytics'].every((text) => adminTemplate.includes(text) || adminScript.includes(text)));
