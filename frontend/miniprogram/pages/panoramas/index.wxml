@@ -9,6 +9,11 @@
     <text class="arc-lede ar-mast__lede">对准指定木雕，认识构件、雕刻层次与饰金效果。</text>
   </view>
 
+  <view wx:if="{{stage === 'intro'}}" class="ar-assistant-entry arc-card">
+    <text class="ar-kicker">研学知识问答</text>
+    <text class="ar-body ar-assistant-entry__copy">想了解金楼故事或木雕工艺？随时提问，结合资料为你解答。</text>
+    <button class="arc-btn ar-cta" bindtap="openAssistant">进入知识问答</button>
+  </view>
   <!-- 流程索引：对准 → 探索 → 完成 -->
   <view class="ar-steps">
     <view class="ar-step is-on {{stage === 'discovered' ? '' : 'is-current'}}">

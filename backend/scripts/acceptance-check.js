@@ -57,7 +57,7 @@ try {
   const privacyTemplate = readFileSync(resolve(frontendRoot, 'pages/privacy/index.wxml'), 'utf8');
   check('本地数据页面精简', ['data-type="visit"', 'data-type="notes"', 'data-type="display"'].every((item) => privacyTemplate.includes(item)) && !privacyTemplate.includes('接口缓存') && !privacyTemplate.includes('匿名互动标识'));
   const apiService = readFileSync(resolve(frontendRoot, 'services/api.js'), 'utf8');
-  check('缓存快速回退', apiService.includes('timeout: cached ? 1500 : 8000'));
+  check('缓存快速回退', apiService.includes('cached ? 1500 : 8000') && apiService.includes("'/assistant/chat' ? 35000"));
   const homeTemplate = readFileSync(resolve(frontendRoot, 'pages/index/index.wxml'), 'utf8');
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
   const arTemplate = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.wxml'), 'utf8');

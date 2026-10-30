@@ -412,7 +412,7 @@ async function createKnowledgeAnswer(question, snapshot, clientKey = 'anonymous'
   return {
     answer: result.answer,
     mode: result.mode,
-    sources: resolveKnowledgeSources(result.sourceIds),
+    sources: [...resolveKnowledgeSources(result.sourceIds), ...(result.webSources || [])],
     reviewStatus: result.reviewStatus,
     publicStatus: result.publicStatus,
     fallbackReason: result.fallbackReason,

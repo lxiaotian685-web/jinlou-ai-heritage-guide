@@ -11,6 +11,7 @@ const FALLBACK_QUESTIONS = [
 ].map((question, index) => ({ id: `fallback-${index}`, question }));
 
 function verificationStatusLabel(status) {
+  if (status === 'web-reference') return '联网资料';
   if (status === 'verified-public-reference') return '公开资料';
   return '项目整理资料';
 }
@@ -32,6 +33,8 @@ function publicStatusLabel(status) {
 
 const MODE_LABELS = {
   fixed_fact: '固定信息',
+  web_rag: '联网检索 + 模型整理',
+  web_fallback: '联网资料摘要（模型暂不可用）',
   knowledge_rag: '资料检索 + 模型整理',
   rule_fallback: '资料检索（规则回答）',
   not_ready: '资料库暂未收录',

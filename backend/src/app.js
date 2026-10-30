@@ -229,7 +229,7 @@ export function createApp(db, options = {}) {
       data: {
         answer: result.answer,
         mode: result.mode,
-        sources: resolveKnowledgeSources(result.sourceIds),
+        sources: [...resolveKnowledgeSources(result.sourceIds), ...(result.webSources || [])],
         reviewStatus: result.reviewStatus,
         publicStatus: result.publicStatus,
         fallbackReason: result.fallbackReason,

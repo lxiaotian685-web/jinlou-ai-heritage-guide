@@ -167,8 +167,21 @@ function categoryRank(category) {
   return 1;
 }
 
+function contextualQuestion(items, question) {
+  let text = String(question || '');
+  // This entry is a Jinlou study page. Only resolve explicit deictic references.
+  text = text.replace(/这个楼|这座楼|这栋楼|该楼/g, '金楼');
+  const otherSpot = items.some((item) => item.category === 'spot' && item.id !== 'spot:jinlou'
+    && item.title && text.includes(item.title));
+  if (!otherSpot && /建成|建造|修建|始建|建于/.test(text)
+      && /时间|何时|什么时候|哪年|几年|年代|多久/.test(text)) {
+    text += ' 年代';
+  }
+  return text;
+}
+
 function retrieve(items, question, limit = 3) {
-  const normalizedQuestion = normalize(question);
+  const normalizedQuestion = normalize(contextualQuestion(items, question));
   if (!normalizedQuestion) return [];
   const scored = items
     .filter((item) => item.category !== 'service')
@@ -237,10 +250,10 @@ function fixedFact({ service = {}, routes = [] }, question) {
     }
     return { answer: `当前项目记录的景区联系电话为${service.phone}。票务、停车、临时开放和特殊通行安排建议直接致电确认。`, sourceIds: [SOURCE_IDS.PROJECT_SERVICE_CONFIG] };
   }
-  if (/建议.*时间|游览.*多久|逛.*多久|需要多久|多长时间/.test(question)) {
+  if (/建议.*时间|游览.*多久|逛.*多久|玩.*多久|需要多久|多长时间|多久.*逛|多久.*游|几个小时|多长时间能逛完/.test(question)) {
     if (!routes.length) return { missing: '未找到可靠资料：景区游览用时尚未整理。' };
     return {
-      answer: `当前${routes.length}条路线的用时均为参考值：${routes.map((route) => `${route.name}${routeDuration(route.duration)}`).join('；')}。实际用时会受停留、讲解和现场开放情况影响。`,
+      answer: '第一次来，建议预留约1—1.5小时。\n如果只看金楼和主要建筑，可以按45—60分钟安排；想听讲解、拍照并体验AR研学，建议预留约1.5—2小时。\n按90分钟安排时，可以把约30分钟留给金楼与木雕，约30分钟看其他建筑，约20分钟逛园林，另留10分钟休息。\n以上是行程安排参考值，不是实测通行时间；带老人、小孩或喜欢细看拍照，可以再多留一些时间。',
       sourceIds: [SOURCE_IDS.PROJECT_ROUTE_PLAN],
     };
   }
@@ -256,6 +269,7 @@ function fixedFact({ service = {}, routes = [] }, question) {
 
 module.exports = {
   SOURCE_IDS,
+  contextualQuestion,
   buildKnowledgeItems,
   fixedFact,
   normalize,
