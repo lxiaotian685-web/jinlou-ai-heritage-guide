@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   'use strict';
 
   if (!window.cloudbase) {
@@ -138,7 +138,16 @@
     });
   }
 
+  // 小程序包内的实拍封面在后台没有同路径资源，需按文件名映射到后台 assets，
+  // 否则会被当成首页通用图，看起来像「照片没更新」。
+  const bundledSpotCoverPaths = {
+    '/images/spot-nanshan-hall-v1.jpg': './assets/spots/spot-nanshan-hall-v1.jpg',
+    '/images/spot-wokear-residence-v1.jpg': './assets/spots/spot-wokear-residence-v1.jpg',
+    '/images/spot-components-exhibit-v1.jpg': './assets/spots/spot-components-exhibit-v1.jpg',
+  };
+
   function displayLocation(location) {
+    if (bundledSpotCoverPaths[location]) return bundledSpotCoverPaths[location];
     return adminHomeSlides[location] || (location?.startsWith('/images/') ? './assets/home-hero.jpg' : location || '');
   }
 
@@ -361,7 +370,7 @@
       } catch (_error) { image.removeAttribute('src'); }
       return;
     }
-    image.src = location.startsWith('/images/') ? './assets/home-hero.jpg' : location;
+    image.src = displayLocation(location);
   }
 
   function resetFileChoice(fileInputId, labelId, customText = '') {
