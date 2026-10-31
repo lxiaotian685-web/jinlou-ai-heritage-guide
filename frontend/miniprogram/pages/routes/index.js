@@ -24,12 +24,27 @@ function normalizeMeta(meta = {}) {
 }
 
 Page({
-  data: { routes: [], meta: null, loading: true, error: '', offlineNotice: '', expandedId: '' },
+  data: { routes: [], meta: null, loading: true, error: '', offlineNotice: '', expandedId: '', selectedRouteId: '', selectedRouteName: '' },
   onLoad(options) {
     this.sharedRouteId = options.routeId || (options.scene ? decodeURIComponent(options.scene) : '');
     this.loadRoutes();
   },
-  onShow() { this.setData({ displayClass: getDisplayClass() }); },
+  onShow() {
+    this.setData({ displayClass: getDisplayClass() });
+    this.syncSelectedRoute();
+  },
+  syncSelectedRoute() {
+    const saved = wx.getStorageSync('selectedTourRoute');
+    this.setData({
+      selectedRouteId: saved && saved.id ? saved.id : '',
+      selectedRouteName: saved && saved.name ? saved.name : '',
+    });
+  },
+  clearSelectedRoute() {
+    wx.removeStorageSync('selectedTourRoute');
+    this.setData({ selectedRouteId: '', selectedRouteName: '' });
+    wx.showToast({ title: '已清除当前路线', icon: 'none' });
+  },
   onShareAppMessage(event) {
     const id = event.target?.dataset?.id || this.data.expandedId;
     const route = this.data.routes.find((item) => item.id === id);
@@ -60,6 +75,7 @@ Page({
     const route = this.data.routes.find((item) => item.id === event.currentTarget.dataset.id);
     if (!route) return;
     wx.setStorageSync('selectedTourRoute', route);
+    this.syncSelectedRoute();
     wx.switchTab({ url: '/pages/guide/index' });
   },
 });
