@@ -23,6 +23,15 @@
   <view class="routes-body">
     <view wx:if="{{offlineNotice}}" class="routes-offline">{{offlineNotice}}</view>
 
+    <view wx:if="{{selectedRouteId}}" class="routes-current arc-card arc-card--ticks">
+      <view class="routes-current__copy">
+        <text class="arc-eyebrow">当前已选路线</text>
+        <text class="routes-current__name serif">{{selectedRouteName}}</text>
+        <text class="routes-current__hint">导览图会按这条路线显示点位顺序</text>
+      </view>
+      <button class="arc-btn arc-btn--ghost routes-current__clear" bindtap="clearSelectedRoute">清除路线</button>
+    </view>
+
     <view wx:if="{{loading}}" class="routes-state arc-card arc-card--ticks">
       <text class="arc-eyebrow">READING THE ROUTE ARCHIVE</text>
       <text class="routes-state__title serif">正在读取推荐游线…</text>
