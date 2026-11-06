@@ -92,6 +92,47 @@
   padding-top: 26rpx;
 }
 
+.routes-planner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22rpx;
+  margin-bottom: 22rpx;
+  padding: 26rpx;
+  border-left: 4rpx solid #3a5a47;
+}
+
+.routes-planner__copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.routes-planner__title,
+.routes-planner__body {
+  display: block;
+}
+
+.routes-planner__title {
+  margin-top: 8rpx;
+  font-size: 32rpx;
+  line-height: 1.4;
+}
+
+.routes-planner__body {
+  margin-top: 7rpx;
+  font-size: 22rpx;
+  line-height: 1.65;
+  color: var(--arc-muted);
+}
+
+.routes-planner__action {
+  flex: none;
+  width: 176rpx;
+  min-height: 82rpx;
+  padding: 0 14rpx;
+  font-size: 23rpx;
+}
+
 /* ---------- 离线提示 ---------- */
 .routes-offline {
   margin-bottom: 20rpx;
@@ -434,6 +475,23 @@
 
 .font-large .routes-card__actions {
   grid-template-columns: 1fr;
+}
+
+.font-large .routes-planner {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.font-large .routes-planner__title {
+  font-size: 38rpx;
+}
+
+.font-large .routes-planner__body {
+  font-size: 27rpx;
+}
+
+.font-large .routes-planner__action {
+  width: 100%;
 }
 
 .font-large .routes-card__action,

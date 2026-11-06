@@ -1,0 +1,72 @@
+<view class="page arc-page arc-grid-bg itinerary-page {{displayClass}}">
+  <view class="itinerary-head">
+    <view class="itinerary-head__top">
+      <text class="arc-eyebrow">PERSONAL ROUTE / 个性游览</text>
+      <button class="arc-text-btn" bindtap="backToRoutes">返回游线</button>
+    </view>
+    <view class="itinerary-head__main">
+      <view class="itinerary-head__copy">
+        <text class="arc-title serif itinerary-head__title">为你排一程</text>
+        <text class="arc-lede">选择时间、同行人与兴趣，从现有景点和路线中生成建议。</text>
+      </view>
+      <view class="arc-seal">程</view>
+    </view>
+  </view>
+
+  <view wx:if="{{!result}}" class="planner">
+    <view class="planner-section">
+      <view class="arc-head"><text class="arc-head__index">01</text><text class="arc-head__label">可用时间</text><view class="arc-head__rule"></view><text class="arc-head__meta">TIME</text></view>
+      <view class="option-grid option-grid--three">
+        <view wx:for="{{durations}}" wx:key="value" class="option-card {{duration === item.value ? 'is-active' : ''}}" data-value="{{item.value}}" bindtap="selectDuration" aria-role="button" aria-label="选择{{item.label}}">
+          <text class="option-card__label serif">{{item.label}}</text><text class="option-card__note">{{item.note}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="planner-section">
+      <view class="arc-head"><text class="arc-head__index">02</text><text class="arc-head__label">同行方式</text><view class="arc-head__rule"></view><text class="arc-head__meta">COMPANY</text></view>
+      <view class="chip-list">
+        <view wx:for="{{companions}}" wx:key="value" class="choice-chip {{companion === item.value ? 'is-active' : ''}}" data-value="{{item.value}}" bindtap="selectCompanion" aria-role="button"><text>{{item.label}}</text></view>
+      </view>
+    </view>
+
+    <view class="planner-section">
+      <view class="arc-head"><text class="arc-head__index">03</text><text class="arc-head__label">感兴趣的内容</text><view class="arc-head__rule"></view><text class="arc-head__meta">最多三项</text></view>
+      <view class="chip-list">
+        <view wx:for="{{interests}}" wx:key="value" class="choice-chip {{item.selected ? 'is-active' : ''}}" data-value="{{item.value}}" bindtap="toggleInterest" aria-role="button"><text>{{item.label}}</text></view>
+      </view>
+    </view>
+
+    <view wx:if="{{error}}" class="planner-error">{{error}}</view>
+    <button class="arc-btn planner-submit" loading="{{loading}}" disabled="{{loading}}" bindtap="generatePlan">{{loading ? '正在规划…' : '生成我的游览建议'}}</button>
+    <text class="planner-safety">只使用现有15个景点和3条路线；现场开放情况请以公告和工作人员指引为准。</text>
+  </view>
+
+  <view wx:else class="result">
+    <view class="result-summary arc-card arc-card--ticks">
+      <view class="result-summary__top"><text class="arc-eyebrow">{{result.modeLabel}}</text><view class="arc-tag"><text>{{result.durationLabel}}</text></view></view>
+      <text class="result-summary__title serif">{{result.name}}</text>
+      <text class="result-summary__meta">{{result.companionLabel}} · {{result.interestLabelText}}</text>
+      <text class="result-summary__source">参考：{{result.sourceRouteName}}</text>
+    </view>
+
+    <view class="ai-note arc-card">
+      <text class="arc-eyebrow">AI STUDY NOTE</text>
+      <text wx:if="{{aiLoading}}" class="ai-note__body">正在根据现有资料补充参观提醒…</text>
+      <text wx:elif="{{aiAdvice}}" class="ai-note__body">{{aiAdvice}}</text>
+      <text wx:else class="ai-note__body">{{aiNotice || '路线已由受控规则生成，可直接使用。'}}</text>
+      <text wx:if="{{aiAdvice && aiNotice}}" class="ai-note__meta">{{aiNotice}}</text>
+    </view>
+
+    <view class="arc-head result-head"><text class="arc-head__index">路线</text><text class="arc-head__label">建议顺序</text><view class="arc-head__rule"></view><text class="arc-head__meta">{{result.stops.length}}站</text></view>
+    <view class="stop-list">
+      <view wx:for="{{result.stops}}" wx:key="id" class="stop-card arc-card" data-id="{{item.id}}" bindtap="openSpot" aria-role="button" aria-label="查看{{item.name}}详情">
+        <view class="stop-card__index"><text>{{item.order}}</text></view>
+        <view class="stop-card__copy"><text class="stop-card__name serif">{{item.name}}</text><text class="stop-card__reason">{{item.reason}}</text><text class="stop-card__time">建议停留 {{item.suggestedMinutes}} 分钟</text></view>
+        <text class="stop-card__arrow">→</text>
+      </view>
+    </view>
+    <text class="result-notice">{{result.notice}}</text>
+    <view class="result-actions"><button class="arc-btn" bindtap="useOnGuide">在导览图中使用</button><button class="arc-btn arc-btn--ghost" bindtap="resetPlan">重新选择</button></view>
+  </view>
+</view>

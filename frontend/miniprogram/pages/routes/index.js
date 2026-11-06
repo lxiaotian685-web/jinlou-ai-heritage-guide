@@ -45,6 +45,9 @@ Page({
     this.setData({ selectedRouteId: '', selectedRouteName: '' });
     wx.showToast({ title: '已清除当前路线', icon: 'none' });
   },
+  openItineraryPlanner() {
+    wx.navigateTo({ url: '/pages/itinerary/index' });
+  },
   onShareAppMessage(event) {
     const id = event.target?.dataset?.id || this.data.expandedId;
     const route = this.data.routes.find((item) => item.id === id);

@@ -54,6 +54,21 @@ try {
   check('固定规则能力如实命名', assistantTemplate.includes('研学资料问答') && !assistantTemplate.includes('AI 研学问答'));
   const assistantStyles = readFileSync(resolve(frontendRoot, 'pages/assistant/index.wxss'), 'utf8');
   check('问答重试与来源展示', assistantTemplate.includes('retryLastQuestion') && assistantTemplate.includes('answer.sources') && assistantTemplate.includes('copySourceUrl') && assistantStyles.includes('.question-form'));
+  const itineraryPlanner = require(resolve(frontendRoot, 'utils/itinerary-planner.js'));
+  const bundledSnapshot = JSON.parse(readFileSync(resolve(frontendRoot, '../cloudfunctions/bijiang-api/data.json'), 'utf8'));
+  const itineraryResults = [45, 90, 120].map((duration) => itineraryPlanner.buildItinerary({
+    spots: bundledSnapshot.spots.data,
+    routes: bundledSnapshot.routes.data,
+    duration,
+    companion: 'study',
+    interests: ['architecture', 'craft'],
+  }));
+  const itineraryTemplate = readFileSync(resolve(frontendRoot, 'pages/itinerary/index.wxml'), 'utf8');
+  const validItinerarySpotIds = new Set(bundledSnapshot.spots.data.map((spot) => spot.id));
+  check('个性游览三档时长', itineraryResults.every((result, index) => result.duration === [45, 90, 120][index] && result.stops.length > 0));
+  check('个性游览景点白名单', itineraryResults.every((result) => result.stopIds.every((id) => validItinerarySpotIds.has(id))));
+  const itineraryScript = readFileSync(resolve(frontendRoot, 'pages/itinerary/index.js'), 'utf8');
+  check('个性游览页面与AI回退', appConfig.pages.includes('pages/itinerary/index') && itineraryTemplate.includes('generatePlan') && itineraryTemplate.includes('useOnGuide') && itineraryScript.includes('AI补充暂不可用') && itineraryPlanner.buildAssistantQuestion(itineraryResults[0]).includes('不要新增景点、路线、票价或开放时间'));
   const privacyTemplate = readFileSync(resolve(frontendRoot, 'pages/privacy/index.wxml'), 'utf8');
   check('本地数据页面精简', ['data-type="visit"', 'data-type="notes"', 'data-type="display"'].every((item) => privacyTemplate.includes(item)) && !privacyTemplate.includes('接口缓存') && !privacyTemplate.includes('匿名互动标识'));
   const apiService = readFileSync(resolve(frontendRoot, 'services/api.js'), 'utf8');
