@@ -9,6 +9,7 @@
     "pages/panorama-viewer/index",
     "pages/recommendations/index",
     "pages/assistant/index",
+    "pages/itinerary/index",
     "pages/routes/index",
     "pages/craft-guide/index",
     "pages/visit-center/index",

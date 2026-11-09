@@ -1,0 +1,51 @@
+@import "../../styles/archive.wxss";
+
+.itinerary-page { box-sizing: border-box; min-height: 100vh; padding: 0 32rpx calc(54rpx + env(safe-area-inset-bottom)); }
+.itinerary-head { padding-top: 36rpx; }
+.itinerary-head__top, .result-summary__top { display: flex; align-items: center; justify-content: space-between; gap: 20rpx; }
+.itinerary-head__main { display: flex; align-items: flex-start; justify-content: space-between; gap: 24rpx; margin-top: 20rpx; padding-bottom: 28rpx; border-bottom: 1rpx solid var(--arc-line-strong); }
+.itinerary-head__copy { flex: 1; min-width: 0; }
+.itinerary-head__title { display: block; margin-bottom: 12rpx; font-size: 58rpx; letter-spacing: 5rpx; }
+.planner, .result { padding-top: 28rpx; }
+.planner-section { margin-bottom: 34rpx; }
+.option-grid { display: grid; gap: 14rpx; margin-top: 18rpx; }
+.option-grid--three { grid-template-columns: repeat(3, 1fr); }
+.option-card { box-sizing: border-box; min-height: 132rpx; padding: 22rpx 12rpx; background: var(--arc-paper); border: 1rpx solid var(--arc-line); border-radius: 6rpx; text-align: center; }
+.option-card.is-active { color: #fff; background: #3a5a47; border-color: #3a5a47; }
+.option-card__label, .option-card__note { display: block; }
+.option-card__label { font-size: 29rpx; line-height: 1.4; }
+.option-card__note { margin-top: 8rpx; font-size: 20rpx; color: var(--arc-muted); }
+.option-card.is-active .option-card__note { color: rgba(255,255,255,.78); }
+.chip-list { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 18rpx; }
+.choice-chip { padding: 15rpx 24rpx; background: var(--arc-paper); border: 1rpx solid var(--arc-line-strong); border-radius: 999rpx; font-size: 25rpx; color: var(--arc-blue); }
+.choice-chip.is-active { color: #fff; background: #3a5a47; border-color: #3a5a47; }
+.planner-submit { width: 100%; min-height: 96rpx; margin-top: 10rpx; }
+.planner-submit[disabled] { opacity: .65; }
+.planner-safety, .result-notice { display: block; margin-top: 18rpx; font-size: 21rpx; line-height: 1.7; color: var(--arc-muted); text-align: center; }
+.planner-error { margin: 0 0 18rpx; padding: 18rpx 20rpx; color: #8d2e22; background: #fff4f0; border-left: 3rpx solid #a6402d; font-size: 24rpx; line-height: 1.6; }
+.result-summary { padding: 28rpx; }
+.result-summary__title { display: block; margin-top: 18rpx; font-size: 40rpx; line-height: 1.35; }
+.result-summary__meta { display: block; margin-top: 10rpx; font-size: 25rpx; line-height: 1.6; color: var(--arc-blue); }
+.result-summary__source { display: block; margin-top: 8rpx; font-size: 21rpx; color: var(--arc-muted); }
+.ai-note { margin-top: 18rpx; padding: 24rpx 26rpx; border-left: 4rpx solid #3a5a47; }
+.ai-note__body { display: block; margin-top: 12rpx; font-size: 25rpx; line-height: 1.75; color: var(--arc-ink); }
+.ai-note__meta { display: block; margin-top: 10rpx; font-size: 20rpx; color: var(--arc-muted); }
+.result-head { margin-top: 34rpx; }
+.stop-list { display: flex; flex-direction: column; gap: 14rpx; margin-top: 18rpx; }
+.stop-card { display: flex; align-items: center; gap: 18rpx; padding: 22rpx 24rpx; }
+.stop-card__index { flex: none; display: flex; align-items: center; justify-content: center; width: 48rpx; height: 48rpx; border: 1rpx solid var(--arc-line-strong); border-radius: 50%; font-size: 22rpx; color: #3a5a47; }
+.stop-card__copy { flex: 1; min-width: 0; }
+.stop-card__name, .stop-card__reason, .stop-card__time { display: block; }
+.stop-card__name { font-size: 31rpx; line-height: 1.4; }
+.stop-card__reason { margin-top: 5rpx; font-size: 22rpx; line-height: 1.55; color: var(--arc-blue); }
+.stop-card__time { margin-top: 5rpx; font-size: 20rpx; color: var(--arc-muted); }
+.stop-card__arrow { flex: none; font-size: 28rpx; color: var(--arc-red); }
+.result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12rpx; margin-top: 24rpx; }
+.result-actions button { min-height: 92rpx; font-size: 25rpx; }
+.font-large .itinerary-head__title { font-size: 68rpx; }
+.font-large .choice-chip, .font-large .result-summary__meta, .font-large .ai-note__body { font-size: 30rpx; }
+.font-large .stop-card__name { font-size: 38rpx; }
+.font-large .stop-card__reason { font-size: 27rpx; }
+.high-contrast .option-card, .high-contrast .choice-chip, .high-contrast .arc-card { background: #fff; border-color: #222; }
+.high-contrast .option-card.is-active, .high-contrast .choice-chip.is-active { color: #fff; background: #111; }
+@media (max-width: 340px) { .option-grid--three, .result-actions { grid-template-columns: 1fr; } }

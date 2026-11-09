@@ -23,6 +23,15 @@
   <view class="routes-body">
     <view wx:if="{{offlineNotice}}" class="routes-offline">{{offlineNotice}}</view>
 
+    <view class="routes-planner arc-card arc-card--ticks">
+      <view class="routes-planner__copy">
+        <text class="arc-eyebrow">PERSONAL ROUTE</text>
+        <text class="routes-planner__title serif">按时间与兴趣规划</text>
+        <text class="routes-planner__body">选择45、90或120分钟，以及同行人与兴趣，生成只包含现有景点的游览建议。</text>
+      </view>
+      <button class="arc-btn routes-planner__action" bindtap="openItineraryPlanner">开始规划</button>
+    </view>
+
     <view wx:if="{{selectedRouteId}}" class="routes-current arc-card arc-card--ticks">
       <view class="routes-current__copy">
         <text class="arc-eyebrow">当前已选路线</text>
