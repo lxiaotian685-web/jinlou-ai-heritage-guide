@@ -23,20 +23,13 @@
   <view class="routes-body">
     <view wx:if="{{offlineNotice}}" class="routes-offline">{{offlineNotice}}</view>
 
-    <view wx:if="{{meta}}" class="routes-status arc-card arc-card--ticks">
-      <text class="arc-eyebrow">TRAIL STATUS</text>
-      <view class="routes-status__head">
-        <text class="routes-status__title serif">{{meta.statusLabel}}</text>
-        <text class="routes-status__date">核对至 {{meta.lastReviewed}}</text>
+    <view wx:if="{{selectedRouteId}}" class="routes-current arc-card arc-card--ticks">
+      <view class="routes-current__copy">
+        <text class="arc-eyebrow">当前已选路线</text>
+        <text class="routes-current__name serif">{{selectedRouteName}}</text>
+        <text class="routes-current__hint">导览图会按这条路线显示点位顺序</text>
       </view>
-      <text class="routes-status__copy">{{meta.notice}}</text>
-      <view class="routes-status__tags">
-        <view class="arc-pending routes-status__tag"><text>入口出口：待确认</text></view>
-        <view class="arc-pending routes-status__tag"><text>无障碍路线：待确认</text></view>
-      </view>
-      <view class="routes-status__safety">
-        <text>{{meta.safetyNotice}}</text>
-      </view>
+      <button class="arc-btn arc-btn--ghost routes-current__clear" bindtap="clearSelectedRoute">清除路线</button>
     </view>
 
     <view wx:if="{{loading}}" class="routes-state arc-card arc-card--ticks">
@@ -57,7 +50,7 @@
       <text class="arc-eyebrow">NO ROUTES</text>
       <text class="routes-empty__title serif">暂无推荐游线</text>
       <view class="arc-empty__rule"></view>
-      <text class="routes-empty__body">游线资料待景区确认后接入。</text>
+      <text class="routes-empty__body">暂无推荐游线，请稍后重试。</text>
       <button class="arc-btn routes-empty__btn" bindtap="backHome">返回首页</button>
     </view>
 
@@ -101,7 +94,7 @@
 
     <view class="routes-foot">
       <view class="arc-hair arc-hair--dot"><text>END OF ROUTES</text></view>
-      <text class="routes-foot__note">游线为资料参考，须景区确认与现场实走</text>
+      <text class="routes-foot__note">可按兴趣选择路线，并在导览图中查看点位</text>
     </view>
   </view>
 </view>

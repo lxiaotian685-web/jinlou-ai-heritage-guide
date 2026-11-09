@@ -13,7 +13,7 @@ const seedSpots = [
     name: '南山祠',
     summary: '现场景点分布牌1号点位，建筑介绍待景区资料审核。',
     category: '祠堂建筑',
-    coverImage: '/images/jinlou-03.jpg',
+    coverImage: '/images/spot-nanshan-hall-v1.jpg',
     hasPanorama: 0,
     hasAudio: 0,
   },
@@ -47,10 +47,10 @@ const seedSpots = [
   { id: 'shouqingwu', name: '守清屋', summary: '现场景点分布牌5号点位，详细历史资料待景区审核。', category: '传统民居', coverImage: '/images/jinlou-02.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'boshao-clinic', name: '伯韶医馆', summary: '现场景点分布牌6号点位，展陈内容与人物资料待景区审核。', category: '历史展陈', coverImage: '/images/jinlou-03.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'nilou', name: '泥楼', summary: '现场景点分布牌7号点位，建筑材料与营造介绍待景区审核。', category: '传统民居', coverImage: '/images/jinlou-02.jpg', hasPanorama: 0, hasAudio: 0 },
-  { id: 'wokear-residence', name: '镬耳民居', summary: '现场景点分布牌8号点位，建筑形制介绍待景区审核。', category: '传统民居', coverImage: '/images/jinlou-02.jpg', hasPanorama: 0, hasAudio: 0 },
+  { id: 'wokear-residence', name: '镬耳民居', summary: '现场景点分布牌8号点位，建筑形制介绍待景区审核。', category: '传统民居', coverImage: '/images/spot-wokear-residence-v1.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'wokear-house', name: '镬耳大屋', summary: '现场景点分布牌9号点位，建筑形制介绍待景区审核。', category: '传统民居', coverImage: '/images/jinlou-02.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'yiyu-school', name: '亦渔遗塾', summary: '现场景点分布牌10号点位，家塾历史与展陈内容待景区审核。', category: '教育建筑', coverImage: '/images/jinlou-03.jpg', hasPanorama: 0, hasAudio: 0 },
-  { id: 'components-exhibit', name: '民居构件展示', summary: '现场景点分布牌11号点位，构件名称与说明待景区审核。', category: '专题展陈', coverImage: '/images/jinlou-01.jpg', hasPanorama: 0, hasAudio: 0 },
+  { id: 'components-exhibit', name: '民居构件展示', summary: '现场景点分布牌11号点位，构件名称与说明待景区审核。', category: '专题展陈', coverImage: '/images/spot-components-exhibit-v1.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'twenty-four-odes', name: '二十四咏', summary: '现场景点分布牌12号点位，作品内容与背景资料待景区审核。', category: '文化景观', coverImage: '/images/jinlou-01.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'baoyue-pavilion', name: '抱月亭', summary: '现场景点分布牌13号点位，园林景观介绍待景区审核。', category: '亭台景观', coverImage: '/images/jinlou-03.jpg', hasPanorama: 0, hasAudio: 0 },
   { id: 'diequ-pavilion', name: '叠趣亭', summary: '现场景点分布牌14号点位，园林景观介绍待景区审核。', category: '亭台景观', coverImage: '/images/jinlou-03.jpg', hasPanorama: 0, hasAudio: 0 },
@@ -133,10 +133,10 @@ const seedHotspots = [
 ];
 
 const seedRecommendations = [
-  ['food-1', 'food', '推荐美食待接入', '餐饮', '地址待接入', '营业信息待接入', '/images/jinlou-01.jpg', '', '', '', '', 10, 'pending-review', '景区接口 · 占位数据'],
-  ['hotel-1', 'hotel', '推荐酒店待接入', '住宿', '地址待接入', '营业信息待接入', '/images/jinlou-02.jpg', '', '', '', '', 20, 'pending-review', '景区接口 · 占位数据'],
+  ['food-1', 'food', '顺德特色美食', '餐饮参考', '碧江金楼周边', '营业时间请以到店信息为准', '/images/arc/arc-colonnade.jpg', '可留意双皮奶、鱼皮等顺德特色风味。', '', '', '双皮奶与鱼皮', 10, 'reviewed', '比赛展示资料 · 非商户广告'],
+  ['hotel-1', 'hotel', '拾光美宿酒店（北滘碧江店）', '住宿参考', '距碧江金楼步行约700米', '房态与价格请以住宿平台实时信息为准', '/images/arc/arc-garden-moon.jpg', '用户提供的住宿平台截图显示该店位于景点附近。', '', '', '附近住宿', 20, 'reviewed', '用户提供截图 · 2026-10-27'],
   ['transport-1', 'transport', '交通方案待接入', '交通', '路线待接入', '班次信息待接入', '/images/jinlou-03.jpg', '', '', '', '', 30, 'pending-review', '景区接口 · 占位数据'],
-  ['attraction-1', 'attraction', '周边景点待接入', '景点', '地址待接入', '开放信息待接入', '/images/jinlou-01.jpg', '', '', '', '', 40, 'pending-review', '景区接口 · 占位数据'],
+  ['attraction-1', 'attraction', '清晖园', '岭南园林', '佛山市顺德区大良街道清晖路23号', '开放安排请以景区当日公告为准', '/images/arc/arc-gable.jpg', '可作为碧江金楼行程后的顺德古建延伸参观。', '', '', '周边景点', 40, 'reviewed', '比赛展示资料 · 出发前核实'],
 ];
 
 const seedRoutes = [
@@ -430,9 +430,22 @@ export function createDatabase(filename = ':memory:') {
   }
 
   db.prepare(`
-    INSERT OR IGNORE INTO service_config (id, ticket_url, address, opening_hours, phone, transport)
-    VALUES (1, '', '地址待景区确认', '以景区最新公告为准', '联系电话待景区确认', '公交与停车信息待接入')
+    INSERT OR IGNORE INTO service_config (id, ticket_url, address, opening_hours, phone, transport, latitude, longitude)
+    VALUES (1, '', '广东省佛山市顺德区北滘镇碧江社区泰宁西路6号', '每日08:30—17:00；停止入园时间及临时闭园安排请以景区当日公告为准', '0757-26632123', '公交可在德云市场站下车后步行前往；具体线路、停车位置及实时路况请以地图导航和景区公告为准。', 22.942558, 113.262272)
   `).run();
+
+  db.prepare(`
+    UPDATE service_config
+    SET address = ?, opening_hours = ?, phone = ?, transport = ?, latitude = ?, longitude = ?
+    WHERE id = 1 AND address = '地址待景区确认' AND phone = '联系电话待景区确认'
+  `).run(
+    '广东省佛山市顺德区北滘镇碧江社区泰宁西路6号',
+    '每日08:30—17:00；停止入园时间及临时闭园安排请以景区当日公告为准',
+    '0757-26632123',
+    '公交可在德云市场站下车后步行前往；具体线路、停车位置及实时路况请以地图导航和景区公告为准。',
+    22.942558,
+    113.262272,
+  );
 
   const recommendationCount = db.prepare('SELECT COUNT(*) AS total FROM recommendations').get().total;
   if (recommendationCount === 0) {
@@ -442,6 +455,15 @@ export function createDatabase(filename = ':memory:') {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     for (const recommendation of seedRecommendations) insertRecommendation.run(...recommendation);
+  }
+  const refreshRecommendation = db.prepare(`
+    UPDATE recommendations
+    SET category = ?, name = ?, type = ?, address = ?, availability = ?, image = ?, description = ?, phone = ?, link_url = ?, product_name = ?, sort_order = ?, status = ?, source_note = ?
+    WHERE id = ? AND status = 'pending-review' AND name LIKE '%待接入%'
+  `);
+  for (const item of seedRecommendations.filter(([, category]) => category !== 'transport')) {
+    const [id, ...values] = item;
+    refreshRecommendation.run(...values, id);
   }
 
   const routeCount = db.prepare('SELECT COUNT(*) AS total FROM tour_routes').get().total;

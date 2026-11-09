@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   'use strict';
 
   if (!window.cloudbase) {
@@ -19,10 +19,12 @@
   const value = (id) => $(id).value.trim();
   const setValue = (id, next = '') => { $(id).value = next ?? ''; };
   const bundledSpotCovers = {
+    'nanshan-hall': './assets/spots/spot-nanshan-hall-v1.jpg',
     zhifangdi: './assets/spots/zhifangdi-cover.jpg', duizhao: './assets/spots/duizhao-cover.jpg', jinlou: './assets/spots/jinlou-cover-v2.jpg',
     shouqingwu: './assets/spots/shouqingwu-cover.jpg', 'boshao-clinic': './assets/spots/boshao-clinic-cover.jpg', nilou: './assets/spots/nilou-cover.jpg',
     'wokear-house': './assets/spots/wokear-house-cover.jpg', 'yiyu-school': './assets/spots/yiyu-school-cover.jpg', 'twenty-four-odes': './assets/spots/twenty-four-odes-cover.jpg',
     'baoyue-pavilion': './assets/spots/baoyue-pavilion-cover.jpg', 'diequ-pavilion': './assets/spots/diequ-pavilion-cover.jpg', garden: './assets/spots/garden-cover.jpg',
+    'wokear-residence': './assets/spots/spot-wokear-residence-v1.jpg', 'components-exhibit': './assets/spots/spot-components-exhibit-v1.jpg',
   };
   const placeholderSpotImage = /^\/images\/jinlou-0[1-3]\.jpg$/;
   const defaultHomeSlides = Array.from({ length: 6 }, (_, index) => `/images/jinlou-home-slide-${index + 1}.jpg`);
@@ -136,7 +138,16 @@
     });
   }
 
+  // 小程序包内的实拍封面在后台没有同路径资源，需按文件名映射到后台 assets，
+  // 否则会被当成首页通用图，看起来像「照片没更新」。
+  const bundledSpotCoverPaths = {
+    '/images/spot-nanshan-hall-v1.jpg': './assets/spots/spot-nanshan-hall-v1.jpg',
+    '/images/spot-wokear-residence-v1.jpg': './assets/spots/spot-wokear-residence-v1.jpg',
+    '/images/spot-components-exhibit-v1.jpg': './assets/spots/spot-components-exhibit-v1.jpg',
+  };
+
   function displayLocation(location) {
+    if (bundledSpotCoverPaths[location]) return bundledSpotCoverPaths[location];
     return adminHomeSlides[location] || (location?.startsWith('/images/') ? './assets/home-hero.jpg' : location || '');
   }
 
@@ -359,7 +370,7 @@
       } catch (_error) { image.removeAttribute('src'); }
       return;
     }
-    image.src = location.startsWith('/images/') ? './assets/home-hero.jpg' : location;
+    image.src = displayLocation(location);
   }
 
   function resetFileChoice(fileInputId, labelId, customText = '') {

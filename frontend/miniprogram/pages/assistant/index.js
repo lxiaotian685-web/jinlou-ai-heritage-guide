@@ -11,11 +11,9 @@ const FALLBACK_QUESTIONS = [
 ].map((question, index) => ({ id: `fallback-${index}`, question }));
 
 function verificationStatusLabel(status) {
-  if (status === 'verified-public-reference') return '已核对公开资料';
-  if (status === 'pending-scenic-review') return '待景区复核';
-  if (status === 'pending-expert-review') return '待专家复核';
-  if (status === 'pending-field-check') return '待现场实走';
-  return '待补充核对';
+  if (status === 'web-reference') return '联网资料';
+  if (status === 'verified-public-reference') return '公开资料';
+  return '项目整理资料';
 }
 
 function normalizeSources(sources = []) {
@@ -28,10 +26,19 @@ function normalizeSources(sources = []) {
 }
 
 function publicStatusLabel(status) {
-  if (status === 'public') return '景区已审核';
-  if (status === 'not-ready') return '暂不作为正式发布答案';
-  return '公开资料核对稿，待景区审核';
+  if (status === 'public') return '已确认资料';
+  if (status === 'not-ready') return '暂无正式答案';
+  return '参考资料';
 }
+
+const MODE_LABELS = {
+  fixed_fact: '固定信息',
+  web_rag: '联网检索 + 模型整理',
+  web_fallback: '联网资料摘要（模型暂不可用）',
+  knowledge_rag: '资料检索 + 模型整理',
+  rule_fallback: '资料检索（规则回答）',
+  not_ready: '资料库暂未收录',
+};
 
 Page({
   onLoad() { this.loadSuggestions(); },
@@ -43,6 +50,7 @@ Page({
     questionLength: 0,
     selectedQuestion: '',
     answer: null,
+    sourcesExpanded: false,
     quickQuestions: FALLBACK_QUESTIONS,
   },
   async loadSuggestions() {
@@ -71,21 +79,28 @@ Page({
   retryLastQuestion() {
     return this.loadAnswer(this.data.selectedQuestion);
   },
+  toggleSources() {
+    this.setData({ sourcesExpanded: !this.data.sourcesExpanded });
+  },
   copySourceUrl(event) {
     const url = event.currentTarget.dataset.url;
     if (url) wx.setClipboardData({ data: url });
   },
   async loadAnswer(question) {
     if (!question || this.data.sending) return;
-    this.setData({ selectedQuestion: question, inputQuestion: question, questionLength: question.length, answer: null, sending: true });
+    this.setData({ selectedQuestion: question, inputQuestion: question, questionLength: question.length, answer: null, sourcesExpanded: false, sending: true });
     try {
       const result = await askAssistant(question);
+      const data = result.data || {};
       this.setData({
         answer: {
-          text: result.data.answer,
-          notice: result.data.notice,
-          sources: normalizeSources(result.data.sources),
-          publicStatus: publicStatusLabel(result.data.publicStatus),
+          text: data.answer,
+          notice: data.notice,
+          modeLabel: MODE_LABELS[data.mode] || '',
+          fallbackHint: data.mode === 'rule_fallback' ? '模型暂不可用或超时，已改用规则回答。' : '',
+          requestId: data.requestId || '',
+          sources: normalizeSources(data.sources),
+          publicStatus: publicStatusLabel(data.publicStatus),
         },
         sending: false,
       });

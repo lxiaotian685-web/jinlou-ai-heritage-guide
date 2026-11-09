@@ -4,9 +4,9 @@ const TARGET_ID = 'jinlou-woodcarving';
 const PROGRESS_KEY = `arStudyProgress:${TARGET_ID}`;
 
 const HOTSPOTS = [
-  { id: 'component', number: 1, title: '观察构件', description: '从梁架、门窗等位置辨认木雕构件；具体点位仍待现场标定。', x: 24, y: 36 },
-  { id: 'carving', number: 2, title: '理解雕刻层次', description: '用浅浮雕、深浮雕等概念辅助观察，正式术语与实例待专家确认。', x: 58, y: 48 },
-  { id: 'gilding', number: 3, title: '查看饰金效果', description: '留意金色装饰与木质底色的层次关系；材料和工序待资料审核。', x: 72, y: 25 },
+  { id: 'component', number: 1, title: '观察构件', description: '从梁架、门窗等位置观察木雕构件，比较它们在建筑中的位置与作用。', x: 24, y: 36 },
+  { id: 'carving', number: 2, title: '理解雕刻层次', description: '留意纹样由浅到深的起伏变化，观察层次如何让画面更有立体感。', x: 58, y: 48 },
+  { id: 'gilding', number: 3, title: '查看饰金效果', description: '观察金色装饰与木质底色的对比，看看视觉重点如何被突出。', x: 72, y: 25 },
 ];
 
 Page({
@@ -16,7 +16,7 @@ Page({
     cameraReady: false,
     cameraError: '',
     useFallback: false,
-    hotspots: HOTSPOTS,
+    hotspots: HOTSPOTS.map((item) => ({ ...item, visited: false })),
     activeHotspot: HOTSPOTS[0],
     visitedHotspots: [],
     quizOptions: [
@@ -26,6 +26,8 @@ Page({
     ],
     selectedAnswer: '',
     quizPassed: false,
+    quizUnlocked: false,
+    visitedCount: 0,
     completedBefore: false,
   },
   onShow() {
@@ -35,36 +37,60 @@ Page({
     });
   },
   startExperience() {
-    this.setData({ stage: 'camera', cameraError: '', useFallback: false });
+    this.setData({ stage: 'camera', cameraReady: false, cameraError: '', useFallback: false });
   },
   handleCameraReady() {
     this.setData({ cameraReady: true, cameraError: '' });
   },
   handleCameraError(event) {
-    const message = event?.detail?.errMsg || '当前设备无法打开相机';
+    const errMsg = event?.detail?.errMsg || '';
+    const permissionDenied = /auth deny|auth denied|authorize:fail|permission denied|system permission/i.test(errMsg);
+    const message = permissionDenied
+      ? '未获得相机权限，可在右上角···设置中允许，或先用参考图继续。'
+      : (errMsg || '当前设备无法打开相机');
     this.setData({ cameraReady: false, cameraError: message });
   },
   confirmTarget() {
-    this.setData({ stage: 'discovered', activeHotspot: HOTSPOTS[0], visitedHotspots: ['component'] });
+    this.enterDiscovery(false);
   },
   useImageFallback() {
-    this.setData({ stage: 'discovered', useFallback: true, cameraError: '', activeHotspot: HOTSPOTS[0], visitedHotspots: ['component'] });
+    this.enterDiscovery(true);
+  },
+  enterDiscovery(useFallback) {
+    const hotspots = HOTSPOTS.map((item, index) => ({ ...item, visited: index === 0 }));
+    this.setData({ stage: 'discovered', useFallback, cameraError: '', hotspots, activeHotspot: hotspots[0], visitedHotspots: ['component'], visitedCount: 1, quizUnlocked: false, selectedAnswer: '', quizPassed: false });
   },
   selectHotspot(event) {
     const id = event.currentTarget.dataset.id;
     const activeHotspot = HOTSPOTS.find((item) => item.id === id);
     if (!activeHotspot) return;
     const visitedHotspots = Array.from(new Set([...this.data.visitedHotspots, id]));
-    this.setData({ activeHotspot, visitedHotspots });
+    const hotspots = this.data.hotspots.map((item) => ({ ...item, visited: visitedHotspots.includes(item.id) }));
+    this.setData({
+      hotspots,
+      activeHotspot: hotspots.find((item) => item.id === id),
+      visitedHotspots,
+      visitedCount: visitedHotspots.length,
+      quizUnlocked: visitedHotspots.length === HOTSPOTS.length,
+    });
   },
   answerQuiz(event) {
+    if (!this.data.quizUnlocked) {
+      wx.showToast({ title: '请先集齐三枚线索', icon: 'none' });
+      return;
+    }
     const selectedAnswer = event.currentTarget.dataset.id;
     const quizPassed = selectedAnswer === 'a';
     this.setData({ selectedAnswer, quizPassed });
     if (quizPassed) {
-      wx.setStorageSync(PROGRESS_KEY, { completedAt: Date.now(), visitedHotspots: this.data.visitedHotspots });
+      wx.setStorageSync(PROGRESS_KEY, {
+        targetId: TARGET_ID,
+        completedAt: Date.now(),
+        visitedHotspots: [...this.data.visitedHotspots],
+      });
       this.setData({ completedBefore: true });
-      wx.showToast({ title: '解锁观察员', icon: 'success' });
+      wx.vibrateShort({ type: 'light' });
+      wx.showToast({ title: '彩蛋已解锁', icon: 'success' });
     }
   },
   openNarration() {
@@ -74,6 +100,7 @@ Page({
     wx.navigateTo({ url: '/pages/assistant/index' });
   },
   resetExperience() {
-    this.setData({ stage: 'intro', cameraReady: false, cameraError: '', useFallback: false, activeHotspot: HOTSPOTS[0], visitedHotspots: [], selectedAnswer: '', quizPassed: false });
+    const hotspots = HOTSPOTS.map((item) => ({ ...item, visited: false }));
+    this.setData({ stage: 'intro', cameraReady: false, cameraError: '', useFallback: false, hotspots, activeHotspot: hotspots[0], visitedHotspots: [], visitedCount: 0, quizUnlocked: false, selectedAnswer: '', quizPassed: false });
   },
 });

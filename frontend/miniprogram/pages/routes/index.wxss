@@ -105,69 +105,6 @@
   color: var(--arc-blue);
 }
 
-/* ---------- 游线状态 ---------- */
-.routes-status {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-  margin-bottom: 22rpx;
-  padding: 26rpx;
-}
-
-.routes-status__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 6rpx 18rpx;
-}
-
-.routes-status__title {
-  flex: 1;
-  min-width: 0;
-  font-size: 36rpx;
-  line-height: 1.35;
-  letter-spacing: 1rpx;
-  color: var(--arc-ink);
-}
-
-.routes-status__date {
-  flex: none;
-  font-size: 22rpx;
-  line-height: 1.5;
-  letter-spacing: 1rpx;
-  color: var(--arc-muted);
-}
-
-.routes-status__copy {
-  font-size: 24rpx;
-  line-height: 1.8;
-  letter-spacing: 0.5rpx;
-  color: var(--arc-blue);
-}
-
-.routes-status__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-  margin-top: 2rpx;
-}
-
-.routes-status__tag {
-  font-size: 19rpx;
-  letter-spacing: 1rpx;
-}
-
-.routes-status__safety {
-  margin-top: 6rpx;
-  padding-left: 16rpx;
-  border-left: 3rpx solid var(--arc-red);
-  font-size: 24rpx;
-  line-height: 1.75;
-  letter-spacing: 0.5rpx;
-  color: var(--arc-muted);
-}
-
 /* ---------- 加载 / 错误 ---------- */
 .routes-state {
   display: flex;
@@ -454,21 +391,6 @@
   font-size: 26rpx;
 }
 
-.font-large .routes-status__title {
-  font-size: 42rpx;
-}
-
-.font-large .routes-status__date,
-.font-large .routes-status__copy,
-.font-large .routes-status__safety {
-  font-size: 30rpx;
-  line-height: 1.8;
-}
-
-.font-large .routes-status__tag {
-  font-size: 25rpx;
-}
-
 .font-large .routes-state__title,
 .font-large .routes-error__title,
 .font-large .routes-empty__title {
@@ -561,15 +483,11 @@
   background: #393939;
 }
 
-.high-contrast .routes-status__title,
-.high-contrast .routes-status__copy,
 .high-contrast .routes-card__name,
 .high-contrast .routes-stop__text {
   color: #111;
 }
 
-.high-contrast .routes-status__date,
-.high-contrast .routes-status__safety,
 .high-contrast .routes-card__theme,
 .high-contrast .routes-card__toggle-text,
 .high-contrast .routes-error__body,
@@ -596,4 +514,38 @@
   .routes-card__chevron {
     transition: none;
   }
+}
+
+
+.routes-current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 28rpx 30rpx;
+  margin-bottom: 24rpx;
+}
+
+.routes-current__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.routes-current__name {
+  font-size: 34rpx;
+  color: #1f3327;
+}
+
+.routes-current__hint {
+  font-size: 24rpx;
+  color: #6b7269;
+}
+
+.routes-current__clear {
+  flex: 0 0 auto;
+  min-width: 168rpx;
+  padding: 0 24rpx;
 }

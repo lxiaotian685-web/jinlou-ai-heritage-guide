@@ -61,7 +61,7 @@ function requestLocal(path, options, cached) {
       method: options.method || 'GET',
       data: options.data,
       header: { ...(options.data ? { 'content-type': 'application/json' } : {}), ...(options.headers || {}) },
-      timeout: cached ? 1500 : 8000,
+      timeout: path === '/assistant/chat' ? 35000 : (cached ? 1500 : 8000),
       success(response) {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           return resolve(response.data);
@@ -81,6 +81,7 @@ function requestLocal(path, options, cached) {
 async function requestCloud(path, options) {
   const result = await wx.cloud.callFunction({
     name: 'bijiang-api',
+    config: { timeout: path === '/assistant/chat' ? 35000 : 10000 },
     data: { path, method: options.method || 'GET', body: options.data || null, adminToken: options.adminToken || '' },
   });
   if (result.result?.ok) return result.result.response;

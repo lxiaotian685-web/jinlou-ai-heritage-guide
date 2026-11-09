@@ -66,12 +66,14 @@ try {
   check('管理端反馈筛选与处理', ['问题反馈', '内部备注'].every((text) => adminMiniTemplate.includes(text)) && ['待处理', '处理中', '已完成'].every((text) => adminMiniScript.includes(text)) && adminMiniScript.includes('adminGetFeedback') && adminMiniScript.includes('adminUpdateFeedback'));
   const apiService = readFileSync(resolve(frontendRoot, 'services/api.js'), 'utf8');
   check('反馈接口封装', ['submitFeedback', 'adminGetFeedback', 'adminUpdateFeedback'].every((name) => apiService.includes(name)));
-  check('缓存快速回退', apiService.includes('timeout: cached ? 1500 : 8000'));
+  check('缓存快速回退', apiService.includes('cached ? 1500 : 8000') && apiService.includes("'/assistant/chat' ? 35000"));
   const homeTemplate = readFileSync(resolve(frontendRoot, 'pages/index/index.wxml'), 'utf8');
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
   const arTemplate = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.wxml'), 'utf8');
   const arScript = readFileSync(resolve(frontendRoot, 'pages/panoramas/index.js'), 'utf8');
-  check('AR木雕研学试点', ['<camera', '观察构件', '理解雕刻层次', '查看饰金效果', '使用参考图继续', '来参加一下研学问答吧', '小小木雕观察员'].every((text) => arTemplate.includes(text) || arScript.includes(text)));
+  check('AR木雕研学试点', ['<camera', '观察构件', '理解雕刻层次', '查看饰金效果', '使用参考图继续', '线索已集齐 · 寻宝彩蛋', '小小木雕观察员'].every((text) => arTemplate.includes(text) || arScript.includes(text)));
+  check('AR彩蛋需集齐三枚线索', arScript.includes('visitedHotspots.length === HOTSPOTS.length') && arTemplate.includes('还差 {{3 - visitedCount}} 枚线索') && arTemplate.includes('wx:if="{{!quizUnlocked}}"'));
+  check('AR产品文案无内部待办', !['待现场标定', '待专家确认', '待资料审核', '以景区审核资料为准'].some((text) => arTemplate.includes(text) || arScript.includes(text)));
   check('全景入口已替换', appConfig.tabBar.list.some((item) => item.pagePath === 'pages/panoramas/index' && item.text === 'AR研学') && homeTemplate.includes('AR木雕寻宝') && !homeTemplate.includes('全景漫游'));
   const spotDetailScript = readFileSync(resolve(frontendRoot, 'pages/spot-detail/index.js'), 'utf8');
   check('讲解音频地址由接口显式提供', spotDetailScript.includes("configuredUrl.startsWith('cloud://')") && spotDetailScript.includes('fileID: configuredUrl') && !spotDetailScript.includes('CLOUD_AUDIO_ROOT'));
@@ -79,7 +81,8 @@ try {
   check('音频失败保留文字降级', spotDetailScript.includes('audioError') && spotDetailTemplate.includes('{{audioError}}') && spotDetailTemplate.includes('讲解文字稿'));
   const spotImages = require(resolve(frontendRoot, 'utils/spot-images.js'));
   const missingSpotImages = Object.values(spotImages.bundledCovers).filter((imagePath) => !existsSync(resolve(frontendRoot, imagePath.slice(1))));
-  check('实拍景点封面', Object.keys(spotImages.bundledCovers).length === 12 && missingSpotImages.length === 0, `${12 - missingSpotImages.length}/12`);
+  const expectedSpotCovers = 15;
+  check('实拍景点封面', Object.keys(spotImages.bundledCovers).length === expectedSpotCovers && missingSpotImages.length === 0, `${expectedSpotCovers - missingSpotImages.length}/${expectedSpotCovers}`);
   check('首页叠放轮播图', [1, 2, 3, 4, 5, 6].every((index) => existsSync(resolve(frontendRoot, `images/jinlou-home-slide-${index}.jpg`))));
   const adminWebRoot = resolve(frontendRoot, '../admin-web');
   check('独立云端管理网站', ['index.html', 'styles.css', 'redesign.css', 'app.js', 'config.js', 'assets/home-hero.jpg'].every((file) => existsSync(resolve(adminWebRoot, file))));
@@ -88,7 +91,7 @@ try {
   check('后台欢迎语包含碧江金楼', adminTemplate.includes('欢迎使用碧江金楼运营管理平台'));
   check('后台图片直接上传', ['选择照片', '图片文件地址', 'uploadSelectedImage', '/admin/media/images'].every((text) => adminTemplate.includes(text) || adminScript.includes(text)));
   const missingAdminSpotImages = Object.values(spotImages.bundledCovers).filter((imagePath) => !existsSync(resolve(adminWebRoot, 'assets/spots', imagePath.split('/').pop())));
-  check('后台显示原有景点封面', missingAdminSpotImages.length === 0 && adminScript.includes("shouqingwu: './assets/spots/shouqingwu-cover.jpg'") && adminTemplate.includes('spot-preview-empty'), `${12 - missingAdminSpotImages.length}/12`);
+  check('后台显示原有景点封面', missingAdminSpotImages.length === 0 && adminScript.includes("shouqingwu: './assets/spots/shouqingwu-cover.jpg'") && adminTemplate.includes('spot-preview-empty'), `${expectedSpotCovers - missingAdminSpotImages.length}/${expectedSpotCovers}`);
   check('商家分类与上架流程简化', adminTemplate.includes('当前分类') && adminTemplate.includes('保存草稿') && adminTemplate.includes('保存并上架'));
   check('商家缺图不再误用首页封面', adminTemplate.includes('ad-preview-empty') && adminScript.includes('showStoredAdPreview'));
   check('后台运营数据看板', ['运营数据', '商家互动排行', 'analytics-total', '/admin/recommendation-analytics'].every((text) => adminTemplate.includes(text) || adminScript.includes(text)));

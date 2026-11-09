@@ -3,18 +3,27 @@ const { getDisplayClass } = require('../../utils/display-settings');
 const config = require('../../config');
 
 const TICKET_STATES = [
-  { key: 'pending', index: '01', name: '准备中', meta: '入口未配置' },
-  { key: 'open', index: '02', name: '已开放', meta: '可跳转官方' },
-  { key: 'link', index: '03', name: '需复制链接', meta: '小程序 / 网页' },
+  { key: 'guide', index: '01', name: '使用说明', meta: '复制后在微信打开' },
+  { key: 'link', index: '02', name: '复制链接', meta: '新版购票小程序' },
+  { key: 'official', index: '03', name: '官方平台', meta: '票价退改以其为准' },
 ];
+
+const CONFIRMED_SERVICE = {
+  address: '广东省佛山市顺德区北滘镇碧江社区泰宁西路6号',
+  openingHours: '每日08:30—17:00；停止入园时间及临时闭园安排请以景区当日公告为准',
+  phone: '0757-26632123',
+  transport: '公交可在德云市场站下车后步行前往；具体线路、停车位置及实时路况请以地图导航和景区公告为准。',
+  latitude: 22.942558,
+  longitude: 113.262272,
+};
 
 const MINI_TICKET_LINK = String(config.ticketMiniLink || '').trim();
 const LEGACY_TICKET_LINK = String(config.ticketLegacyLink || '').trim();
 
 const NEARBY = [
-  { key: 'food-1', category: 'food', title: '附近美食', label: '餐饮推荐位', mark: '食', meta: '早餐 · 正餐 · 茶饮', image: '/images/arc/arc-colonnade.jpg' },
-  { key: 'hotel-1', category: 'hotel', title: '附近住宿', label: '住宿推荐位', mark: '宿', meta: '民宿 · 酒店 · 客栈', image: '/images/arc/arc-garden-moon.jpg' },
-  { key: 'food-2', category: 'food', title: '附近美食', label: '餐饮推荐位', mark: '食', meta: '小吃 · 甜品 · 咖啡', image: '/images/arc/arc-gable.jpg' },
+  { key: 'food-1', category: 'food', title: '顺德美食', label: '双皮奶与鱼皮', mark: '食', meta: '顺德特色 · 到店前核实', note: '美食示意图', image: '/images/arc/arc-colonnade.jpg' },
+  { key: 'hotel-1', category: 'hotel', title: '附近住宿', label: '拾光美宿酒店', mark: '宿', meta: '北滘碧江店 · 约700米', note: '房型示意图', image: '/images/arc/arc-garden-moon.jpg' },
+  { key: 'attraction-1', category: 'attraction', title: '周边景点', label: '清晖园', mark: '园', meta: '岭南园林 · 大良清晖路', note: '景观示意图', image: '/images/arc/arc-gable.jpg' },
 ];
 
 const PLACEHOLDER = /待接入|待确认|待景区|以景区最新公告为准/;
@@ -42,22 +51,24 @@ function resolveTicketLinks(ticket) {
   };
 }
 
-function resolveTicketState(ticket, links) {
-  if (ticket && ticket.appId && (ticket.enabled === true || Boolean(ticket.path))) return 'open';
-  if (links && (links.miniLink || links.legacyLink)) return 'link';
-  return 'pending';
-}
-
-function ticketStateLine(state) {
-  if (state === 'open') return '官方购票渠道已接入';
-  if (state === 'link') return '官方购票入口已提供，可复制链接打开';
-  return '订票入口尚未开放';
-}
-
-function ticketPrimaryLabel(state) {
-  if (state === 'open') return '微信内打开官方购票';
-  if (state === 'link') return '查看官方购票入口';
-  return '订票入口准备中';
+function mergeConfirmedService(service) {
+  const source = service || {};
+  const actions = source.actions || {};
+  const merged = { ...source };
+  for (const [key, value] of Object.entries(CONFIRMED_SERVICE)) {
+    if (key === 'latitude' || key === 'longitude') {
+      if (merged[key] === null || merged[key] === '' || !Number.isFinite(Number(merged[key]))) merged[key] = value;
+    } else if (isPending(merged[key])) {
+      merged[key] = value;
+    }
+  }
+  merged.actions = {
+    ...actions,
+    copyAddress: true,
+    callPhone: true,
+    openMap: true,
+  };
+  return merged;
 }
 
 Page({
@@ -70,9 +81,8 @@ Page({
     ticketLegacyLink: '',
     ticketHasLink: false,
     ticketSecondaryLabel: '',
-    ticketState: 'pending',
-    ticketStateLine: '订票入口尚未开放',
-    ticketPrimaryLabel: '订票入口准备中',
+    ticketState: 'guide',
+    ticketStateLine: '复制新版链接后，在微信聊天窗口粘贴发送并点击卡片',
     ticketStates: TICKET_STATES,
     serviceMeta: { addressPending: true, transportPending: true, openingPending: true, phonePending: true },
     ticketSheet: false,
@@ -89,10 +99,10 @@ Page({
     this.setData({ loading: true, error: '' });
     try {
       const result = await getService();
-      const service = result.data;
+      const service = mergeConfirmedService(result.data);
       const ticket = service.ticket || {};
       const links = resolveTicketLinks(ticket);
-      const ticketState = resolveTicketState(ticket, links);
+      const ticketState = links.miniLink || links.legacyLink ? 'link' : 'guide';
       const ticketSecondaryLabel = links.miniLink ? '复制新版链接' : (links.legacyLink ? '复制旧版链接' : '');
       this.loaded = true;
       this.setData({
@@ -104,44 +114,13 @@ Page({
         ticketHasLink: Boolean(links.miniLink || links.legacyLink),
         ticketSecondaryLabel,
         ticketState,
-        ticketStateLine: ticketStateLine(ticketState),
-        ticketPrimaryLabel: ticketPrimaryLabel(ticketState),
+        ticketStateLine: ticketState === 'link'
+          ? '复制新版链接后，在微信聊天窗口粘贴发送并点击卡片'
+          : '请以景区最新公布的官方购票渠道为准',
       });
     } catch (error) {
       this.setData({ loading: false, error: getErrorMessage(error, '服务信息加载失败，请稍后重试。') });
     }
-  },
-  handleTicket() {
-    const state = this.data.ticketState;
-    if (state === 'pending') {
-      wx.showModal({
-        title: '订票入口准备中',
-        content: '官方购票平台尚未配置。本小程序不代售、不收款，请以景区最新公告为准。',
-        showCancel: false,
-      });
-      return;
-    }
-    if (state === 'link') {
-      this.openTicketSheet('link');
-      return;
-    }
-    const ticket = (this.data.service && this.data.service.ticket) || {};
-    wx.navigateToMiniProgram({
-      appId: ticket.appId,
-      path: ticket.path || '',
-      success: () => {
-        this.setData({ ticketState: 'open', ticketStateLine: ticketStateLine('open') });
-      },
-      fail: () => {
-        this.setData({
-          ticketState: 'link',
-          ticketStateLine: ticketStateLine('link'),
-          ticketPrimaryLabel: ticketPrimaryLabel('link'),
-          ticketSecondaryLabel: this.data.ticketMiniLink ? '复制新版链接' : (this.data.ticketLegacyLink ? '复制旧版链接' : ''),
-        });
-        this.openTicketSheet('failed');
-      },
-    });
   },
   copyTicketLink() {
     const link = this.data.ticketMiniLink || this.data.ticketLegacyLink;
@@ -151,7 +130,11 @@ Page({
     }
     wx.setClipboardData({
       data: link,
-      success: () => wx.showToast({ title: '购票链接已复制', icon: 'none' }),
+      success: () => wx.showToast({
+        title: this.data.ticketMiniLink ? '小程序链接已复制，请粘贴到微信聊天发送' : '购票链接已复制',
+        icon: 'none',
+      }),
+      fail: () => wx.showToast({ title: '复制失败，请长按链接手动复制', icon: 'none' }),
     });
   },
   openTicketSheet(mode) {
@@ -181,23 +164,40 @@ Page({
     wx.setClipboardData({
       data: link,
       success: () => this.setData({ copiedKey: kind }),
+      fail: () => wx.showToast({ title: '复制失败，请长按链接手动复制', icon: 'none' }),
     });
   },
   copyAddress() {
-    if (!this.data.service.actions.copyAddress) return this.showPending('正式地址尚未配置');
-    wx.setClipboardData({ data: this.data.service.address });
+    const service = this.data.service || {};
+    const actions = service.actions || {};
+    if (!actions.copyAddress) return this.showPending('正式地址尚未配置');
+    wx.setClipboardData({
+      data: service.address,
+      fail: () => this.showPending('复制失败，请稍后重试'),
+    });
   },
   callPhone() {
-    if (!this.data.service.actions.callPhone) return this.showPending('正式联系电话尚未配置');
-    wx.makePhoneCall({ phoneNumber: this.data.service.phone });
+    const service = this.data.service || {};
+    const actions = service.actions || {};
+    if (!actions.callPhone) return this.showPending('正式联系电话尚未配置');
+    wx.makePhoneCall({
+      phoneNumber: service.phone,
+      fail: (error) => {
+        if (/cancel/i.test((error && error.errMsg) || '')) return;
+        this.showPending('无法拨打电话，请稍后重试');
+      },
+    });
   },
   openMap() {
-    if (!this.data.service.actions.openMap) return this.showPending('地图坐标尚未配置');
+    const service = this.data.service || {};
+    const actions = service.actions || {};
+    if (!actions.openMap) return this.showPending('地图坐标尚未配置');
     wx.openLocation({
-      latitude: this.data.service.latitude,
-      longitude: this.data.service.longitude,
+      latitude: service.latitude,
+      longitude: service.longitude,
       name: '碧江金楼',
-      address: this.data.service.address,
+      address: service.address,
+      fail: () => this.showPending('无法打开地图，请稍后重试'),
     });
   },
   showPending(message) {
@@ -205,7 +205,10 @@ Page({
   },
   openRecommendations(event) {
     const { category, title } = event.currentTarget.dataset;
-    wx.navigateTo({ url: `/pages/recommendations/index?category=${category}&title=${encodeURIComponent(title)}` });
+    wx.navigateTo({
+      url: `/pages/recommendations/index?category=${category}&title=${encodeURIComponent(title)}`,
+      fail: () => wx.showToast({ title: '页面打开失败，请稍后重试', icon: 'none' }),
+    });
   },
   openFeedback() {
     wx.navigateTo({
