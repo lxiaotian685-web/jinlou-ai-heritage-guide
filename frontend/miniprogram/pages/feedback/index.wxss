@@ -1,0 +1,514 @@
+@import "../../styles/archive.wxss";
+
+/* ==========================================================================
+   问题反馈 · B 蚝壳青灰
+   单向提交：选择类型、填写内容、可选联系方式，只显示本次提交的回执。
+   ========================================================================== */
+
+.fb-page {
+  box-sizing: border-box;
+  padding: 0 0 calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* ---------- 页头 ---------- */
+.fb-head {
+  padding: 36rpx 32rpx 0;
+}
+
+.fb-head__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.fb-head__folio {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.fb-head__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 14rpx;
+}
+
+.fb-head__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.fb-head__title {
+  font-size: 60rpx;
+  letter-spacing: 3rpx;
+}
+
+.fb-head__seal {
+  flex: none;
+  margin-top: 6rpx;
+}
+
+.fb-head__rule {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 26rpx;
+}
+
+.fb-head__rule-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--arc-line-strong);
+}
+
+.fb-head__rule-meta {
+  flex: none;
+  font-size: 18rpx;
+  line-height: 1.5;
+  letter-spacing: 3rpx;
+  color: var(--arc-muted);
+}
+
+.fb-body {
+  padding: 26rpx 32rpx 0;
+}
+
+/* ---------- 章节头 ---------- */
+.fb-section-head {
+  margin: 38rpx 0 18rpx;
+}
+
+.fb-section-head:first-child {
+  margin-top: 8rpx;
+}
+
+/* ---------- 类型选择 ---------- */
+.fb-cats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14rpx;
+}
+
+.fb-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-height: 132rpx;
+  box-sizing: border-box;
+  padding: 18rpx 18rpx 16rpx;
+}
+
+.fb-cat__top {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+}
+
+.fb-cat__index {
+  flex: none;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.fb-cat__label {
+  font-size: 28rpx;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+  color: var(--arc-ink);
+}
+
+.fb-cat__hint {
+  font-size: 20rpx;
+  line-height: 1.6;
+  color: var(--arc-muted);
+}
+
+.fb-cat.is-active {
+  border-color: var(--arc-red);
+  background: var(--arc-oyster);
+}
+
+.fb-cat.is-active .fb-cat__index,
+.fb-cat.is-active .fb-cat__label {
+  color: var(--arc-red);
+}
+
+.fb-cat--press {
+  background: var(--arc-paper);
+}
+
+/* ---------- 表单 ---------- */
+.fb-form {
+  padding: 26rpx 24rpx 24rpx;
+}
+
+.fb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.fb-field__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.fb-field__label {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  color: var(--arc-ink);
+}
+
+.fb-counter {
+  flex: none;
+  font-size: 19rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+.fb-textarea-wrap {
+  padding: 16rpx 18rpx;
+  background: var(--arc-oyster);
+  border: 1rpx solid var(--arc-line);
+  border-radius: 8rpx;
+}
+
+.fb-textarea {
+  width: 100%;
+  height: 260rpx;
+  font-size: 26rpx;
+  line-height: 1.8;
+  color: var(--arc-ink);
+}
+
+.fb-placeholder {
+  color: var(--arc-muted);
+}
+
+.fb-form__hair {
+  margin: 24rpx 0;
+}
+
+.fb-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 88rpx;
+  padding: 0 18rpx;
+  background: var(--arc-oyster);
+  border: 1rpx solid var(--arc-line);
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: var(--arc-ink);
+}
+
+.fb-field__help {
+  font-size: 20rpx;
+  line-height: 1.7;
+  color: var(--arc-muted);
+}
+
+.fb-error {
+  margin-top: 22rpx;
+  padding: 14rpx 16rpx;
+  border: 1rpx solid var(--arc-red);
+  border-radius: 6rpx;
+}
+
+.fb-error__text {
+  display: block;
+  font-size: 23rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: var(--arc-red);
+}
+
+.fb-submit {
+  width: 100%;
+  min-height: 92rpx;
+  margin-top: 26rpx;
+  font-size: 28rpx;
+  letter-spacing: 3rpx;
+}
+
+.fb-form__note {
+  display: block;
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: 19rpx;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 页脚 ---------- */
+.fb-foot {
+  margin-top: 46rpx;
+}
+
+.fb-foot .arc-hair--dot text {
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+}
+
+.fb-foot__note {
+  display: block;
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: 18rpx;
+  line-height: 1.7;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+/* ---------- 回执 ---------- */
+.fb-receipt {
+  margin-top: 8rpx;
+  padding: 40rpx 30rpx 32rpx;
+  text-align: center;
+}
+
+.fb-receipt__seal {
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0 auto 20rpx;
+  font-size: 30rpx;
+}
+
+.fb-receipt__eyebrow {
+  color: var(--arc-muted);
+}
+
+.fb-receipt__title {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 46rpx;
+  line-height: 1.35;
+  letter-spacing: 3rpx;
+  color: var(--arc-ink);
+}
+
+.fb-receipt__lede {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  line-height: 1.7;
+  color: var(--arc-muted);
+}
+
+.fb-receipt__hair {
+  margin: 24rpx 0 4rpx;
+}
+
+.fb-receipt__rows {
+  text-align: left;
+}
+
+.fb-receipt__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid var(--arc-line);
+}
+
+.fb-receipt__row:last-child {
+  border-bottom: 0;
+}
+
+.fb-receipt__key {
+  flex: none;
+  font-size: 21rpx;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
+.fb-receipt__value {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  line-height: 1.6;
+  text-align: right;
+  word-break: break-all;
+  color: var(--arc-ink);
+}
+
+.fb-receipt__note {
+  display: block;
+  margin-top: 22rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--arc-line);
+  text-align: left;
+  font-size: 21rpx;
+  line-height: 1.8;
+  color: var(--arc-muted);
+}
+
+.fb-receipt__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 26rpx;
+}
+
+.fb-receipt__actions .arc-btn {
+  width: 100%;
+}
+
+/* ---------- 大字模式 ---------- */
+.font-large .fb-head__title {
+  font-size: 68rpx;
+}
+
+.font-large .fb-head__folio,
+.font-large .fb-head__rule-meta {
+  font-size: 22rpx;
+}
+
+.font-large .fb-cat {
+  min-height: 154rpx;
+}
+
+.font-large .fb-cat__index {
+  font-size: 22rpx;
+}
+
+.font-large .fb-cat__label {
+  font-size: 34rpx;
+}
+
+.font-large .fb-cat__hint {
+  font-size: 26rpx;
+}
+
+.font-large .fb-field__label {
+  font-size: 30rpx;
+}
+
+.font-large .fb-counter {
+  font-size: 24rpx;
+}
+
+.font-large .fb-textarea {
+  height: 340rpx;
+  font-size: 32rpx;
+}
+
+.font-large .fb-input {
+  min-height: 96rpx;
+  font-size: 32rpx;
+}
+
+.font-large .fb-field__help {
+  font-size: 26rpx;
+}
+
+.font-large .fb-error__text {
+  font-size: 28rpx;
+}
+
+.font-large .fb-form__note,
+.font-large .fb-foot__note {
+  font-size: 24rpx;
+}
+
+.font-large .fb-receipt__title {
+  font-size: 54rpx;
+}
+
+.font-large .fb-receipt__lede {
+  font-size: 28rpx;
+}
+
+.font-large .fb-receipt__key {
+  font-size: 26rpx;
+}
+
+.font-large .fb-receipt__value {
+  font-size: 30rpx;
+}
+
+.font-large .fb-receipt__note {
+  font-size: 27rpx;
+}
+
+/* ---------- 高对比 ---------- */
+.fb-page.high-contrast {
+  background-color: #fff;
+  background-image: none;
+}
+
+.high-contrast .fb-head__folio,
+.high-contrast .fb-head__rule-meta,
+.high-contrast .fb-counter,
+.high-contrast .fb-field__help,
+.high-contrast .fb-form__note,
+.high-contrast .fb-foot__note,
+.high-contrast .fb-cat__hint,
+.high-contrast .fb-receipt__key,
+.high-contrast .fb-receipt__lede,
+.high-contrast .fb-receipt__note {
+  color: #222;
+}
+
+.high-contrast .fb-cat {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .fb-cat.is-active {
+  background: #fff;
+  border-color: #111;
+}
+
+.high-contrast .fb-cat__label,
+.high-contrast .fb-cat.is-active .fb-cat__index,
+.high-contrast .fb-cat.is-active .fb-cat__label,
+.high-contrast .fb-field__label,
+.high-contrast .fb-receipt__title,
+.high-contrast .fb-receipt__value {
+  color: #111;
+}
+
+.high-contrast .fb-textarea-wrap,
+.high-contrast .fb-input {
+  background: #fff;
+  border-color: #393939;
+}
+
+.high-contrast .fb-textarea,
+.high-contrast .fb-input {
+  color: #111;
+}
+
+.high-contrast .fb-placeholder {
+  color: #444;
+}
+
+.high-contrast .fb-error {
+  border-color: #111;
+}
+
+.high-contrast .fb-error__text {
+  color: #111;
+}
+
+.high-contrast .fb-receipt__row,
+.high-contrast .fb-receipt__note {
+  border-color: #393939;
+}

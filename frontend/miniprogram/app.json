@@ -13,6 +13,7 @@
     "pages/craft-guide/index",
     "pages/visit-center/index",
     "pages/privacy/index",
+    "pages/feedback/index",
     "pages/admin/index"
   ],
   "lazyCodeLoading": "requiredComponents",

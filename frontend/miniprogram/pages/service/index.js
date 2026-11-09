@@ -207,5 +207,11 @@ Page({
     const { category, title } = event.currentTarget.dataset;
     wx.navigateTo({ url: `/pages/recommendations/index?category=${category}&title=${encodeURIComponent(title)}` });
   },
+  openFeedback() {
+    wx.navigateTo({
+      url: '/pages/feedback/index',
+      fail: () => wx.showToast({ title: '页面打开失败，请稍后重试', icon: 'none' }),
+    });
+  },
   noop() {},
 });

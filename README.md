@@ -44,6 +44,11 @@ npm.cmd start
 - `GET /api/v1/assistant/suggestions`
 - `POST /api/v1/assistant/chat`
 - `GET /api/v1/routes`
+- `POST /api/v1/feedback`（游客提交私密反馈，只写）
+- `GET /api/v1/admin/feedback?status=pending|processing|done`（管理口令）
+- `PATCH /api/v1/admin/feedback/:id`（管理口令）
+
+私密反馈的字段、权限边界和管理入口恢复方式见 `docs/PRIVATE_FEEDBACK_ADMIN_ENTRY.md`。游客端没有公开反馈列表；管理端读取与更新必须经过现有管理鉴权。
 
 当前景点文字是明确标注的演示内容，正式发布前须由景区审核。
 

@@ -171,6 +171,10 @@
   color: var(--arc-blue);
 }
 
+.privacy-policy__body--feedback {
+  margin-top: 14rpx;
+}
+
 .privacy-policy__version {
   margin-top: 18rpx;
   padding-top: 16rpx;
@@ -197,20 +201,7 @@
 /* ---------- 页脚 ---------- */
 .privacy-foot {
   margin-top: 40rpx;
-}
-
-.privacy-admin {
-  width: 100%;
-  min-height: 88rpx;
-  margin-top: 16rpx;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  font-size: 22rpx;
-  line-height: 1.4;
-  letter-spacing: 2rpx;
-  color: var(--arc-muted);
+  padding: 16rpx 0 56rpx;
 }
 
 /* ---------- 大字模式 ---------- */
@@ -256,11 +247,6 @@
   font-size: 26rpx;
 }
 
-.font-large .privacy-admin {
-  min-height: 96rpx;
-  font-size: 26rpx;
-}
-
 /* ---------- 高对比 ---------- */
 .privacy-page.high-contrast {
   background-color: #fff;
@@ -297,11 +283,6 @@
 }
 
 .high-contrast .privacy-policy__phone {
-  color: #111;
-}
-
-.high-contrast .privacy-admin {
-  border: 0;
   color: #111;
 }
 

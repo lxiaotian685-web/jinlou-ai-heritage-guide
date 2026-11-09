@@ -56,7 +56,16 @@ try {
   check('问答重试与来源展示', assistantTemplate.includes('retryLastQuestion') && assistantTemplate.includes('answer.sources') && assistantTemplate.includes('copySourceUrl') && assistantStyles.includes('.question-form'));
   const privacyTemplate = readFileSync(resolve(frontendRoot, 'pages/privacy/index.wxml'), 'utf8');
   check('本地数据页面精简', ['data-type="visit"', 'data-type="notes"', 'data-type="display"'].every((item) => privacyTemplate.includes(item)) && !privacyTemplate.includes('接口缓存') && !privacyTemplate.includes('匿名互动标识'));
+  const feedbackTemplate = readFileSync(resolve(frontendRoot, 'pages/feedback/index.wxml'), 'utf8');
+  const feedbackScript = readFileSync(resolve(frontendRoot, 'pages/feedback/index.js'), 'utf8');
+  check('私密反馈页面与单向提交', appConfig.pages.includes('pages/feedback/index') && ['内容纠错', '功能问题', '参观建议', '其他'].every((text) => feedbackScript.includes(text)) && feedbackTemplate.includes('联系方式（选填）') && feedbackTemplate.includes('反馈已收到') && feedbackTemplate.includes('仅管理人员可见') && !feedbackTemplate.includes('wx:for="{{feedback'));
+  check('反馈页面不提供公开列表', !feedbackScript.includes('adminGetFeedback') && !feedbackTemplate.includes('公开评论'));
+  check('管理入口改为受控触发', privacyTemplate.includes('bindlongpress="openAdmin"') && !privacyTemplate.includes('管理人员入口') && appConfig.pages.includes('pages/admin/index'));
+  const adminMiniTemplate = readFileSync(resolve(frontendRoot, 'pages/admin/index.wxml'), 'utf8');
+  const adminMiniScript = readFileSync(resolve(frontendRoot, 'pages/admin/index.js'), 'utf8');
+  check('管理端反馈筛选与处理', ['问题反馈', '内部备注'].every((text) => adminMiniTemplate.includes(text)) && ['待处理', '处理中', '已完成'].every((text) => adminMiniScript.includes(text)) && adminMiniScript.includes('adminGetFeedback') && adminMiniScript.includes('adminUpdateFeedback'));
   const apiService = readFileSync(resolve(frontendRoot, 'services/api.js'), 'utf8');
+  check('反馈接口封装', ['submitFeedback', 'adminGetFeedback', 'adminUpdateFeedback'].every((name) => apiService.includes(name)));
   check('缓存快速回退', apiService.includes('timeout: cached ? 1500 : 8000'));
   const homeTemplate = readFileSync(resolve(frontendRoot, 'pages/index/index.wxml'), 'utf8');
   check('后台首页文案绑定', homeTemplate.includes('{{home.title}}') && homeTemplate.includes('{{home.subtitle}}'));
@@ -100,6 +109,11 @@ try {
   check('云端保存景点上一张封面', cloudApi.includes('coverImageChanged') && cloudApi.includes('previousCoverImage: currentCoverImage'));
   check('云端问答推荐与来源同步', cloudApi.includes("path === '/assistant/suggestions'") && cloudApi.includes('resolveKnowledgeSources') && existsSync(resolve(frontendRoot, '../cloudfunctions/bijiang-api/knowledge-sources.js')));
   check('云音频发布必须先完成文件校验', cloudApi.includes('normalizeCloudAudio') && existsSync(resolve('scripts/cloud-audio-publish.js')) && existsSync(resolve('../docs/CLOUD_AUDIO_REAL_DEVICE_CHECKLIST.md')));
+  check('云端私密反馈存储与鉴权', cloudApi.includes("path === '/feedback'") && cloudApi.includes('FEEDBACK_COLLECTION') && cloudApi.includes('feedbackMatch') && cloudApi.includes('isAdmin(event)'));
+  const backendAppSource = readFileSync(resolve('src/app.js'), 'utf8');
+  const backendDbSource = readFileSync(resolve('src/db.js'), 'utf8');
+  check('反馈后端写入与受控读取', backendAppSource.includes("app.post('/api/v1/feedback'") && backendAppSource.includes("app.get('/api/v1/admin/feedback'") && backendAppSource.includes("app.patch('/api/v1/admin/feedback/:id'") && !backendAppSource.includes("app.get('/api/v1/feedback'"));
+  check('反馈数据表与状态枚举', backendDbSource.includes('CREATE TABLE IF NOT EXISTS feedback') && backendDbSource.includes("['pending', 'processing', 'done']"));
   delete globalThis.wx;
 
   const launchProfile = JSON.parse(readFileSync(resolve('config/launch-profile.example.json'), 'utf8'));

@@ -7,7 +7,7 @@
     <view class="admin-head__main">
       <view class="admin-head__copy">
         <text class="arc-title serif admin-head__title">云端内容管理</text>
-        <text class="arc-lede">当前批次支持景点名称、类别和简介；图片、音频及商家广告将在后续批次接入。</text>
+        <text class="arc-lede">当前批次支持景点名称、类别和简介的维护，以及游客问题反馈的私密查看、备注与处理状态更新；图片、音频及商家广告将在后续批次接入。</text>
       </view>
       <view class="arc-seal admin-head__seal">管</view>
     </view>
@@ -47,40 +47,147 @@
         <button class="admin-toolbar__logout" hover-class="admin-toolbar__logout--press" bindtap="logout" aria-label="退出云端管理">退出</button>
       </view>
 
-      <view class="arc-card arc-card--ticks admin-edit">
-        <view class="admin-edit__head">
-          <text class="arc-eyebrow">EDIT / 编辑</text>
-          <text class="admin-edit__meta">CLOUD RECORD</text>
+      <view class="admin-tabs" aria-role="tablist" aria-label="管理内容切换">
+        <view
+          class="admin-tab {{activeTab === 'spots' ? 'is-active' : ''}}"
+          data-tab="spots"
+          bindtap="switchTab"
+          hover-class="admin-tab--press"
+          aria-role="tab"
+          aria-selected="{{activeTab === 'spots'}}"
+        >
+          <text class="admin-tab__text">景点内容</text>
         </view>
-
-        <view class="admin-field">
-          <text class="admin-field__label">选择景点</text>
-          <picker mode="selector" range="{{spots}}" range-key="name" value="{{selectedIndex}}" bindchange="chooseSpot">
-            <view class="admin-picker" hover-class="admin-picker--press" aria-role="button" aria-label="选择要编辑的景点">
-              <text class="admin-picker__value">{{form.name}}</text>
-              <text class="admin-picker__chevron">›</text>
-            </view>
-          </picker>
+        <view
+          class="admin-tab {{activeTab === 'feedback' ? 'is-active' : ''}}"
+          data-tab="feedback"
+          bindtap="switchTab"
+          hover-class="admin-tab--press"
+          aria-role="tab"
+          aria-selected="{{activeTab === 'feedback'}}"
+        >
+          <text class="admin-tab__text">问题反馈 · {{feedback.length}}</text>
         </view>
-
-        <view class="admin-field">
-          <text class="admin-field__label">景点名称</text>
-          <input class="admin-input" value="{{form.name}}" maxlength="60" data-field="name" bindinput="handleField" aria-label="景点名称" />
-        </view>
-
-        <view class="admin-field">
-          <text class="admin-field__label">景点类别</text>
-          <input class="admin-input" value="{{form.category}}" maxlength="40" data-field="category" bindinput="handleField" aria-label="景点类别" />
-        </view>
-
-        <view class="admin-field">
-          <text class="admin-field__label">景点简介</text>
-          <textarea class="admin-textarea" value="{{form.summary}}" maxlength="1000" auto-height data-field="summary" bindinput="handleField" aria-label="景点简介" />
-          <text class="admin-counter">{{form.summary.length}} / 1000</text>
-        </view>
-
-        <button class="arc-btn admin-save" loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到云端</button>
       </view>
+
+      <block wx:if="{{activeTab === 'spots'}}">
+        <view class="arc-card arc-card--ticks admin-edit">
+          <view class="admin-edit__head">
+            <text class="arc-eyebrow">EDIT / 编辑</text>
+            <text class="admin-edit__meta">CLOUD RECORD</text>
+          </view>
+
+          <view class="admin-field">
+            <text class="admin-field__label">选择景点</text>
+            <picker mode="selector" range="{{spots}}" range-key="name" value="{{selectedIndex}}" bindchange="chooseSpot">
+              <view class="admin-picker" hover-class="admin-picker--press" aria-role="button" aria-label="选择要编辑的景点">
+                <text class="admin-picker__value">{{form.name}}</text>
+                <text class="admin-picker__chevron">›</text>
+              </view>
+            </picker>
+          </view>
+
+          <view class="admin-field">
+            <text class="admin-field__label">景点名称</text>
+            <input class="admin-input" value="{{form.name}}" maxlength="60" data-field="name" bindinput="handleField" aria-label="景点名称" />
+          </view>
+
+          <view class="admin-field">
+            <text class="admin-field__label">景点类别</text>
+            <input class="admin-input" value="{{form.category}}" maxlength="40" data-field="category" bindinput="handleField" aria-label="景点类别" />
+          </view>
+
+          <view class="admin-field">
+            <text class="admin-field__label">景点简介</text>
+            <textarea class="admin-textarea" value="{{form.summary}}" maxlength="1000" auto-height data-field="summary" bindinput="handleField" aria-label="景点简介" />
+            <text class="admin-counter">{{form.summary.length}} / 1000</text>
+          </view>
+
+          <button class="arc-btn admin-save" loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到云端</button>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="arc-card arc-card--ticks admin-edit">
+          <view class="admin-edit__head">
+            <text class="arc-eyebrow">FEEDBACK / 反馈</text>
+            <text class="admin-edit__meta">PRIVATE · ADMIN</text>
+          </view>
+
+          <view class="fb-admin-filter">
+            <view
+              wx:for="{{feedbackStatuses}}"
+              wx:key="key"
+              class="fb-admin-filter__chip {{feedbackStatus === item.key ? 'is-active' : ''}}"
+              data-status="{{item.key}}"
+              bindtap="filterFeedback"
+              hover-class="fb-admin-filter__chip--press"
+              aria-role="button"
+              aria-label="筛选{{item.label}}反馈"
+            >{{item.label}}</view>
+          </view>
+
+          <text wx:if="{{feedbackLoading}}" class="fb-admin-loading">正在读取反馈…</text>
+
+          <view wx:if="{{!feedbackLoading && !feedback.length}}" class="fb-admin-empty">
+            <text class="fb-admin-empty__title">暂无反馈</text>
+            <text class="fb-admin-empty__hint">游客提交后会显示在这里。</text>
+          </view>
+
+          <view wx:if="{{!feedbackLoading && feedback.length}}" class="fb-admin-list">
+            <view wx:for="{{feedback}}" wx:key="id" class="fb-admin-card">
+              <view class="fb-admin-card__head">
+                <text class="fb-admin-category">{{item.categoryLabel}}</text>
+                <text class="fb-admin-badge fb-admin-badge--{{item.status}}">{{item.statusLabel}}</text>
+              </view>
+
+              <text class="fb-admin-content">{{item.content}}</text>
+
+              <view class="fb-admin-meta">
+                <text class="fb-admin-meta__item">{{item.createdAtText}}</text>
+                <text wx:if="{{item.contact}}" class="fb-admin-meta__item">联系方式：{{item.contact}}</text>
+              </view>
+
+              <view class="fb-admin-note">
+                <text class="admin-field__label">内部备注（仅管理员可见）</text>
+                <textarea
+                  class="admin-textarea fb-admin-note__input"
+                  value="{{item.adminNote}}"
+                  maxlength="500"
+                  auto-height
+                  data-index="{{index}}"
+                  bindinput="handleFeedbackNote"
+                  placeholder="记录处理过程或回复要点"
+                  placeholder-class="admin-placeholder"
+                  aria-label="反馈内部备注"
+                />
+              </view>
+
+              <view class="fb-admin-status">
+                <block wx:for="{{feedbackStatusOptions}}" wx:for-item="status" wx:for-index="statusIndex" wx:key="key">
+                  <view
+                    class="fb-admin-status__chip {{item.status === status.key ? 'is-active' : ''}}"
+                    data-index="{{index}}"
+                    data-status="{{status.key}}"
+                    bindtap="setFeedbackStatus"
+                    hover-class="fb-admin-status__chip--press"
+                    aria-role="button"
+                    aria-label="标记为{{status.label}}"
+                  >{{status.label}}</view>
+                </block>
+              </view>
+
+              <button
+                class="arc-btn fb-admin-save"
+                data-index="{{index}}"
+                loading="{{feedbackSavingId === item.id}}"
+                disabled="{{feedbackSavingId === item.id}}"
+                bindtap="saveFeedback"
+              >保存处理结果</button>
+            </view>
+          </view>
+        </view>
+      </block>
     </block>
 
     <view wx:if="{{message}}" class="admin-message admin-message--ok">{{message}}</view>
