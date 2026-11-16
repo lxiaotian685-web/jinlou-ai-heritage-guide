@@ -165,6 +165,7 @@
     <view class="svc-foot">
       <view class="arc-hair arc-hair--dot"><text>END OF SERVICE</text></view>
       <text class="svc-foot__note">本页信息以景区最新公告与官方平台为准</text>
+      <button class="svc-feedback" bindtap="openFeedback">问题反馈 · 仅管理人员可见</button>
     </view>
   </block>
 

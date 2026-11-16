@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -340,6 +341,17 @@ export function createDatabase(filename = ':memory:') {
       sources_json TEXT NOT NULL,
       review_status TEXT NOT NULL DEFAULT 'pending-scenic-review',
       public_status TEXT NOT NULL DEFAULT 'review-draft'
+    ) STRICT;
+    CREATE TABLE IF NOT EXISTS feedback (
+      id TEXT PRIMARY KEY,
+      category TEXT NOT NULL CHECK (category IN ('content-error','feature-issue','visit-suggestion','other')),
+      content TEXT NOT NULL,
+      contact TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','done')),
+      admin_note TEXT NOT NULL DEFAULT '',
+      updated_at TEXT NOT NULL,
+      source_version TEXT NOT NULL DEFAULT ''
     ) STRICT;
   `);
 
@@ -725,6 +737,61 @@ export function updateTourRoute(db, id, changes) {
     db.exec('COMMIT');
   } catch (error) { db.exec('ROLLBACK'); throw error; }
   return listTourRoutes(db).find((item) => item.id === id);
+}
+
+const feedbackStatuses = ['pending', 'processing', 'done'];
+
+function serializeFeedback(row) {
+  return {
+    id: row.id,
+    category: row.category,
+    content: row.content,
+    contact: row.contact,
+    createdAt: row.created_at,
+    status: row.status,
+    adminNote: row.admin_note,
+    updatedAt: row.updated_at,
+    sourceVersion: row.source_version,
+  };
+}
+
+export function createFeedback(db, input) {
+  const id = `fb-${randomUUID()}`;
+  const now = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO feedback (id, category, content, contact, created_at, status, admin_note, updated_at, source_version)
+    VALUES (?, ?, ?, ?, ?, 'pending', '', ?, ?)
+  `).run(id, input.category, input.content, input.contact || '', now, now, input.sourceVersion || '');
+  return serializeFeedback(db.prepare('SELECT * FROM feedback WHERE id = ?').get(id));
+}
+
+export function listFeedback(db, status) {
+  const rows = status
+    ? db.prepare('SELECT * FROM feedback WHERE status = ? ORDER BY created_at DESC, rowid DESC').all(status)
+    : db.prepare('SELECT * FROM feedback ORDER BY created_at DESC, rowid DESC').all();
+  return rows.map(serializeFeedback);
+}
+
+export function updateFeedback(db, id, changes) {
+  const current = db.prepare('SELECT * FROM feedback WHERE id = ?').get(id);
+  if (!current) return null;
+  const hasStatus = changes.status !== undefined && changes.status !== null;
+  const hasAdminNote = changes.adminNote !== undefined && changes.adminNote !== null;
+  if (!hasStatus && !hasAdminNote) throw new Error('至少提供状态或备注');
+  let status = current.status;
+  if (hasStatus) {
+    if (!feedbackStatuses.includes(changes.status)) throw new Error('反馈状态不正确');
+    status = changes.status;
+  }
+  let adminNote = current.admin_note;
+  if (hasAdminNote) {
+    if (typeof changes.adminNote !== 'string') throw new Error('备注不能超过1000个字符');
+    adminNote = changes.adminNote.trim();
+    if (adminNote.length > 1000) throw new Error('备注不能超过1000个字符');
+  }
+  db.prepare('UPDATE feedback SET status = ?, admin_note = ?, updated_at = ? WHERE id = ?')
+    .run(status, adminNote, new Date().toISOString(), id);
+  return serializeFeedback(db.prepare('SELECT * FROM feedback WHERE id = ?').get(id));
 }
 
 export function getCraftGuide(db, spotId) {

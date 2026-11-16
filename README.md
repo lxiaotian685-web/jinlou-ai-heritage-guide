@@ -233,11 +233,11 @@
 
 | 层 | 技术 |
 |---|---|
-| 客户端 | 原生微信小程序（14 页）、camera 组件、wx.cloud.callFunction、本机存储 |
-| 云开发 | 云函数 `bijiang-api`（Node.js 16，17 条路由）、云数据库（41 个内容文档）、云存储（45 段音频） |
+| 客户端 | 原生微信小程序（16 页）、camera 组件、wx.cloud.callFunction、本机存储 |
+| 云开发 | 云函数 `bijiang-api`（Node.js 16，20 条路由）、云数据库（41 个内容文档）、云存储（45 段音频） |
 | AI | DeepSeek `deepseek-chat`、规则检索、`/v1/tools/search` 联网检索 |
 | 后台 | CloudBase 静态托管 ＋ 云函数口令鉴权 |
-| 质量 | `node:test` 53 项、集中验收脚本 40 余项静态检查 |
+| 质量 | `node:test` 62 项、集中验收脚本 50 余项静态检查 |
 
 几个实现细节：
 
@@ -245,7 +245,7 @@
 - **单一云函数网关**：前台与后台共用同一个入口，按 `path + method` 分发，管理口令换取会话。
 - **音频发布校验**：45 段讲解上传后逐条下载回算 SHA-256，45/45 一致才写入云数据库并标记可播放。
 - **可撤销的后台修改**：替换景点封面时记录上一张，可预览并恢复。
-- **包体控制**：14 页、113 个文件、约 1.91 MiB，超 200 KB 单资源 0 个。
+- **包体控制**：16 页；主包继续控制在 2 MB 以内，超 200 KB 单资源 0 个。
 
 ## 素材与授权
 
@@ -307,6 +307,7 @@ docs/screenshots/        README 配图（现场实拍与真实运行界面）
 ## 相关文档
 
 - [`docs/AI_KNOWLEDGE_ASSISTANT.md`](docs/AI_KNOWLEDGE_ASSISTANT.md)：AI 问答链路、检索与回退说明
+- [`docs/PRIVATE_FEEDBACK_ADMIN_ENTRY.md`](docs/PRIVATE_FEEDBACK_ADMIN_ENTRY.md)：私密反馈字段、权限边界与管理入口恢复方式
 - [`docs/AR_FRONTEND_CONTRACT.md`](docs/AR_FRONTEND_CONTRACT.md)：AR 页面状态与事件契约
 - [`docs/AR_DEVICE_ACCEPTANCE_AND_DEMO.md`](docs/AR_DEVICE_ACCEPTANCE_AND_DEMO.md)：真机验收清单与演示脚本
 - [`docs/STUDY_KNOWLEDGE_QA.md`](docs/STUDY_KNOWLEDGE_QA.md)：知识来源与审核状态
@@ -329,7 +330,12 @@ GET  /api/v1/routes
 GET  /api/v1/recommendations?category=food|hotel|transport|attraction
 GET  /api/v1/assistant/suggestions
 POST /api/v1/assistant/chat
+POST /api/v1/feedback
+GET  /api/v1/admin/feedback?status=pending|processing|done
+PATCH /api/v1/admin/feedback/:id
 ```
+
+`/feedback` 是游客只写接口，没有公开反馈列表；两个管理端反馈接口需要管理口令。字段、权限和恢复路径见 [`docs/PRIVATE_FEEDBACK_ADMIN_ENTRY.md`](docs/PRIVATE_FEEDBACK_ADMIN_ENTRY.md)。
 
 ## 数据备份与内容修改
 

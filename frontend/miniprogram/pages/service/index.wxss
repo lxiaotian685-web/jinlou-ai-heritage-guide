@@ -798,6 +798,20 @@
   color: var(--arc-muted);
 }
 
+.svc-feedback {
+  width: 100%;
+  min-height: 88rpx;
+  margin-top: 16rpx;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 22rpx;
+  line-height: 1.4;
+  letter-spacing: 2rpx;
+  color: var(--arc-muted);
+}
+
 /* ---------- 购票降级弹层 ---------- */
 .ticket-sheet {
   max-height: 86vh;
@@ -985,6 +999,11 @@
   font-size: 24rpx;
 }
 
+.font-large .svc-feedback {
+  min-height: 96rpx;
+  font-size: 26rpx;
+}
+
 .font-large .plate__micro {
   font-size: 22rpx;
 }
@@ -1075,4 +1094,9 @@
 
 .high-contrast .nearby-card__meta {
   color: #222;
+}
+
+.high-contrast .svc-feedback {
+  border: 0;
+  color: #111;
 }

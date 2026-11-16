@@ -14,6 +14,9 @@ const assistantRateLimiter = assistant.createRateLimiter({
 const COLLECTION = 'bijiang_content';
 const ADMIN_LOG_COLLECTION = 'bijiang_admin_logs';
 const RECOMMENDATION_METRICS_COLLECTION = 'bijiang_recommendation_metrics';
+const FEEDBACK_COLLECTION = 'bijiang_feedback';
+const FEEDBACK_CATEGORIES = ['content-error', 'feature-issue', 'visit-suggestion', 'other'];
+const FEEDBACK_STATUSES = ['pending', 'processing', 'done'];
 const CACHE_TTL_MS = 60 * 1000;
 const ADMIN_TOKEN_ENV = 'BIJIANG_ADMIN_TOKEN';
 const RECOMMENDATION_CATEGORIES = ['food', 'hotel', 'transport', 'attraction'];
@@ -157,6 +160,119 @@ function isMediaLocation(value) {
 
 function text(value, limit = 500) {
   return typeof value === 'string' ? value.trim().slice(0, limit) : '';
+}
+
+function feedbackIsoString(value) {
+  if (!value) return '';
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? '' : value.toISOString();
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? String(value) : parsed.toISOString();
+}
+
+async function ensureFeedbackCollection() {
+  if (!database) return;
+  try {
+    await database.createCollection(FEEDBACK_COLLECTION);
+  } catch (createError) {
+    if (!/already exists|DATABASE_COLLECTION_EXIST/i.test(String(createError?.message || createError))) throw createError;
+  }
+}
+
+function serializeFeedback(document) {
+  const source = document || {};
+  return {
+    id: text(source.id || source._id, 120),
+    category: text(source.category, 40),
+    content: text(source.content, 500),
+    contact: text(source.contact, 80),
+    createdAt: feedbackIsoString(source.createdAt),
+    status: text(source.status, 20) || 'pending',
+    adminNote: text(source.adminNote, 1000),
+    updatedAt: feedbackIsoString(source.updatedAt),
+    sourceVersion: text(source.sourceVersion, 40),
+  };
+}
+
+async function createFeedbackRecord(body) {
+  const category = text(body?.category, 40);
+  const content = typeof body?.content === 'string' ? body.content.trim() : '';
+  const contact = typeof body?.contact === 'string' ? body.contact.trim() : '';
+  const sourceVersion = text(body?.sourceVersion, 40);
+  if (!FEEDBACK_CATEGORIES.includes(category)) return { validationError: '请选择正确的问题类型' };
+  if (!content) return { validationError: '请输入反馈内容' };
+  if (content.length > 500) return { validationError: '反馈内容不能超过500个字符' };
+  if (contact.length > 80) return { validationError: '联系方式不能超过80个字符' };
+  if (!database) throw new Error('反馈服务暂时不可用');
+  const id = `fb-${Date.now()}-${require('node:crypto').randomBytes(4).toString('hex')}`;
+  const createdAt = new Date();
+  const data = {
+    id,
+    category,
+    content,
+    contact,
+    createdAt,
+    status: 'pending',
+    adminNote: '',
+    updatedAt: createdAt,
+    sourceVersion,
+  };
+  const write = () => database.collection(FEEDBACK_COLLECTION).doc(id).set({ data });
+  try {
+    await write();
+  } catch (writeError) {
+    if (!isMissingCollectionError(writeError)) throw writeError;
+    await ensureFeedbackCollection();
+    await write();
+  }
+  return { record: { id, category, status: 'pending', createdAt: createdAt.toISOString() } };
+}
+
+async function listFeedback(status) {
+  if (status && !FEEDBACK_STATUSES.includes(status)) return { validationError: '反馈状态不正确' };
+  if (!database) return { feedback: [] };
+  let result;
+  try {
+    const collection = database.collection(FEEDBACK_COLLECTION);
+    const query = status ? collection.where({ status }) : collection;
+    result = await query.orderBy('createdAt', 'desc').limit(100).get();
+  } catch (readError) {
+    if (!isMissingCollectionError(readError)) throw readError;
+    await ensureFeedbackCollection();
+    return { feedback: [] };
+  }
+  const rows = result.data || [];
+  return { feedback: rows.map(serializeFeedback) };
+}
+
+async function updateFeedbackRecord(id, body) {
+  const statusProvided = body?.status !== undefined && body?.status !== null && body?.status !== '';
+  const status = statusProvided ? text(body.status, 20) : '';
+  if (statusProvided && !FEEDBACK_STATUSES.includes(status)) return { validationError: '反馈状态不正确' };
+  let adminNote;
+  if (body?.adminNote !== undefined) {
+    if (typeof body.adminNote !== 'string') return { validationError: '备注内容格式不正确' };
+    adminNote = body.adminNote.trim();
+    if (adminNote.length > 1000) return { validationError: '备注不能超过1000个字符' };
+  }
+  if (!statusProvided && adminNote === undefined) return { validationError: '至少提供状态或备注' };
+  if (!database) throw new Error('反馈服务暂时不可用');
+  const ref = database.collection(FEEDBACK_COLLECTION).doc(id);
+  let existing;
+  try {
+    const document = await ref.get();
+    existing = document?.data;
+  } catch (readError) {
+    if (isMissingCollectionError(readError) || /not exist/i.test(String(readError?.message || readError || ''))) return { notFound: true };
+    throw readError;
+  }
+  if (!existing) return { notFound: true };
+  const changes = {
+    ...(status ? { status } : {}),
+    ...(adminNote !== undefined ? { adminNote } : {}),
+    updatedAt: new Date(),
+  };
+  await ref.update({ data: changes });
+  return { record: serializeFeedback({ ...existing, ...changes, _id: id }) };
 }
 
 async function writeAdminLog(transaction, action, targetId, fields) {
@@ -551,7 +667,42 @@ exports.main = async (event = {}) => {
         return error('ADMIN_WRITE_FAILED', writeError.message || '广告信息删除失败');
       }
     }
+    const feedbackListMatch = path.match(/^\/admin\/feedback(?:\?status=([^&]+))?$/);
+    if (feedbackListMatch && method === 'GET') {
+      try {
+        const status = feedbackListMatch[1] ? decodeURIComponent(feedbackListMatch[1]) : '';
+        const result = await listFeedback(status);
+        if (result.validationError) return error('FEEDBACK_READ_FAILED', result.validationError);
+        return success({ data: result.feedback });
+      } catch (readError) {
+        console.error('反馈读取失败：', readError?.message || '未知错误');
+        return error('FEEDBACK_READ_FAILED', '反馈读取失败，请稍后重试');
+      }
+    }
+    const feedbackMatch = path.match(/^\/admin\/feedback\/([^/]+)$/);
+    if (feedbackMatch && method === 'PATCH') {
+      try {
+        const result = await updateFeedbackRecord(decodeURIComponent(feedbackMatch[1]), event.body);
+        if (result.notFound) return error('FEEDBACK_NOT_FOUND', '未找到该反馈');
+        if (result.validationError) return error('INVALID_FEEDBACK_UPDATE', result.validationError);
+        return success({ data: result.record });
+      } catch (writeError) {
+        console.error('反馈更新失败：', writeError?.message || '未知错误');
+        return error('FEEDBACK_UPDATE_FAILED', '反馈更新失败，请稍后重试');
+      }
+    }
     return error('NOT_FOUND', '云端管理接口不存在');
+  }
+
+  if (path === '/feedback' && method === 'POST') {
+    try {
+      const result = await createFeedbackRecord(event.body);
+      if (result.validationError) return error('INVALID_FEEDBACK', result.validationError);
+      return success({ data: result.record, meta: { notice: '反馈已提交，仅管理人员可查看' } });
+    } catch (writeError) {
+      console.error('反馈提交失败：', writeError?.message || '未知错误');
+      return error('FEEDBACK_WRITE_FAILED', '反馈提交失败，请稍后重试');
+    }
   }
 
   const { snapshot } = await getSnapshot();

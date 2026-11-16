@@ -1,0 +1,109 @@
+<view class="page arc-page arc-grid-bg fb-page {{displayClass}}">
+  <view class="fb-head">
+    <view class="fb-head__top">
+      <text class="arc-eyebrow">FEEDBACK / 反馈</text>
+      <text class="fb-head__folio">NO. 12</text>
+    </view>
+    <view class="fb-head__main">
+      <view class="fb-head__copy">
+        <text class="arc-title serif fb-head__title">问题反馈</text>
+        <text class="arc-lede">写下遇到的问题或建议，内容仅管理人员可见。</text>
+      </view>
+      <view class="arc-seal fb-head__seal">信</view>
+    </view>
+    <view class="fb-head__rule">
+      <view class="fb-head__rule-line"></view>
+      <text class="fb-head__rule-meta">PRIVATE MESSAGE</text>
+    </view>
+  </view>
+
+  <view class="fb-body">
+    <block wx:if="{{!submitted}}">
+      <view class="arc-head fb-section-head">
+        <text class="arc-head__index">01</text>
+        <text class="arc-head__label">反馈类型</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">CATEGORY</text>
+      </view>
+
+      <view class="fb-cats">
+        <view wx:for="{{categories}}" wx:key="key" class="fb-cat arc-card {{category === item.key ? 'is-active' : ''}}" data-key="{{item.key}}" bindtap="selectCategory" hover-class="fb-cat--press" hover-stay-time="80" aria-role="button" aria-label="{{item.label}}：{{item.hint}}">
+          <view class="fb-cat__top">
+            <text class="fb-cat__index">{{item.index}}</text>
+            <text class="fb-cat__label serif">{{item.label}}</text>
+          </view>
+          <text class="fb-cat__hint">{{item.hint}}</text>
+        </view>
+      </view>
+
+      <view class="arc-head fb-section-head">
+        <text class="arc-head__index">02</text>
+        <text class="arc-head__label">反馈内容</text>
+        <view class="arc-head__rule"></view>
+        <text class="arc-head__meta">MESSAGE</text>
+      </view>
+
+      <view class="arc-card fb-form">
+        <view class="fb-field">
+          <view class="fb-field__head">
+            <text class="fb-field__label">反馈内容（必填）</text>
+            <text class="fb-counter">{{contentCount}} / 500</text>
+          </view>
+          <view class="fb-textarea-wrap">
+            <textarea class="fb-textarea" value="{{content}}" maxlength="500" bindinput="onContentInput" placeholder="请描述具体情况，例如页面名称、操作步骤或出错位置。" placeholder-class="fb-placeholder" show-confirm-bar="{{false}}" aria-label="反馈内容"></textarea>
+          </view>
+        </view>
+
+        <view class="arc-hair fb-form__hair"></view>
+
+        <view class="fb-field">
+          <view class="fb-field__head">
+            <text class="fb-field__label">联系方式（选填）</text>
+            <text class="fb-counter">{{contactCount}} / 80</text>
+          </view>
+          <input class="fb-input" value="{{contact}}" maxlength="80" bindinput="onContactInput" placeholder="微信号、邮箱等，可不填" placeholder-class="fb-placeholder" aria-label="联系方式（选填）" />
+          <text class="fb-field__help">仅用于必要时回访，不会公开展示，也不需要登录或手机号</text>
+        </view>
+
+        <view wx:if="{{errorMessage}}" class="fb-error">
+          <text class="fb-error__text">{{errorMessage}}</text>
+        </view>
+
+        <button class="arc-btn fb-submit" bindtap="handleSubmit" disabled="{{submitting}}" loading="{{submitting}}">{{submitting ? '正在提交…' : '提交反馈'}}</button>
+        <text class="fb-form__note">提交后只会在本页显示这一次的回执，不生成公开内容。</text>
+      </view>
+
+      <view class="fb-foot">
+        <view class="arc-hair arc-hair--dot"><text>PRIVATE FEEDBACK</text></view>
+        <text class="fb-foot__note">不登录、不需要手机号，反馈内容不公开展示</text>
+      </view>
+    </block>
+
+    <view wx:else class="fb-receipt arc-card arc-card--ticks">
+      <view class="arc-seal fb-receipt__seal">收</view>
+      <text class="arc-eyebrow fb-receipt__eyebrow">RECEIVED · PRIVATE</text>
+      <text class="fb-receipt__title serif">反馈已收到</text>
+      <text class="fb-receipt__lede">我们会按类型整理，必要时再联系你。</text>
+      <view class="arc-hair fb-receipt__hair"></view>
+      <view class="fb-receipt__rows">
+        <view wx:if="{{referenceId}}" class="fb-receipt__row">
+          <text class="fb-receipt__key">受理编号</text>
+          <text class="fb-receipt__value">{{referenceId}}</text>
+        </view>
+        <view class="fb-receipt__row">
+          <text class="fb-receipt__key">提交时间</text>
+          <text class="fb-receipt__value">{{submittedAtText}}</text>
+        </view>
+        <view class="fb-receipt__row">
+          <text class="fb-receipt__key">反馈类型</text>
+          <text class="fb-receipt__value">{{submittedCategoryLabel}}</text>
+        </view>
+      </view>
+      <text class="fb-receipt__note">反馈仅管理人员可见；如留下联系方式，只会在必要时用于回访。</text>
+      <view class="fb-receipt__actions">
+        <button class="arc-btn" bindtap="goService">返回服务</button>
+        <button class="arc-btn arc-btn--ghost" bindtap="resetForm">再写一条</button>
+      </view>
+    </view>
+  </view>
+</view>

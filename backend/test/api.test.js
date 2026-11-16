@@ -444,6 +444,112 @@ test('admin content API requires its token and saves a backed-up spot change', a
   }
 });
 
+test('private visitor feedback is write-only for visitors and manageable by admins', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'bijiang-feedback-'));
+  const databasePath = join(directory, 'content.db');
+  const backupDirectory = join(directory, 'backups');
+  const feedbackDb = createDatabase(databasePath);
+  const feedbackServer = createApp(feedbackDb, {
+    databasePath,
+    backupDirectory,
+    adminToken: 'test-secret',
+  }).listen(0);
+  await new Promise((resolve) => feedbackServer.once('listening', resolve));
+  const feedbackBaseUrl = `http://127.0.0.1:${feedbackServer.address().port}`;
+  const contact = '13800138000';
+  const content = '金楼简介里有一处需要核对的错别字';
+  const postFeedback = (payload) => fetch(`${feedbackBaseUrl}/api/v1/feedback`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  try {
+    const created = await postFeedback({ category: 'content-error', content, contact, sourceVersion: 'v1.0.0' });
+    const createdText = await created.text();
+    const createdBody = JSON.parse(createdText);
+    assert.equal(created.status, 201);
+    assert.match(createdBody.data.id, /^fb-/);
+    assert.equal(createdBody.data.category, 'content-error');
+    assert.equal(createdBody.data.status, 'pending');
+    assert.ok(createdBody.data.createdAt);
+    assert.equal(createdBody.meta.notice, '反馈已提交，仅管理人员可查看');
+    assert.ok(!createdText.includes(contact));
+    assert.ok(!createdText.includes(content));
+
+    const emptyContent = await postFeedback({ category: 'content-error', content: '   ', contact });
+    assert.equal(emptyContent.status, 400);
+    assert.equal((await emptyContent.json()).error.code, 'CONTENT_REQUIRED');
+
+    const longContent = await postFeedback({ category: 'content-error', content: '木'.repeat(501), contact });
+    assert.equal(longContent.status, 400);
+    assert.equal((await longContent.json()).error.code, 'CONTENT_TOO_LONG');
+
+    const badCategory = await postFeedback({ category: 'wrong', content, contact });
+    assert.equal(badCategory.status, 400);
+    assert.equal((await badCategory.json()).error.code, 'INVALID_CATEGORY');
+
+    const longContact = await postFeedback({ category: 'other', content, contact: '1'.repeat(81) });
+    assert.equal(longContact.status, 400);
+    assert.equal((await longContact.json()).error.code, 'CONTACT_TOO_LONG');
+
+    const publicList = await fetch(`${feedbackBaseUrl}/api/v1/feedback`);
+    assert.equal(publicList.status, 404);
+
+    const unauthorized = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback`);
+    assert.equal(unauthorized.status, 401);
+
+    const listed = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback`, {
+      headers: { 'x-admin-token': 'test-secret' },
+    });
+    const listedBody = await listed.json();
+    assert.equal(listed.status, 200);
+    assert.equal(listedBody.data.length, 1);
+    assert.equal(listedBody.data[0].contact, contact);
+
+    const updated = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback/${createdBody.data.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-token': 'test-secret' },
+      body: JSON.stringify({ status: 'processing', adminNote: '已转交内容组核对' }),
+    });
+    const updatedBody = await updated.json();
+    assert.equal(updated.status, 200);
+    assert.equal(updatedBody.data.status, 'processing');
+    assert.equal(updatedBody.data.adminNote, '已转交内容组核对');
+    assert.ok(updatedBody.data.updatedAt);
+
+    const processing = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback?status=processing`, {
+      headers: { 'x-admin-token': 'test-secret' },
+    });
+    assert.equal((await processing.json()).data.length, 1);
+
+    const pending = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback?status=pending`, {
+      headers: { 'x-admin-token': 'test-secret' },
+    });
+    assert.equal((await pending.json()).data.length, 0);
+
+    const invalidStatus = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback/${createdBody.data.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-token': 'test-secret' },
+      body: JSON.stringify({ status: 'archived' }),
+    });
+    assert.equal(invalidStatus.status, 400);
+    assert.equal((await invalidStatus.json()).error.code, 'INVALID_FEEDBACK_UPDATE');
+
+    const unknown = await fetch(`${feedbackBaseUrl}/api/v1/admin/feedback/fb-not-found`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-token': 'test-secret' },
+      body: JSON.stringify({ status: 'done' }),
+    });
+    assert.equal(unknown.status, 404);
+    assert.equal((await unknown.json()).error.code, 'FEEDBACK_NOT_FOUND');
+  } finally {
+    await new Promise((resolve) => feedbackServer.close(resolve));
+    feedbackDb.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('spot detail returns 404 for an unknown id', async () => {
   const response = await fetch(`${baseUrl}/api/v1/spots/unknown`);
   const body = await response.json();

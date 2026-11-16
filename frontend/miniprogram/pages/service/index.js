@@ -210,5 +210,11 @@ Page({
       fail: () => wx.showToast({ title: '页面打开失败，请稍后重试', icon: 'none' }),
     });
   },
+  openFeedback() {
+    wx.navigateTo({
+      url: '/pages/feedback/index',
+      fail: () => wx.showToast({ title: '页面打开失败，请稍后重试', icon: 'none' }),
+    });
+  },
   noop() {},
 });

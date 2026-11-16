@@ -61,13 +61,14 @@
       <text class="privacy-policy__title serif">当前数据边界</text>
       <view class="arc-hair privacy-policy__hair"></view>
       <text class="privacy-policy__body">游览记录、私人笔记和使用偏好只保存在当前手机，内容缓存由系统自动管理。常见问题页面仅提供预设的景区资料。当前不使用微信登录，不采集昵称、头像、手机号或实时定位，也不收集点赞、评论等游客公开内容。</text>
+      <text class="privacy-policy__body privacy-policy__body--feedback">问题反馈仅在主动填写时收集文字说明和选填联系方式，仅管理人员可见，不公开展示，不要求登录或手机号。</text>
       <view class="privacy-policy__version"><text>隐私草案版本：</text><text class="arc-pending">0.2（2026-09-23）</text><text>，正式发布前须由运营主体审核。</text></view>
       <text class="privacy-policy__phone">客服电话：0757-26632123（待景区最终确认）</text>
     </view>
 
-    <view class="privacy-foot">
+    <view class="privacy-foot" bindlongpress="openAdmin">
+      <!-- 管理入口改为受控触发：长按页脚进入；后台页面与直达路径保留。 -->
       <view class="arc-hair arc-hair--dot"><text>END OF POLICY</text></view>
-      <button class="privacy-admin" bindtap="openAdmin">管理人员入口</button>
     </view>
   </view>
 </view>

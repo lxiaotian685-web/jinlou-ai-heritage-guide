@@ -11,6 +11,9 @@ import {
   listNarrations,
   listAllNarrations,
   listAssistantFaqs,
+  createFeedback,
+  listFeedback,
+  updateFeedback,
   updateAssistantFaq,
   updateNarrationReview,
   updateTourRoute,
@@ -29,6 +32,8 @@ import {
 import assistantCore from '../../frontend/cloudfunctions/bijiang-api/assistant/index.js';
 
 const recommendationCategories = new Set(['food', 'hotel', 'transport', 'attraction']);
+const feedbackCategories = new Set(['content-error', 'feature-issue', 'visit-suggestion', 'other']);
+const feedbackStatuses = new Set(['pending', 'processing', 'done']);
 
 function buildAssistantInput(db) {
   const spots = listSpots(db);
@@ -146,6 +151,24 @@ export function createApp(db, options = {}) {
     } catch (error) { return response.status(400).json({ error: { code: 'FAQ_UPDATE_FAILED', message: error.message } }); }
   });
 
+  app.get('/api/v1/admin/feedback', requireAdmin, (request, response) => {
+    const status = request.query.status;
+    if (status && !feedbackStatuses.has(status)) {
+      return response.status(400).json({ error: { code: 'INVALID_STATUS', message: '反馈状态不正确' } });
+    }
+    return response.json({ data: listFeedback(db, status) });
+  });
+
+  app.patch('/api/v1/admin/feedback/:id', requireAdmin, (request, response) => {
+    try {
+      const updated = updateFeedback(db, request.params.id, request.body || {});
+      if (!updated) return response.status(404).json({ error: { code: 'FEEDBACK_NOT_FOUND', message: '未找到该反馈' } });
+      return response.json({ data: updated });
+    } catch (error) {
+      return response.status(400).json({ error: { code: 'INVALID_FEEDBACK_UPDATE', message: error.message } });
+    }
+  });
+
   app.get('/api/v1/health', (_request, response) => {
     response.json({ status: 'ok', service: 'bijiang-explorer-api' });
   });
@@ -237,6 +260,34 @@ export function createApp(db, options = {}) {
         model: result.model,
         notice: result.notice,
       },
+    });
+  });
+
+  app.post('/api/v1/feedback', (request, response) => {
+    const body = request.body || {};
+    const category = typeof body.category === 'string' ? body.category.trim() : '';
+    if (!feedbackCategories.has(category)) {
+      return response.status(400).json({ error: { code: 'INVALID_CATEGORY', message: '请选择正确的问题类型' } });
+    }
+    const content = typeof body.content === 'string' ? body.content.trim() : '';
+    if (!content) {
+      return response.status(400).json({ error: { code: 'CONTENT_REQUIRED', message: '请输入反馈内容' } });
+    }
+    if (content.length > 500) {
+      return response.status(400).json({ error: { code: 'CONTENT_TOO_LONG', message: '反馈内容不能超过500个字符' } });
+    }
+    const contact = typeof body.contact === 'string' ? body.contact.trim() : '';
+    if (contact.length > 80) {
+      return response.status(400).json({ error: { code: 'CONTACT_TOO_LONG', message: '联系方式不能超过80个字符' } });
+    }
+    const sourceVersion = typeof body.sourceVersion === 'string' ? body.sourceVersion.trim() : '';
+    if (sourceVersion.length > 40) {
+      return response.status(400).json({ error: { code: 'SOURCE_VERSION_TOO_LONG', message: '来源版本信息不能超过40个字符' } });
+    }
+    const record = createFeedback(db, { category, content, contact, sourceVersion });
+    return response.status(201).json({
+      data: { id: record.id, category: record.category, status: record.status, createdAt: record.createdAt },
+      meta: { notice: '反馈已提交，仅管理人员可查看' },
     });
   });
 
